@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34928.147
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RM250728_Fiera Host MI (Gerosa)", "RM250728_Fiera Host MI (Gerosa)\RM250728_Fiera Host MI (Gerosa).csproj", "{C4A1B633-37DE-4557-B8D4-80B14DDCC1AD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C4A1B633-37DE-4557-B8D4-80B14DDCC1AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4A1B633-37DE-4557-B8D4-80B14DDCC1AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4A1B633-37DE-4557-B8D4-80B14DDCC1AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4A1B633-37DE-4557-B8D4-80B14DDCC1AD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {51A68F18-1994-462F-8781-8287F4DA7B87}
+	EndGlobalSection
+EndGlobal

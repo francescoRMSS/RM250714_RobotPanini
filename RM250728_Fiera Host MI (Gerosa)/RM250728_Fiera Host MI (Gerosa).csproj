@@ -1,0 +1,466 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C4A1B633-37DE-4557-B8D4-80B14DDCC1AD}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>RM</RootNamespace>
+    <AssemblyName>RM250728_Fiera Host MI %28Gerosa%29</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>doc\documentation.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>logoRM.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CookComputing.XmlRpcV2">
+      <HintPath>..\..\..\..\..\..\Support\CookComputing.XmlRpcV2.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyModbus">
+      <HintPath>..\..\..\..\..\..\Support\EasyModbus.dll</HintPath>
+    </Reference>
+    <Reference Include="libfairino">
+      <HintPath>..\..\..\..\..\..\Support\libfairino.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=3.0.4.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.3.0.4\lib\net462\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.Sqlite">
+      <HintPath>..\..\..\..\..\..\Support\Microsoft.Data.Sqlite.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Support\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Npgsql">
+      <HintPath>..\..\..\..\..\..\Support\Npgsql.dll</HintPath>
+    </Reference>
+    <Reference Include="RMLib.Alarms">
+      <HintPath>..\..\..\..\..\..\Support\RMLib.Alarms.dll</HintPath>
+    </Reference>
+    <Reference Include="RMLib.DataAccess">
+      <HintPath>..\..\..\..\..\..\Support\RMLib.DataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="RMLib.Environment">
+      <HintPath>..\..\..\..\..\..\Support\RMLib.Environment.dll</HintPath>
+    </Reference>
+    <Reference Include="RMLib.Keyboards">
+      <HintPath>..\..\..\..\..\..\Support\RMLib.Keyboards.dll</HintPath>
+    </Reference>
+    <Reference Include="RMLib.Logger">
+      <HintPath>..\..\..\..\..\..\Support\RMLib.Logger.dll</HintPath>
+    </Reference>
+    <Reference Include="RMLib.MessageBox">
+      <HintPath>..\..\..\..\..\..\Support\RMLib.MessageBox.dll</HintPath>
+    </Reference>
+    <Reference Include="RMLib.PLC">
+      <HintPath>..\..\..\..\..\..\Support\RMLib.PLC.dll</HintPath>
+    </Reference>
+    <Reference Include="RMLib.Recipes">
+      <HintPath>..\..\..\..\..\..\Support\RMLib.Recipes.dll</HintPath>
+    </Reference>
+    <Reference Include="RMLib.Security">
+      <HintPath>..\..\..\..\..\..\Support\RMLib.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="RMLib.Translations">
+      <HintPath>..\..\..\..\..\..\Support\RMLib.Translations.dll</HintPath>
+    </Reference>
+    <Reference Include="RMLib.Utils">
+      <HintPath>..\..\..\..\..\..\Support\RMLib.Utils.dll</HintPath>
+    </Reference>
+    <Reference Include="RMLib.VATView">
+      <HintPath>..\..\..\..\..\..\Support\RMLib.VATView.dll</HintPath>
+    </Reference>
+    <Reference Include="RMLib.Versions">
+      <HintPath>..\..\..\..\..\..\Support\RMLib.Versions.dll</HintPath>
+    </Reference>
+    <Reference Include="RMLib.View">
+      <HintPath>..\..\..\..\..\..\Support\RMLib.View.dll</HintPath>
+    </Reference>
+    <Reference Include="S7.Net">
+      <HintPath>..\..\..\..\..\..\Support\S7.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="SQLitePCLRaw.core">
+      <HintPath>..\..\..\..\..\..\Support\SQLitePCLRaw.core.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite">
+      <HintPath>..\..\..\..\..\..\Support\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="src\RM250728\Classes\Configuration.cs" />
+    <Compile Include="src\RM250728\Classes\ConfigurationSettings.cs" />
+    <Compile Include="src\RM250728\Classes\FR20\Applications\ApplicationConfig.cs" />
+    <Compile Include="src\RM250728\Classes\FR20\Applications\Application\ApplicationPositions.cs" />
+    <Compile Include="src\RM250728\Classes\FR20\Applications\Application\GunSettings.cs" />
+    <Compile Include="src\RM250728\Classes\FR20\Applications\Application\RobotApplication.cs" />
+    <Compile Include="src\RM250728\Classes\FR20\Applications\ObservableApplicationsDictionary.cs" />
+    <Compile Include="src\RM250728\Classes\FR20\DAO\SQLite\RobotDAOSqlite.cs" />
+    <Compile Include="src\RM250728\Classes\FR20\Properties\Collisions.cs" />
+    <Compile Include="src\RM250728\Classes\FR20\Properties\Frames.cs" />
+    <Compile Include="src\RM250728\Classes\FR20\Jog\JogMovement.cs" />
+    <Compile Include="src\RM250728\Classes\FR20\Jog\JogRobotProperties.cs" />
+    <Compile Include="src\RM250728\Classes\FR20\PointPosition.cs" />
+    <Compile Include="src\RM250728\Classes\FR20\PositionChecker.cs" />
+    <Compile Include="src\RM250728\Classes\FR20\RobotDictionaryChangedEventArgs.cs" />
+    <Compile Include="src\RM250728\Classes\FR20\RobotManager.cs" />
+    <Compile Include="src\RM250728\Classes\FR20\RobotPointRecordingEventArgs.cs" />
+    <Compile Include="src\RM250728\Classes\FR20\RobotProperties.cs" />
+    <Compile Include="src\RM250728\Classes\FR20\RobotSpeed.cs" />
+    <Compile Include="src\RM250728\Classes\FR20\SpeedMode.cs" />
+    <Compile Include="src\RM250728\Classes\FR20\Properties\Tools.cs" />
+    <Compile Include="src\RM250728\Classes\FR20\TaskManager\TaskManager.cs" />
+    <Compile Include="src\RM250728\Classes\FR20\TaskManager\TaskModel.cs" />
+    <Compile Include="src\RM250728\Classes\FR20\TaskManager\TaskType.cs" />
+    <Compile Include="src\RM250728\Classes\Global.cs" />
+    <Compile Include="src\RM250728\Classes\PLC\PLCTagName.cs" />
+    <Compile Include="src\RM250728\Classes\Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\RM250728\Forms\Plant\DragMode\FormDebugSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\DragMode\FormDebugSettings.Designer.cs">
+      <DependentUpon>FormDebugSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\DragMode\FormDebugTools.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\DragMode\FormDebugTools.Designer.cs">
+      <DependentUpon>FormDebugTools.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\DragMode\UC_FullDragModePage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\DragMode\UC_FullDragModePage.Designer.cs">
+      <DependentUpon>UC_FullDragModePage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\UC_weldingParameters.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\UC_weldingParameters.Designer.cs">
+      <DependentUpon>UC_weldingParameters.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\FormDiagnostics.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\FormDiagnostics.Designer.cs">
+      <DependentUpon>FormDiagnostics.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\FormHomePage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\FormHomePage.Designer.cs">
+      <DependentUpon>FormHomePage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\FormInfoRobot.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\FormInfoRobot.Designer.cs">
+      <DependentUpon>FormInfoRobot.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\FormLanguageSelection.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\FormLanguageSelection.Designer.cs">
+      <DependentUpon>FormLanguageSelection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\FormLoading.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\FormLoading.Designer.cs">
+      <DependentUpon>FormLoading.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\UC_ApplicationPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\UC_ApplicationPage.Designer.cs">
+      <DependentUpon>UC_ApplicationPage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\UC_configuration.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\UC_configuration.Designer.cs">
+      <DependentUpon>UC_configuration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\UC_HomePage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\UC_HomePage.Designer.cs">
+      <DependentUpon>UC_HomePage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\UC_parameters.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\UC_parameters.Designer.cs">
+      <DependentUpon>UC_parameters.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\UC_permissions.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\UC_permissions.Designer.cs">
+      <DependentUpon>UC_permissions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\UC_positions.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\Plant\UC_positions.Designer.cs">
+      <DependentUpon>UC_positions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\ScreenSaver\ScreenSaverManager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\ScreenSaver\ScreenSaverManager.Designer.cs">
+      <DependentUpon>ScreenSaverManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\ScreenSaver\VideoPlayer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\RM250728\Forms\ScreenSaver\VideoPlayer.Designer.cs">
+      <DependentUpon>VideoPlayer.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="src\RM250728\Forms\Plant\DragMode\FormDebugSettings.resx">
+      <DependentUpon>FormDebugSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\RM250728\Forms\Plant\DragMode\FormDebugTools.resx">
+      <DependentUpon>FormDebugTools.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\RM250728\Forms\Plant\DragMode\UC_FullDragModePage.resx">
+      <DependentUpon>UC_FullDragModePage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\RM250728\Forms\Plant\UC_weldingParameters.resx">
+      <DependentUpon>UC_weldingParameters.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\RM250728\Forms\Plant\FormDiagnostics.resx">
+      <DependentUpon>FormDiagnostics.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\RM250728\Forms\Plant\FormHomePage.resx">
+      <DependentUpon>FormHomePage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\RM250728\Forms\Plant\FormInfoRobot.resx">
+      <DependentUpon>FormInfoRobot.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\RM250728\Forms\Plant\FormLanguageSelection.resx">
+      <DependentUpon>FormLanguageSelection.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\RM250728\Forms\FormLoading.resx">
+      <DependentUpon>FormLoading.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\RM250728\Forms\Plant\UC_ApplicationPage.resx">
+      <DependentUpon>UC_ApplicationPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\RM250728\Forms\Plant\UC_configuration.resx">
+      <DependentUpon>UC_configuration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\RM250728\Forms\Plant\UC_HomePage.resx">
+      <DependentUpon>UC_HomePage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\RM250728\Forms\Plant\UC_parameters.resx">
+      <DependentUpon>UC_parameters.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\RM250728\Forms\Plant\UC_permissions.resx">
+      <DependentUpon>UC_permissions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\RM250728\Forms\Plant\UC_positions.resx">
+      <DependentUpon>UC_positions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\RM250728\Forms\ScreenSaver\ScreenSaverManager.resx">
+      <DependentUpon>ScreenSaverManager.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\RM250728\Forms\ScreenSaver\VideoPlayer.resx">
+      <DependentUpon>VideoPlayer.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="AxWMPLib">
+      <Guid>{6BF52A50-394A-11D3-B153-00C04F79FAA6}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>aximp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="WMPLib">
+      <Guid>{6BF52A50-394A-11D3-B153-00C04F79FAA6}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="logoRM.ico" />
+    <None Include="Resources\pane-cotto-al-forno-e-focacce-tenuti-scaffale.jpg" />
+    <None Include="Resources\gripper_white.png" />
+    <None Include="Resources\gripper.png" />
+    <None Include="Resources\bg_weld.png" />
+    <None Include="Resources\welding_bg.png" />
+    <None Include="Resources\UC_weldingParameters.png" />
+    <None Include="Resources\UC_parameters.png" />
+    <None Include="Resources\UC_positions.png" />
+    <None Include="Resources\UC_homePage.png" />
+    <None Include="Resources\welding1.png" />
+    <None Include="Resources\20250324_UC_dragMode.png" />
+    <None Include="Resources\warning_message_icon.png" />
+    <None Include="Resources\vatView.png" />
+    <None Include="Resources\upArrowBlue-32.png" />
+    <None Include="Resources\tools-white.png" />
+    <None Include="Resources\tools32.png" />
+    <None Include="Resources\stopEmergencyWhite32.png" />
+    <None Include="Resources\stop.png" />
+    <None Include="Resources\skipBlue-32.png" />
+    <None Include="Resources\settings32.png" />
+    <None Include="Resources\settings_white.png" />
+    <None Include="Resources\security_filled.png" />
+    <None Include="Resources\save32.png" />
+    <None Include="Resources\sartMonitoringGreen-32.png" />
+    <None Include="Resources\safeZone-yellow32.png" />
+    <None Include="Resources\safeZone-green32.png" />
+    <None Include="Resources\robotic-arm.png" />
+    <None Include="Resources\robot_arm_connection.png" />
+    <None Include="Resources\robot_alarm_ok.png" />
+    <None Include="Resources\robot_alarm_error.png" />
+    <None Include="Resources\RM_logo.png" />
+    <None Include="Resources\resumeMonitoringBlue-32.png" />
+    <None Include="Resources\remove_filter_filled1.png" />
+    <None Include="Resources\redCircle.png" />
+    <None Include="Resources\rec32.png" />
+    <None Include="Resources\ptp-line.png" />
+    <None Include="Resources\pressure.png" />
+    <None Include="Resources\power.png" />
+    <None Include="Resources\positionsWhite32.png" />
+    <None Include="Resources\positions.png" />
+    <None Include="Resources\plc_connection_ok.png" />
+    <None Include="Resources\play32.png" />
+    <None Include="Resources\pausemonitoringRed-32.png" />
+    <None Include="Resources\parametersWhite32.png" />
+    <None Include="Resources\parameters.png" />
+    <None Include="Resources\overwriteBluew-32.png" />
+    <None Include="Resources\overwriteBlue-32.png" />
+    <None Include="Resources\on-button.png" />
+    <None Include="Resources\off-button.png" />
+    <None Include="Resources\noMov.png" />
+    <None Include="Resources\monitoring.png" />
+    <None Include="Resources\modifyBlue-32.png" />
+    <None Include="Resources\minus32.png" />
+    <None Include="Resources\lock_32.png" />
+    <None Include="Resources\loading_gif.gif" />
+    <None Include="Resources\load32.png" />
+    <None Include="Resources\list.png" />
+    <None Include="Resources\linear-line.png" />
+    <None Include="Resources\line.png" />
+    <None Include="Resources\letter-m.png" />
+    <None Include="Resources\keypad_filled_black.png" />
+    <None Include="Resources\italy_flag.png" />
+    <None Include="Resources\inMov.png" />
+    <None Include="Resources\info_white.png" />
+    <None Include="Resources\info.png" />
+    <None Include="Resources\home.png" />
+    <None Include="Resources\gun.png" />
+    <None Include="Resources\greenCircle.png" />
+    <None Include="Resources\go-back-arrow.png" />
+    <None Include="Resources\germany_flag.png" />
+    <None Include="Resources\france_flag.png" />
+    <None Include="Resources\filter_filled.png" />
+    <None Include="Resources\exit_filled.png" />
+    <None Include="Resources\esclamationWhite32.png" />
+    <None Include="Resources\england_flag.png" />
+    <None Include="Resources\emptyCircle.png" />
+    <None Include="Resources\egypt_flag.png" />
+    <None Include="Resources\edit321.png" />
+    <None Include="Resources\edit32.png" />
+    <None Include="Resources\dragWhite32.png" />
+    <None Include="Resources\drag.png" />
+    <None Include="Resources\downArrowBlue-32.png" />
+    <None Include="Resources\diagnostic.png" />
+    <None Include="Resources\demo.png" />
+    <None Include="Resources\delete32.png" />
+    <None Include="Resources\Cycle.png" />
+    <None Include="Resources\current.png" />
+    <None Include="Resources\connection_icon.png" />
+    <None Include="Resources\connection_error.png" />
+    <None Include="Resources\configuration.png" />
+    <None Include="Resources\config.png" />
+    <None Include="Resources\close_filled.png" />
+    <None Include="Resources\clean2.png" />
+    <None Include="Resources\clean.png" />
+    <None Include="Resources\china_flag.png" />
+    <None Include="Resources\check_white.png" />
+    <None Include="Resources\check.png" />
+    <None Include="Resources\cancelOperation_32.png" />
+    <None Include="Resources\backgroundSpry.jpg" />
+    <None Include="Resources\back32.png" />
+    <None Include="Resources\appWhite32.png" />
+    <None Include="Resources\apps.png" />
+    <None Include="Resources\alarms_outlined.png" />
+    <None Include="Resources\alarm_popup_red.png" />
+    <None Include="Resources\alarm_popup_grey.png" />
+    <None Include="Resources\airbrush.png" />
+    <None Include="Resources\addApp32.png" />
+    <None Include="Resources\add32.png" />
+    <None Include="Resources\A-letter-white.png" />
+    <None Include="Resources\a.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
