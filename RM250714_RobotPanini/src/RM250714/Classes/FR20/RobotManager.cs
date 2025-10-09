@@ -5507,7 +5507,7 @@ namespace RM.src.RM250714
             int offsetRotPlace = 3;
             int offsetZPostPick = 20;
             int offsetRotPostPick = 2;
-            int offsetPrePlace1 = 850;
+            int offsetPrePlace1 = 800;
             int offsetZPrePlace = 20;
             int offsetCambioTeglia = 400;
 
@@ -5881,7 +5881,7 @@ namespace RM.src.RM250714
             double[] levelCollision7 = new double[] { 7, 7, 7, 7, 7, 7 };
             double[] levelCollision8 = new double[] { 8, 8, 8, 8, 8, 8 };
 
-            double[] workCollision = new double[] { 1, 3, 3, 8, 3, 3 };
+            double[] workCollision = new double[] { 2, 4, 4, 8, 3, 4 };
 
             robot.SetAnticollision(0, workCollision, 1);
 
