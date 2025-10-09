@@ -5507,7 +5507,7 @@ namespace RM.src.RM250714
             int offsetRotPlace = 3;
             int offsetZPostPick = 20;
             int offsetRotPostPick = 2;
-            int offsetPrePlace1 = 800;
+            int offsetPrePlace1 = 850;
             int offsetZPrePlace = 20;
             int offsetCambioTeglia = 400;
 
