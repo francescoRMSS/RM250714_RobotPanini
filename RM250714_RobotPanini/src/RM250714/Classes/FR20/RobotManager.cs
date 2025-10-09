@@ -5972,7 +5972,7 @@ namespace RM.src.RM250714
 
                             if (inPosition) // Se il Robot è arrivato in posizione di Pick 1
                             {
-                                await Task.Delay(200);
+                                await Task.Delay(100);
                                 // Chiudo la pinza
                                 robot.SetDO(0, 1, 0, 0);
                                 step = 40;
@@ -5991,7 +5991,7 @@ namespace RM.src.RM250714
 
                             if (ris == 0)
                             {
-                                await Task.Delay(200);
+                                await Task.Delay(100);
                                 step = 50;
                             }
 
@@ -6047,7 +6047,7 @@ namespace RM.src.RM250714
 
                             if (inPosition) // Se il Robot è arrivato in posizione di place
                             {
-                                await Task.Delay(200);
+                                await Task.Delay(100);
                               //  robot.SetDO(0, 0, 0, 0); // Apro la pinza
                                 step = 85; // Passaggio a step 100
                             }
@@ -6065,7 +6065,7 @@ namespace RM.src.RM250714
 
                           //  if (ris == 1)
                             {
-                                await Task.Delay(200);
+                                await Task.Delay(100);
                                 step = 100;
                             }
 
@@ -6106,7 +6106,7 @@ namespace RM.src.RM250714
 
                             if (inPosition) // Se il Robot è arrivato in posizione di Pick 1
                             {
-                                await Task.Delay(200);
+                                await Task.Delay(100);
                                 // Apro la pinza
                                 robot.SetDO(0, 0, 0, 0);
 
@@ -6126,7 +6126,7 @@ namespace RM.src.RM250714
 
                             if (ris == 1)
                             {
-                                await Task.Delay(200);
+                                await Task.Delay(100);
                                 step = 120; // Passaggio a step 150
                             }
 
@@ -6174,7 +6174,7 @@ namespace RM.src.RM250714
 
                             if (inPosition) // Se il Robot è arrivato in posizione di place 2
                             {
-                                await Task.Delay(200);
+                                await Task.Delay(100);
                                 robot.SetDO(0, 1, 0, 0); // Chiudo la pinza
 
                                 step = 135; // Passaggio a step 140
@@ -6193,7 +6193,7 @@ namespace RM.src.RM250714
 
                             if (ris == 0)
                             {
-                                await Task.Delay(200);
+                                await Task.Delay(100);
                                 step = 140;
                             }
 
@@ -6247,7 +6247,7 @@ namespace RM.src.RM250714
 
                             if (inPosition) // Se il Robot è arrivato in posizione di place
                             {
-                                await Task.Delay(200);
+                                await Task.Delay(100);
                                 //  robot.SetDO(0, 0, 0, 0); // Apro la pinza
                                 step = 170; // Passaggio a step 100
 
@@ -6292,7 +6292,7 @@ namespace RM.src.RM250714
 
                             if (inPosition) // Se il Robot è arrivato in posizione di Pick 1
                             {
-                                await Task.Delay(200);
+                                await Task.Delay(100);
                                 // Apro la pinza
                                 robot.SetDO(0, 0, 0, 0);
 
@@ -6312,7 +6312,7 @@ namespace RM.src.RM250714
 
                             if (ris == 1)
                             {
-                                await Task.Delay(200);
+                                await Task.Delay(100);
                                 step = 200; // Passaggio a step 150
                             }
 
