@@ -5885,6 +5885,8 @@ namespace RM.src.RM250714
 
             robot.SetAnticollision(0, workCollision, 1);
 
+            int velAcc = 60;
+
             byte ris = 0;
 
             // Aspetto che il metodo termini, ma senza bloccare il thread principale
@@ -5991,7 +5993,7 @@ namespace RM.src.RM250714
 
                             if (ris == 0)
                             {
-                                await Task.Delay(100);
+                                await Task.Delay(50);
                                 step = 50;
                             }
 
@@ -6021,7 +6023,7 @@ namespace RM.src.RM250714
 
                             inPosition = false; // Reset inPosition
 
-                            movementResult = robot.MoveJ(jointPosPrePlace1, descPosPrePlaceTeglia1, tool, user, vel/2, acc/2, 
+                            movementResult = robot.MoveJ(jointPosPrePlace1, descPosPrePlaceTeglia1, tool, user, velAcc, velAcc, 
                                 ovl, epos, blendT, offsetFlag, offset);
 
                             GetRobotMovementCode(movementResult);
@@ -6082,7 +6084,7 @@ namespace RM.src.RM250714
                                 ovl, blendT, epos, 0, offsetFlag, offset);
                             GetRobotMovementCode(movementResult); // Stampo risultato del movimento
 
-                            movementResult = robot.MoveJ(jointPosPrePlace2, descPosPrePlaceTeglia2, tool, user, vel / 2, acc / 2,
+                            movementResult = robot.MoveJ(jointPosPrePlace2, descPosPrePlaceTeglia2, tool, user, velAcc, velAcc,
                                 ovl, epos, blendT, offsetFlag, offset);
 
                             // Movimento per uscire da place 1
@@ -6126,7 +6128,7 @@ namespace RM.src.RM250714
 
                             if (ris == 1)
                             {
-                                await Task.Delay(100);
+                              //  await Task.Delay(100);
                                 step = 120; // Passaggio a step 150
                             }
 
@@ -6193,7 +6195,7 @@ namespace RM.src.RM250714
 
                             if (ris == 0)
                             {
-                                await Task.Delay(100);
+                                await Task.Delay(50);
                                 step = 140;
                             }
 
@@ -6222,7 +6224,7 @@ namespace RM.src.RM250714
 
                             inPosition = false; // Reset inPosition
 
-                            movementResult = robot.MoveJ(jointPosPrePlace1, descPosPrePlaceTeglia1, tool, user, vel / 2, acc / 2,
+                            movementResult = robot.MoveJ(jointPosPrePlace1, descPosPrePlaceTeglia1, tool, user, velAcc, velAcc,
                                 ovl, epos, blendT, offsetFlag, offset);
 
                             GetRobotMovementCode(movementResult);
@@ -6268,7 +6270,7 @@ namespace RM.src.RM250714
                                 ovl, blendT, epos, 0, offsetFlag, offset);
                             GetRobotMovementCode(movementResult); // Stampo risultato del movimento
 
-                            movementResult = robot.MoveJ(jointPosPrePlace3, descPosPrePlaceTeglia3, tool, user, vel / 2, acc / 2,
+                            movementResult = robot.MoveJ(jointPosPrePlace3, descPosPrePlaceTeglia3, tool, user, velAcc, velAcc,
                                 ovl, epos, blendT, offsetFlag, offset);
 
                             // Movimento per uscire da place 1
