@@ -5894,7 +5894,7 @@ namespace RM.src.RM250714
             await Task.Run(async () =>
             {
                 // Fino a quando la condizione di stop routine non è true e non sono presenti allarmi bloccanti
-                while (!token.IsCancellationRequested && !AlarmManager.blockingAlarm )
+                while (!token.IsCancellationRequested && !AlarmManager.blockingAlarm && !stopCycleRoutine)
                 {
                     switch (step)
                     {
