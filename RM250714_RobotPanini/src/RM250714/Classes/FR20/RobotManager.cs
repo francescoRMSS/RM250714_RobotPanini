@@ -5500,7 +5500,7 @@ namespace RM.src.RM250714
             // Parametro necessario al comando MoveL
             DescPose offset = new DescPose(0, 0, 0, 0, 0, 0); // Nessun offset
 
-            int offsetAllontamento = 950;
+            int offsetAllontamento = 1000;
             int offsetAvvicinamentoPick = 400;
             int offsetZTegliaPick = 40;
             int offsetRotPrePick = 3;
@@ -5681,7 +5681,7 @@ namespace RM.src.RM250714
                descPosPick2.tran.y - offsetAllontamento,
                descPosPick2.tran.z + offsetZTegliaPick, // Mi alzo di 2 cm per uscire dal carrello senza strisciare
                descPosPick2.rpy.rx,
-               descPosPick2.rpy.ry - offsetRotPostPick,
+               NormalizeAngle((float)descPosPick2.rpy.ry - offsetRotPostPick),
                descPosPick2.rpy.rz
               );
 
@@ -5789,9 +5789,9 @@ namespace RM.src.RM250714
             DescPose descPosPrePlaceTeglia3 = new DescPose(
                 descPosPlace3.tran.x,
                 descPosPlace3.tran.y - offsetAllontamento,
-                descPosPlace3.tran.z + 50,
+                descPosPlace3.tran.z + offsetZPrePlace,
                 descPosPlace3.rpy.rx,
-                NormalizeAngle((float)descPosPlace3.rpy.ry - 3) ,
+                descPosPlace3.rpy.ry,
                 descPosPlace3.rpy.rz);
 
             robot.GetInverseKin(0, descPosPrePlaceTeglia3, -1, ref jointPosPrePlace3);
@@ -5871,6 +5871,7 @@ namespace RM.src.RM250714
 
             #endregion
 
+
             double[] levelCollision1 = new double[] { 1, 1, 1, 1, 1, 1 };
             double[] levelCollision2 = new double[] { 2, 2, 2, 2, 2, 2 };
             double[] levelCollision3 = new double[] { 3, 3, 3, 3, 3, 3 };
@@ -5880,7 +5881,9 @@ namespace RM.src.RM250714
             double[] levelCollision7 = new double[] { 7, 7, 7, 7, 7, 7 };
             double[] levelCollision8 = new double[] { 8, 8, 8, 8, 8, 8 };
 
-            robot.SetAnticollision(0, levelCollision6, 1);
+            double[] workCollision = new double[] { 1, 3, 3, 8, 3, 3 };
+
+            robot.SetAnticollision(0, workCollision, 1);
 
             byte ris = 0;
 
