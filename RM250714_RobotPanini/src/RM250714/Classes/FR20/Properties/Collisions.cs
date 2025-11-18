@@ -25,9 +25,13 @@ namespace RM.src.RM250714.Classes.FR20.Properties
         /// </summary>
         private static readonly log4net.ILog log = LogHelper.GetLogger();
 
+        #region Proprietà connessione database
+
         private static readonly RobotDAOSqlite RobotDAO = new RobotDAOSqlite();
         private static readonly SqliteConnectionConfiguration DatabaseConnection = new SqliteConnectionConfiguration();
         private static readonly string ConnectionString = DatabaseConnection.GetConnectionString();
+
+        #endregion
 
         List<CollisionStruct> _collisions;
         Robot _robot;
