@@ -137,6 +137,10 @@ namespace RM.src.RM250714
         /// </summary>
         public static float blendT = 0;
         /// <summary>
+        /// Valore che rappresenta la smoothness dei movimenti lineari del robot (blend).
+        /// </summary>
+        public static float blendR = 0;
+        /// <summary>
         /// Configurazione dello spazio giunto.
         /// </summary>
         public static int config = -1;
@@ -1009,7 +1013,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// Nome del task check robot com
         /// </summary>
-        public static string TaskPickAndPlaceTegliaIperal = nameof(PickAndPlaceTegliaIperal);
+        public static string TaskPickAndPlaceTegliaIperal = nameof(TaskPickAndPlaceTegliaIperal);
 
         #endregion
 
@@ -1469,13 +1473,37 @@ namespace RM.src.RM250714
         }
 
         /// <summary>
-        /// Esegue ciclo teglie
+        /// Esegue ciclo teglie iperal
         /// </summary>
         public async static Task PickAndPlaceTegliaIperal(CancellationToken token)
         {
+            #region Parametri movimento
 
-            // Parametro necessario al comando MoveL
-            DescPose offset = new DescPose(0, 0, 0, 0, 0, 0); // Nessun offset
+            // Offset spostamento
+            DescPose offset = new DescPose(0, 0, 0, 0, 0, 0);
+            // Dichiarazione asse esterno
+            ExaxisPos epos = new ExaxisPos(0, 0, 0, 0);
+            // Flag presenza offset
+            byte offsetFlag = 0;
+            // Flag per ricerca filo
+            byte search = 0;
+            // Parametri moveL
+            int velAccParamMode = 0;
+            int overSpeedStrategy = 0;
+            int speedPercent = 0;
+            // Codice risultante del movimento del Robot
+            int movementResult = -1;
+            // Reset condizione di stop ciclo
+            stopCycleRoutine = false;
+            // Reset richiesta di stop ciclo
+            stopCycleRequested = false;
+            // Reset step routine
+            step = 0;
+            byte ris = 0;
+
+            #endregion
+
+            #region Offset spostamenti
 
             int offsetAllontamento = 850;
             int offsetAvvicinamento = 400;
@@ -1485,6 +1513,10 @@ namespace RM.src.RM250714
             int zOffsetPostPickTeglia = 40;
             int zOffsetAllontanamentoPostPickTeglia1 = 40;
             int zOffsetPrePlace = 20;
+
+            #endregion
+
+            #region Punti utili al ciclo
 
             #region Punto home
 
@@ -1756,7 +1788,7 @@ namespace RM.src.RM250714
             DescPose descPosRotationPrePlaceTeglia2 = new DescPose(
                 home.x,
                 home.y,
-                placeTeglia2.z + 20,
+                placeTeglia2.z + zOffsetPrePlace,
                 placeTeglia2.rx,
                 placeTeglia2.ry,
                 placeTeglia2.rz
@@ -1964,31 +1996,9 @@ namespace RM.src.RM250714
 
             #endregion
 
-            #region Parametri movimento
-
-            ExaxisPos epos = new ExaxisPos(0, 0, 0, 0); // Nessun asse esterno
-            byte offsetFlag = 0; // Flag per offset (0 = disabilitato)
-            byte search = 0;
-            int velAccParamMode = 0;
-            int overSpeedStrategy = 0;
-            int speedPercent = 0;
-
-            // Indica il codice risultante del movimento del Robot
-            int movementResult = -1;
-
-            // Reset condizione di stop ciclo
-            stopCycleRoutine = false;
-
-            // Reset richiesta di stop ciclo
-            stopCycleRequested = false;
-
-            // Reset step routine
-            step = 0;
-
-            // Segnale di pick
-            bool prendidaNastro = true;
-
             #endregion
+
+            #region Collisioni
 
             double[] levelCollision1 = new double[] { 1, 1, 1, 1, 1, 1 };
             double[] levelCollision2 = new double[] { 2, 2, 2, 2, 2, 2 };
@@ -2001,7 +2011,7 @@ namespace RM.src.RM250714
 
             robot.SetAnticollision(0, levelCollision6, 1);
 
-            byte ris = 0;
+            #endregion
 
             // Aspetto che il metodo termini, ma senza bloccare il thread principale
             // La routine è incapsulata come 'async' per supportare futuri operatori 'await' nel caso ci fosse la necessità
@@ -2074,7 +2084,7 @@ namespace RM.src.RM250714
 
                             endingPoint = descPosPickTeglia1; // Assegnazione endingPoint
 
-                            step = 30; // Passaggio a step 30
+                            step = 30;
 
                             log.Info("STEP 10 - Movimento a punto di Pick teglia 1");
 
@@ -2152,11 +2162,6 @@ namespace RM.src.RM250714
                             movementResult = robot.MoveL(jointPosHome, descPosHome,
                                 tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
-                            /*  blendR = 50;
-                              // Movimento di rotazione pre place teglia 1
-                              movementResult = robot.MoveL(jointPosRotationPrePlaceTeglia1, descPosRotationPrePlaceTeglia1,
-                                  tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);*/
-
                             blendR = 50;
                             // Movimento a punto di avvicinamento place teglia 1
                             movementResult = robot.MoveL(jointPosApproachPlaceTeglia1, descPosApproachPlaceTeglia1,
@@ -2186,6 +2191,7 @@ namespace RM.src.RM250714
                                 step = 80;
                             }
 
+                            log.Info("STEP 70 - Check arrivo in place teglia 1");
                             break;
 
                         #endregion
@@ -2193,11 +2199,12 @@ namespace RM.src.RM250714
                         case 80:
                             #region Ritorno in home e movimento in place teglia 2
 
+                            log.Info("STEP 80 - Ritorno in home e movimento in place teglia 2");
+
                             blendR = 50;
                             // Movimento a punto di avvicinamento place teglia 1
                             movementResult = robot.MoveL(jointPosApproachPlaceTeglia1, descPosApproachPlaceTeglia1,
                                 tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
-
 
                             blendR = 50;
                             // Movimento di rotazione pre place teglia 2
@@ -2205,18 +2212,13 @@ namespace RM.src.RM250714
                                 tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
                             offset = new DescPose(0, 0, 0, 3, 0, 0);
-                            // Movimento a punto di avvicinamento place teglia 1
+                            // Movimento a punto di avvicinamento place teglia 2
                             movementResult = robot.MoveJ(jointPosApproachPlaceTeglia2, descPosApproachPlaceTeglia2,
                                 tool, user, vel, acc, ovl, epos, blendT, 1, offset);
                             offset = new DescPose(0, 0, 0, 0, 0, 0);
-                            /*
-                                                        blendR = 50;
-                                                        // Movimento di rotazione pre place teglia 1
-                                                        movementResult = robot.MoveL(jointPosApproachPlaceTeglia2, descPosApproachPlaceTeglia2,
-                                                            tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);*/
-
+                            
                             blendR = 50;
-                            // Movimento di rotazione pre place teglia 1
+                            // Movimentoa punto di place teglia 2
                             movementResult = robot.MoveL(jointPosPlaceTeglia2, descPosPlaceTeglia2,
                                 tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
@@ -2230,15 +2232,15 @@ namespace RM.src.RM250714
                         case 90:
                             #region Attesa inPosition punto di place teglia 2 e apertura pinza
 
-                            if (inPosition) // Se il Robot è arrivato in posizione di Pick 1
+                            if (inPosition) // Se il Robot è arrivato in posizione di Place teglia 2
                             {
-                                // Chiudo la pinza
+                                // Apro la pinza
                                 robot.SetDO(0, 0, 0, 0);
 
-                                step = 100; // Passaggio a step 40
+                                step = 100;
                             }
 
-                            log.Info("STEP 30 - Attesa inPosition punto di Pick teglia 1 e chiusura pinza");
+                            log.Info("STEP 90 - Attesa inPosition punto di place teglia 2 e apertura pinza");
 
                             break;
 
@@ -2256,36 +2258,38 @@ namespace RM.src.RM250714
                                 step = 110;
                             }
 
-                            formDiagnostics.UpdateRobotStepDescription("STEP 40 - Check chiusura pinza");
+                            formDiagnostics.UpdateRobotStepDescription("STEP 100 - Check apertura pinza");
 
                             break;
 
                         #endregion
 
                         case 110:
-                            #region Ritorno in home e movimento in place teglia 2
+                            #region Ritorno in home e movimento in pick teglia 2
+
+                            log.Info("STEP 110 - Ritorno in home e movimento in pick teglia 2");
 
                             blendR = 50;
 
                             offset = new DescPose(0, 0, 0, -3, 0, 0);
-                            // Movimento a punto di avvicinamento place teglia 1
+                            // Movimento a punto di post place teglia 2
                             movementResult = robot.MoveJ(jointPosPlaceTeglia2, descPosPlaceTeglia2,
                                 tool, user, vel, acc, ovl, epos, blendT, 1, offset);
 
                             blendR = 50;
-                            // Movimento di rotazione pre place teglia 2
+                            // Movimento a punto di allontanamento place teglia 2
                             movementResult = robot.MoveL(jointPosAllontanamentoPlaceTeglia2, descPosAllontanamentoPlaceTeglia2,
                                 tool, user, vel, acc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
                             offset = new DescPose(0, 0, 0, 0, 0, 0); // Nessun offset
 
                             blendR = 50;
-                            // Movimento di rotazione pre place teglia 2
+                            // Movimento a punto di avvicinamento pick teglia 2
                             movementResult = robot.MoveL(jointPosApproachPickTeglia2, descPosApproachPickTeglia2,
                                 tool, user, vel, acc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
                             blendR = 50;
-                            // Movimento di rotazione pre place teglia 2
+                            // Movimento a punto di pick teglia 2
                             movementResult = robot.MoveL(jointPosPickTeglia2, descPosPickTeglia2,
                                 tool, user, vel, acc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
@@ -2296,19 +2300,18 @@ namespace RM.src.RM250714
                             break;
                         #endregion
 
-
                         case 120:
                             #region Attesa inPosition punto di Pick teglia 1 e chiusura pinza
 
-                            if (inPosition) // Se il Robot è arrivato in posizione di Pick 1
+                            if (inPosition) // Se il Robot è arrivato in posizione di Pick teglia 2
                             {
                                 // Chiudo la pinza
                                 robot.SetDO(0, 1, 0, 0);
 
-                                step = 130; // Passaggio a step 40
+                                step = 130;
                             }
 
-                            log.Info("STEP 30 - Attesa inPosition punto di Pick teglia 1 e chiusura pinza");
+                            log.Info("STEP 120 - Attesa inPosition punto di Pick teglia 1 e chiusura pinza");
 
                             break;
 
@@ -2326,32 +2329,32 @@ namespace RM.src.RM250714
                                 step = 140;
                             }
 
-                            formDiagnostics.UpdateRobotStepDescription("STEP 40 - Check chiusura pinza");
+                            formDiagnostics.UpdateRobotStepDescription("STEP 130 - Check chiusura pinza");
 
                             break;
 
                         #endregion
 
                         case 140:
-                            #region Movimento di uscita dal carrello dopo pick teglia 1
+                            #region Movimento di uscita dal carrello dopo pick teglia 2
 
                             blendR = 50;
-                            // Movimento per uscire dal carrelo dopo pick 1
+                            // Movimento per uscire dal carrelo dopo pick 2
                             movementResult = robot.MoveL(jointPosPostPickTeglia2, descPosPostPickTeglia2,
                                 tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
                             offset = new DescPose(0, 0, 0, 3, 0, 0);
-                            // Movimento a punto di avvicinamento place teglia 1
+                            // Movimento a portare la teglia inclinata verso l'alto
                             movementResult = robot.MoveJ(jointPosPostPickTeglia2, descPosPostPickTeglia2,
                                 tool, user, vel, acc, ovl, epos, blendT, 1, offset);
                             offset = new DescPose(0, 0, 0, 0, 0, 0);
 
                             blendR = 50;
-                            // Movimento per uscire dal carrelo dopo pick 1
+                            // Movimento per uscire dal carrelo dopo pick teglia 2
                             movementResult = robot.MoveL(jointPosAllontanamentoPickTeglia2, descPosAllontanamentoPickTeglia2,
                                 tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
-                            log.Info("STEP 50 - Movimento di uscita dal carrello dopo pick teglia 1");
+                            log.Info("STEP 140 - Movimento di uscita dal carrello dopo pick teglia 2");
 
                             step = 150;
 
@@ -2367,11 +2370,6 @@ namespace RM.src.RM250714
                             movementResult = robot.MoveL(jointPosHome, descPosHome,
                                 tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
-                            /*  blendR = 50;
-                              // Movimento di rotazione pre place teglia 1
-                              movementResult = robot.MoveL(jointPosRotationPrePlaceTeglia1, descPosRotationPrePlaceTeglia1,
-                                  tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);*/
-
                             blendR = 50;
                             // Movimento a punto di avvicinamento place teglia 1
                             movementResult = robot.MoveL(jointPosApproachPlaceTeglia1, descPosApproachPlaceTeglia1,
@@ -2385,7 +2383,7 @@ namespace RM.src.RM250714
                             endingPoint = descPosPlaceTeglia1; // Assegnazione ending point
 
 
-                            log.Info("STEP 60 - Ritorno in home e movimento in place teglia 1");
+                            log.Info("STEP 150 - Ritorno in home e movimento in place teglia 1");
 
                             step = 160;
 
@@ -2395,6 +2393,8 @@ namespace RM.src.RM250714
 
                         case 160:
                             #region Check arrivo in place teglia 1
+
+                            log.Info("STEP 160 - Check arrivo in place teglia 1");
 
                             if (inPosition)
                             {
@@ -2406,7 +2406,9 @@ namespace RM.src.RM250714
                         #endregion
 
                         case 170:
-                            #region Ritorno in home e movimento in place teglia 2
+                            #region Ritorno in home e movimento in place teglia 3
+
+                            log.Info("STEP 160 - Check arrivo in place teglia 3");
 
                             blendR = 50;
                             // Movimento a punto di avvicinamento place teglia 1
@@ -2415,24 +2417,18 @@ namespace RM.src.RM250714
 
 
                             blendR = 50;
-                            // Movimento di rotazione pre place teglia 2
+                            // Movimento di rotazione pre place teglia 3
                             movementResult = robot.MoveL(jointPosRotationPrePlaceTeglia3, descPosRotationPrePlaceTeglia3,
                                 tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
-                            blendR = 50;
-                            /*  offset = new DescPose(0, 0, 0, 3, 0, 0);
-                              // Movimento di rotazione pre place teglia 1
-                              movementResult = robot.MoveL(jointPosApproachPlaceTeglia3, descPosApproachPlaceTeglia3,
-                                  tool, user, vel, acc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);*/
-
                             offset = new DescPose(0, 0, 0, 3, 0, 0);
-                            // Movimento a punto di avvicinamento place teglia 1
+                            // Movimento a punto di avvicinamento place teglia 3
                             movementResult = robot.MoveJ(jointPosApproachPlaceTeglia3, descPosApproachPlaceTeglia3,
                                 tool, user, vel, acc, ovl, epos, blendT, 1, offset);
                             offset = new DescPose(0, 0, 0, 0, 0, 0);
 
                             blendR = 50;
-                            // Movimento di rotazione pre place teglia 1
+                            // Movimento di rotazione pre place teglia 3
                             movementResult = robot.MoveL(jointPosPlaceTeglia3, descPosPlaceTeglia3,
                                 tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
@@ -2444,17 +2440,17 @@ namespace RM.src.RM250714
                         #endregion
 
                         case 180:
-                            #region Attesa inPosition punto di place teglia 2 e apertura pinza
+                            #region Attesa inPosition punto di place teglia 3 e apertura pinza
 
                             if (inPosition) // Se il Robot è arrivato in posizione di Pick 1
                             {
                                 // Chiudo la pinza
                                 robot.SetDO(0, 0, 0, 0);
 
-                                step = 190; // Passaggio a step 40
+                                step = 190;
                             }
 
-                            log.Info("STEP 30 - Attesa inPosition punto di Pick teglia 1 e chiusura pinza");
+                            log.Info("STEP 180 - Attesa inPosition punto di place teglia 3 e apertura pinza");
 
                             break;
 
@@ -2472,31 +2468,33 @@ namespace RM.src.RM250714
                                 step = 200;
                             }
 
-                            formDiagnostics.UpdateRobotStepDescription("STEP 40 - Check chiusura pinza");
+                            formDiagnostics.UpdateRobotStepDescription("STEP 190 - Check apertura pinza");
 
                             break;
 
                         #endregion
 
                         case 200:
-                            #region Ritorno in home e movimento in place teglia 2
+                            #region Ritorno in home e riavvio ciclo
+
+                            formDiagnostics.UpdateRobotStepDescription("STEP 200 - Ritorno in home e riavvio ciclo");
 
                             blendR = 50;
 
                             offset = new DescPose(0, 0, 0, -3, 0, 0);
-                            // Movimento a punto di avvicinamento place teglia 1
+                            // Movimento a punto di avvicinamento place teglia 3
                             movementResult = robot.MoveJ(jointPosPlaceTeglia3, descPosPlaceTeglia3,
                                 tool, user, vel, acc, ovl, epos, blendT, 1, offset);
 
                             blendR = 50;
-                            // Movimento di rotazione pre place teglia 2
+                            // Movimento a punto di allontanamento place teglia 3
                             movementResult = robot.MoveL(jointPosAllontanamentoPlaceTeglia3, descPosAllontanamentoPlaceTeglia3,
                                 tool, user, vel, acc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
                             offset = new DescPose(0, 0, 0, 0, 0, 0); // Nessun offset
 
                             blendR = 50;
-                            // Movimento di rotazione pre place teglia 2
+                            // Movimento a punto di home
                             movementResult = robot.MoveL(jointPosHome, descPosHome,
                                 tool, user, vel, acc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
