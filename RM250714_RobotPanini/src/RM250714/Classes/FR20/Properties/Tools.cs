@@ -1,5 +1,6 @@
 ﻿using fairino;
 using RMLib.DataAccess;
+using RMLib.Logger;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -23,6 +24,12 @@ namespace RM.src.RM250714.Classes.FR20
     /// </summary>
     public class Tools
     {
+        /// <summary>
+        /// Logger
+        /// </summary>
+        private static readonly log4net.ILog log = LogHelper.GetLogger();
+
+
         private static readonly RobotDAOSqlite RobotDAO = new RobotDAOSqlite();
         private static readonly SqliteConnectionConfiguration DatabaseConnection = new SqliteConnectionConfiguration();
         private static readonly string ConnectionString = DatabaseConnection.GetConnectionString();
@@ -118,30 +125,47 @@ namespace RM.src.RM250714.Classes.FR20
         /// </summary>
         /// <param name="toolId"></param>
         /// <returns></returns>
-        public int ChangeRobotTool(int toolId)
+        public bool ChangeRobotTool(int toolId)
         {
             int _checkNewTool = -1;
             ToolStruct? _data;
 
+            int errNum = 10;
+
             if (toolId < 0) // Frame non valido
-                return 0;
+                errNum = 0;
+            else
+            {
+                _data = ReadToolData(toolId);
+                if (_data == null) // ID Frame non trovato nella lista
+                    errNum = 1;
+                else
+                {
+                    if (_data.Value.id == RobotManager.tool)
+                        errNum = 2;
+                    else
+                    {
+                        _robot.SetToolCoord(toolId, _data.Value.pose, _data.Value.type, _data.Value.install, 0, 0);
+                        _robot.GetActualTCPNum(0, ref _checkNewTool);
 
-            _data = ReadToolData(toolId);
-            if (_data == null) // ID Frame non trovato nella lista
-                return 1;
-
-            if (_data.Value.id == currentTool)
-                return 2;
-
-            _robot.SetToolCoord(toolId, _data.Value.pose, _data.Value.type, _data.Value.install, 0, 0);
-            _robot.GetActualTCPNum(0, ref _checkNewTool);
-
-            if (_checkNewTool != toolId)    // ID di risposta diverso da ID settato
-                return 3;
-
-            RobotManager.tool = toolId;
-            currentTool = toolId;
-            return 10;
+                        if (_checkNewTool != toolId)    // ID di risposta diverso da ID settato
+                            errNum = 3;
+                        else
+                        {
+                            RobotManager.tool = toolId;
+                            //currentTool = toolId;
+                        }
+                    }
+                }
+            }
+            if (IsErrorBlocking(errNum))
+            {
+                log.Error("[Tools] Errore durante cambio tool: " + GetErrorCode(errNum));
+                RobotManager.GenerateAlarm(0, 2);
+                return false;
+            }
+            log.Info("[Tools] Cambio di tool a " + toolId);
+            return true;
         }
 
         /// <summary>

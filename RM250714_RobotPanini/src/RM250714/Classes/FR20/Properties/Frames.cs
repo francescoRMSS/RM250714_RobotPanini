@@ -1,5 +1,6 @@
 ﻿using fairino;
 using RMLib.DataAccess;
+using RMLib.Logger;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -21,6 +22,12 @@ namespace RM.src.RM250714.Classes.FR20
     /// </summary>
     public class Frames
     {
+
+        /// <summary>
+        /// Logger
+        /// </summary>
+        private static readonly log4net.ILog log = LogHelper.GetLogger();
+
         private static readonly RobotDAOSqlite RobotDAO = new RobotDAOSqlite();
         private static readonly SqliteConnectionConfiguration DatabaseConnection = new SqliteConnectionConfiguration();
         private static readonly string ConnectionString = DatabaseConnection.GetConnectionString();
@@ -114,32 +121,47 @@ namespace RM.src.RM250714.Classes.FR20
         /// </summary>
         /// <param name="frameId"></param>
         /// <returns></returns>
-        public int ChangeRobotFrame(int frameId)
+        public bool ChangeRobotFrame(int frameId)
         {
             int _checkNewFrame = -1;
             FrameStruct? _data;
+            int errNum = 10;
 
             if (frameId < 0) // Frame non valido
-                return 0;
+                errNum = 0;
+            else
+            {
+                _data = ReadFrameData(frameId);
+                if (_data == null) // ID Frame non trovato nella lista
+                    errNum = 1;
+                else
+                {
+                    if (_data.Value.id == RobotManager.user)
+                        errNum = 2;
+                    else
+                    {
+                        _robot.SetWObjCoord(frameId, _data.Value.pose, 0);
+                        _robot.GetActualWObjNum(0, ref _checkNewFrame);
 
-            _data = ReadFrameData(frameId);
-            if (_data == null) // ID Frame non trovato nella lista
-                return 1;
-
-            if (_data.Value.id == currentFrame)
-                return 2;
-
-            _robot.SetWObjCoord(frameId, _data.Value.pose, 0);
-            _robot.GetActualWObjNum(0, ref _checkNewFrame);
-
-            if (_checkNewFrame != frameId)    // ID di risposta diverso da ID settato
-                return 3;
-
-            RobotManager.user = frameId;
-            currentFrame = frameId;
-            return 10;
+                        if (_checkNewFrame != frameId)    // ID di risposta diverso da ID settato
+                            errNum = 3;
+                        else
+                        {
+                            RobotManager.user = frameId;
+                            //currentFrame = frameId;
+                        }
+                    }
+                }
+            }
+            if (IsErrorBlocking(errNum))
+            {
+                log.Error("[Frames] Errore durante cambio frame: " + GetErrorCode(errNum));
+                RobotManager.GenerateAlarm(0, 1);
+                return false;
+            }
+            log.Info("[Frames] Cambio di frame a " + frameId);
+            return true;
         }
-
         /// <summary>
         /// Modifica il frame in uso del robot e controlla che sia stato cambiato effettivamente
         /// </summary>

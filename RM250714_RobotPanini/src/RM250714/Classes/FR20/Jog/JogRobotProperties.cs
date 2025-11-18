@@ -128,32 +128,32 @@
         /// <summary>
         /// Soglia di spostamento su asse x
         /// </summary>
-        public int JogX_treshold { get; set; }
+        public float JogX_treshold { get; set; }
 
         /// <summary>
         /// Soglia di spostamento su asse y
         /// </summary>
-        public int JogY_treshold { get; set; }
+        public float JogY_treshold { get; set; }
 
         /// <summary>
         /// Soglia di spostamento su asse z
         /// </summary>
-        public int JogZ_treshold { get; set; }
+        public float JogZ_treshold { get; set; }
 
         /// <summary>
         /// Soglia di spostamento su asse rx
         /// </summary>
-        public int JogRX_treshold { get; set; }
+        public float JogRX_treshold { get; set; }
 
         /// <summary>
         /// Soglia di spostamento su asse ry
         /// </summary>
-        public int JogRY_treshold { get; set; }
+        public float JogRY_treshold { get; set; }
 
         /// <summary>
         /// Soglia di spostamento su asse rz
         /// </summary>
-        public int JogRZ_treshold { get; set; }
+        public float JogRZ_treshold { get; set; }
 
         /// <summary>
         /// Velocità di spostamento in jog

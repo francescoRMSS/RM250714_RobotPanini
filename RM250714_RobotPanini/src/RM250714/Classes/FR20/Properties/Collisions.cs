@@ -1,5 +1,6 @@
 ﻿using fairino;
 using RMLib.DataAccess;
+using RMLib.Logger;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -19,6 +20,11 @@ namespace RM.src.RM250714.Classes.FR20.Properties
     /// </summary>
     public class Collisions
     {
+        /// <summary>
+        /// Logger
+        /// </summary>
+        private static readonly log4net.ILog log = LogHelper.GetLogger();
+
         private static readonly RobotDAOSqlite RobotDAO = new RobotDAOSqlite();
         private static readonly SqliteConnectionConfiguration DatabaseConnection = new SqliteConnectionConfiguration();
         private static readonly string ConnectionString = DatabaseConnection.GetConnectionString();
@@ -155,25 +161,52 @@ namespace RM.src.RM250714.Classes.FR20.Properties
             return null;
         }
 
-        public int ChangeRobotCollision(int collisionIndex)
+        /// <summary>
+        /// Modifica il livello delle collisioni sul robot
+        /// </summary>
+        /// <param name="collisionIndex"></param>
+        /// <returns></returns>
+        public bool ChangeRobotCollision(int collisionIndex)
         {
             CollisionStruct? _data;
+            int errNum = 10;
 
-            if (collisionIndex < 0) // Frame non valido
-                return 0;
+            if (collisionIndex < 0) // Id non valido
+                errNum = 0;
+            else
+            {
+                _data = ReadCollisionData(collisionIndex);
+                if (_data == null) // Id non trovato nella lista
+                    errNum = 1;
+                else
+                {
+                    if (_data.Value.index == RobotManager.currentCollisionLevel) // Id già impostato
+                        errNum = 2;
+                    else
+                    {
+                        int err = _robot.SetAnticollision(_data.Value.mode, _data.Value.levels, _data.Value.config);
+                        if (err != 0)
+                        {
+                            errNum = 3;
+                        }
+                        else
+                        {
+                            RobotManager.currentCollisionLevel = collisionIndex;
+                            //currentCollisionLevel = collisionIndex;
+                        }
+                    }
+                }
+            }
 
-            _data = ReadCollisionData(collisionIndex);
-            if (_data == null) // ID Frame non trovato nella lista
-                return 1;
+            if (IsErrorBlocking(errNum))
+            {
+                log.Error("[Collision levels] Errore durante cambio livello di collisioni: " + GetErrorCode(errNum));
+                RobotManager.GenerateAlarm(0, 3);
+                return false;
+            }
+            log.Info("[Collision levels] Cambio di livello collisioni a " + collisionIndex);
+            return true;
 
-            if (_data.Value.index == currentCollisionLevel)
-                return 1;
-
-            _robot.SetAnticollision(_data.Value.mode, _data.Value.levels, _data.Value.config);
-
-            RobotManager.currentCollisionLevel = collisionIndex;
-            currentCollisionLevel = collisionIndex;
-            return 10;
         }
 
         public bool IsErrorBlocking(int errNum)

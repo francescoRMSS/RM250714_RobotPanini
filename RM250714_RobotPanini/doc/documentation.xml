@@ -298,6 +298,18 @@
             Gestisce il livello di collisioni del robot
             </summary>
         </member>
+        <member name="F:RM.src.RM250714.Classes.FR20.Properties.Collisions.log">
+            <summary>
+            Logger
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.Classes.FR20.Properties.Collisions.ChangeRobotCollision(System.Int32)">
+            <summary>
+            Modifica il livello delle collisioni sul robot
+            </summary>
+            <param name="collisionIndex"></param>
+            <returns></returns>
+        </member>
         <member name="T:RM.src.RM250714.Classes.FR20.FrameStruct">
             <summary>
             Rappresenta un frame pronto per essere inserito nella lista di frame
@@ -306,6 +318,11 @@
         <member name="T:RM.src.RM250714.Classes.FR20.Frames">
             <summary>
             Gestisce i frame del robot
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.FR20.Frames.log">
+            <summary>
+            Logger
             </summary>
         </member>
         <member name="F:RM.src.RM250714.Classes.FR20.Frames.currentFrame">
@@ -352,14 +369,19 @@
             Gestisce movimento del Robot in Jog
             </summary>
         </member>
+        <member name="F:RM.src.RM250714.Classes.FR20.Jog.JogMovement.log">
+            <summary>
+            Logger
+            </summary>
+        </member>
         <member name="F:RM.src.RM250714.Classes.FR20.Jog.JogMovement.jog">
             <summary>
             Dichiarazione oggetto static per gestione jog robot
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.Classes.FR20.Jog.JogMovement.jogRobotThread">
+        <member name="F:RM.src.RM250714.Classes.FR20.Jog.JogMovement.CheckJogRequestTaskName">
             <summary>
-            Oggetto thread
+            Nome del task
             </summary>
         </member>
         <member name="F:RM.src.RM250714.Classes.FR20.Jog.JogMovement.jogRobotThreadRefreshPeriod">
@@ -367,12 +389,12 @@
             Delay utilizzato nel thread
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.Classes.FR20.Jog.JogMovement.jogRobotThreadStarted">
+        <member name="F:RM.src.RM250714.Classes.FR20.Jog.JogMovement.jogRobotTaskStarted">
             <summary>
             A 1 quando il thread è partito
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.Classes.FR20.Jog.JogMovement.stopJogThread">
+        <member name="F:RM.src.RM250714.Classes.FR20.Jog.JogMovement.stopJogTask">
             <summary>
             A 1 quando il thread deve essere fermato
             </summary>
@@ -390,19 +412,14 @@
             <param name="sender"></param>
             <param name="e"></param>
         </member>
-        <member name="M:RM.src.RM250714.Classes.FR20.Jog.JogMovement.StartJogRobotThread">
+        <member name="M:RM.src.RM250714.Classes.FR20.Jog.JogMovement.StartJogRobotTask">
             <summary>
             Avvia thread che gestisce jog del robot
             </summary>
         </member>
-        <member name="M:RM.src.RM250714.Classes.FR20.Jog.JogMovement.StopJogRobotThread">
+        <member name="M:RM.src.RM250714.Classes.FR20.Jog.JogMovement.StopJogRobotTask">
             <summary>
             Stoppa thread che gestisce jog del robot
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Classes.FR20.Jog.JogMovement.CheckJogRequest">
-            <summary>
-            Gestisce Jog del robot
             </summary>
         </member>
         <member name="T:RM.src.RM250714.Classes.FR20.JogRobotProperties">
@@ -663,6 +680,11 @@
         <member name="T:RM.src.RM250714.Classes.FR20.Tools">
             <summary>
             Gstisce i tool del robot
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.FR20.Tools.log">
+            <summary>
+            Logger
             </summary>
         </member>
         <member name="F:RM.src.RM250714.Classes.FR20.Tools.currentTool">
@@ -2740,6 +2762,16 @@
             Stato del robot
             </summary>
         </member>
+        <member name="F:RM.src.RM250714.RobotManager.currentRobotMode">
+            <summary>
+            Modalità corrente letta dal robot 0:auto, 1:manual
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.currentRobotEnableStatus">
+            <summary>
+            Indica se il robot è al momento enabled: 1, disabled: 0
+            </summary>
+        </member>
         <member name="F:RM.src.RM250714.RobotManager.currentTool">
             <summary>
             Tool usato al momento
@@ -3180,6 +3212,83 @@
             Evento invocato quanto dall'hmi viene rischiesto di registrare uno specifico punto
             </summary>
         </member>
+        <member name="M:RM.src.RM250714.RobotManager.PauseMotion">
+            <summary>
+            Metodo che mette in pausa il Robot
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.ResumeMotion">
+            <summary>
+            Metodo che riprende movimento Robot
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.StopMotion">
+            <summary>
+            Metodo che mette in stop il Robot
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.EnableRobot(System.Byte)">
+            <summary>
+            Abilita o disabilita il Robot
+            </summary>
+            <param name="enableFlag"></param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.SetRobotMode(System.Int32)">
+            <summary>
+            Imposta la modalità operativa del robot: 
+            <para>0 = automatico</para>
+            <para>1 = manuale</para>
+            </summary>
+            <param name="mode"></param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.SetRobotSpeed(System.Int32)">
+            <summary>
+            Imposta la velocità di movimento del robot in percentuale
+            </summary>
+            <param name="speedPerc"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.SetRobotPayload(System.Int32)">
+            <summary>
+            Imposta il payload
+            </summary>
+            <param name="payload"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.SetRobotProperties">
+            <summary>
+            Imposta le proprietà principali del robot: speed-frame-tool-collision levels
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.ClearRobotAlarm">
+            <summary>
+            Metodo per reset errori Robot
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetInverseKin(fairino.DescPose,fairino.JointPos@,System.Int32,System.Int32)">
+            <summary>
+            Invia comando al robot per calcolare la cinematica inversa e ottenere la posizione dei giunti a partire dalle coordinate
+            </summary>
+            <param name="pose"></param>
+            <param name="jPos"></param>
+            <param name="type"></param>
+            <param name="config"></param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetForwardKin(fairino.JointPos,fairino.DescPose@)">
+            <summary>
+            Invia comando al robot per calcolare la cinematica inversa 
+            </summary>
+            <param name="jPos"></param>
+            <param name="pose"></param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetRobotRealTimeState(fairino.ROBOT_STATE_PKG@)">
+            <summary>
+            Ottiene lo stato corrente del robot sotto forma di struct
+            </summary>
+            <param name="robot_state_pkg"></param>
+            <returns></returns>
+        </member>
         <member name="F:RM.src.RM250714.RobotManager.stopPositionCheckerThread">
             <summary>
             A true quando il thread/task che controlla la posizione per la UI deve essere concluso.
@@ -3566,10 +3675,11 @@
             <param name="token"></param>
             <returns></returns>
         </member>
-        <member name="M:RM.src.RM250714.RobotManager.PickAndPlaceTegliaIperal(System.Threading.CancellationToken)">
+        <member name="M:RM.src.RM250714.RobotManager.CheckGripperStatus">
             <summary>
-            Esegue ciclo teglie iperal
+            Esegue check apertura/chiusura pinza
             </summary>
+            <returns></returns>
         </member>
         <member name="M:RM.src.RM250714.RobotManager.ApplicationTaskManager(System.Threading.CancellationToken)">
             <summary>
@@ -3584,6 +3694,11 @@
             </summary>
             <param name="token"></param>
             <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.PickAndPlaceTegliaIperal(System.Threading.CancellationToken)">
+            <summary>
+            Esegue ciclo teglie iperal
+            </summary>
         </member>
         <member name="M:RM.src.RM250714.RobotManager.HomeRoutine(System.Threading.CancellationToken)">
             <summary>
@@ -3640,19 +3755,6 @@
             Resetta la velocità utilizzata per la home routine
             </summary>
         </member>
-        <member name="M:RM.src.RM250714.RobotManager.ClearRobotAlarm">
-            <summary>
-            Metodo per reset errori Robot
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.SetRobotMode(System.Int32)">
-            <summary>
-            Imposta la modalità operativa del robot: 
-            <para>0 = automatico</para>
-            <para>1 = manuale</para>
-            </summary>
-            <param name="mode"></param>
-        </member>
         <member name="M:RM.src.RM250714.RobotManager.CheckIsRobotEnable">
             <summary>
             Esegue check su Robot enable
@@ -3685,16 +3787,6 @@
             </summary>
             <param name="updates"></param>
         </member>
-        <member name="M:RM.src.RM250714.RobotManager.PauseMotion">
-            <summary>
-            Metodo che mette in pausa il Robot
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.ResumeMotion">
-            <summary>
-            Metodo che riprende movimento Robot
-            </summary>
-        </member>
         <member name="M:RM.src.RM250714.RobotManager.GoToHomePosition">
             <summary>
             Metodo che porta il Robot in HomePosition
@@ -3707,24 +3799,15 @@
             <param name="target"></param>
             <exception cref="T:System.Exception"></exception>
         </member>
-        <member name="M:RM.src.RM250714.RobotManager.CalcolaPosizioneScatola(System.Int32,System.Int32,System.Int32,System.Double,System.Double,System.Double,fairino.DescPose)">
+        <member name="M:RM.src.RM250714.RobotManager.TryGetSingleDOState(System.Int32,System.Boolean@,System.Int32,System.Int32)">
             <summary>
-            Calcola la  pose in cui mettere la scatola nel pallet. <br/>
-            Il calcolo si basa sulla divisione del pallet (messo per il lato lungo in basso) in una matrice di place in questa maniera: <br/>
-            /  (Larghezza) = Divisione in colonne <br/>
-            -- (Lunghezza) = Divisione in righe <br/>
-            I  (Altezza)   = Divisione in strati <br/>
-            Inoltre sono necessiarie le misure Larg,Lung,Alt della scatola <br/>
-            NB: le scatole devono essere necessariamente tutte grandi uguali nello stesso pallet <br/>
+            Legge lo stato di una singola Uscita Digitale (DO) del controllore.
             </summary>
-            <param name="riga">Riga che identifica il posto in cui mettere la nuova scatola</param>
-            <param name="colonna">Colonna che identifica il posto in cui mettere la nuova scatola</param>
-            <param name="strato">Strato in cui mettere la nuova scatola</param>
-            <param name="larghezzaScatola">Larghezza della scatola(mm)</param>
-            <param name="profonditaScatola">Lunghezza della scatola(mm)</param>
-            <param name="altezzaScatola">Altezza della scatola(mm)</param>
-            <param name="originePallet">Punto di origine del pallet, cioè il punto dell'angolo in alto a sinistra. Posizionare il TCP proprio sopra di esso.</param>
-            <returns></returns>
+            <param name="doIndex">L'indice dell'uscita da leggere (da 0 a 15).</param>
+            <param name="isOn">True se l'uscita è ON, False se è OFF.</param>
+            <param name="do_state_h"></param>
+            <param name="do_state_l"></param>
+            <returns>True se la lettura ha avuto successo, False in caso di errore.</returns>
         </member>
         <member name="M:RM.src.RM250714.RobotManager.GenerateAlarm(System.Int32,System.Int32)">
             <summary>
@@ -3781,6 +3864,9 @@
             <summary>
             Esegue check su modalità Robot
             </summary>
+            <summary>
+            Esegue check su modalità Robot
+            </summary>
         </member>
         <member name="M:RM.src.RM250714.RobotManager.CheckStatusRobot">
             <summary>
@@ -3832,7 +3918,7 @@
             </summary>
             <param name="result">Codice risultato del movimento del robot</param>
         </member>
-        <member name="M:RM.src.RM250714.RobotManager.SetRobotProperties">
+        <member name="M:RM.src.RM250714.RobotManager.GetRobotProperties">
             <summary>
             Imposta le proprietà del robot prelevandole dal database.
             </summary>

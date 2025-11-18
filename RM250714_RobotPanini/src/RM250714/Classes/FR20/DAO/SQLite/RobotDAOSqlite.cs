@@ -83,16 +83,19 @@ namespace RM.src.RM250714
         #region Indici tabella robot_properties
         public const int ROBOT_PROPERTIES_SPEED_ROW_INDEX = 0;
         public const int ROBOT_PROPERTIES_VELOCITY_ROW_INDEX = 1;
-        public const int ROBOT_PROPERTIES_BLEND_ROW_INDEX = 2;
+        public const int ROBOT_PROPERTIES_BLENDT_ROW_INDEX = 2;
         public const int ROBOT_PROPERTIES_ACCELERATION_ROW_INDEX = 3;
         public const int ROBOT_PROPERTIES_OVL_ROW_INDEX = 4;
         public const int ROBOT_PROPERTIES_TOOL_ROW_INDEX = 5;
         public const int ROBOT_PROPERTIES_USER_ROW_INDEX = 6;
         public const int ROBOT_PROPERTIES_WEIGHT_ROW_INDEX = 7;
         public const int ROBOT_PROPERTIES_VELREC_ROW_INDEX = 8;
+        public const int ROBOT_PROPERTIES_COLLISION_LEVELS_ROW_INDEX = 9;
+        public const int ROBOT_PROPERTIES_BLENDR_ROW_INDEX = 10;
 
         public const int ROBOT_PROPERTIES_VALUE_COLUMN_INDEX = 2;
         #endregion
+
 
         #region Variabili tabella robot_movements_codes
 

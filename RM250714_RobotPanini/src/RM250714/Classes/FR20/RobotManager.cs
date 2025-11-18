@@ -18,6 +18,7 @@ using RM.src.RM250714.Classes.FR20.Jog;
 using RM.src.RM250714.Classes.FR20;
 using RM.src.RM250714.Classes.FR20.Properties;
 using CookComputing.XmlRpc;
+using System.IO;
 
 namespace RM.src.RM250714
 {
@@ -351,6 +352,14 @@ namespace RM.src.RM250714
         /// Stato del robot
         /// </summary>
         public static int robotStatus = 0;
+        /// <summary>
+        /// Modalità corrente letta dal robot 0:auto, 1:manual
+        /// </summary>
+        public static int currentRobotMode = -1;
+        /// <summary>
+        /// Indica se il robot è al momento enabled: 1, disabled: 0
+        /// </summary>
+        public static int currentRobotEnableStatus = -1;
         /// <summary>
         /// Tool usato al momento
         /// </summary>
@@ -737,6 +746,303 @@ namespace RM.src.RM250714
 
         #endregion
 
+        #region Metodi wrapper robot
+
+        /// <summary>
+        /// Metodo che mette in pausa il Robot
+        /// </summary>
+        public static int PauseMotion()
+        {
+            int err = robot.PauseMotion();
+            if (err != 0)
+            {
+                log.Error("pause err: " + err);
+            }
+            else
+            {
+                log.Info("pause err: " + err);
+            }
+            return err;
+        }
+
+        /// <summary>
+        /// Metodo che riprende movimento Robot
+        /// </summary>
+        public static int ResumeMotion()
+        {
+            int err = robot.ResumeMotion();
+            if (err != 0)
+            {
+                log.Error("resume err: " + err);
+            }
+            else
+            {
+                log.Info("resume err: " + err);
+            }
+            return err;
+        }
+
+        /// <summary>
+        /// Metodo che mette in stop il Robot
+        /// </summary>
+        public static int StopMotion()
+        {
+            int err = robot.StopMotion();
+            if (err != 0)
+            {
+                log.Error("stop err: " + err);
+            }
+            else
+            {
+                log.Info("stop err: " + err);
+            }
+            return err;
+        }
+
+        /// <summary>
+        /// Abilita o disabilita il Robot
+        /// </summary>
+        /// <param name="enableFlag"></param>
+        private static int EnableRobot(byte enableFlag)
+        {
+            int err = robot.RobotEnable(enableFlag);
+            if (err != 0)
+            {
+                if (enableFlag == 1)
+                    log.Error("enable robot err: " + err);
+                else
+                    log.Error("disable robot err: " + err);
+            }
+            else
+            {
+                if (enableFlag == 1)
+                    log.Info("enable robot err: " + err);
+                else
+                    log.Info("disable robot err: " + err);
+            }
+            return err;
+        }
+
+        /// <summary>
+        /// Imposta la modalità operativa del robot: 
+        /// <para>0 = automatico</para>
+        /// <para>1 = manuale</para>
+        /// </summary>
+        /// <param name="mode"></param>
+        public static int SetRobotMode(int mode)
+        {
+            if (mode != 0 && mode != 1)
+                return -1;
+
+            int err = robot.Mode(mode);
+            isAutomaticMode = mode == 0;
+
+            if (err != 0)
+            {
+                log.Error("Errore durante cambio modalità robot a " + mode + " : Codice errore " + err);
+            }
+            else
+            {
+                log.Info("Cambio modalità robot a " + mode + " completato");
+            }
+            return err;
+        }
+
+        /// <summary>
+        /// Imposta la velocità di movimento del robot in percentuale
+        /// </summary>
+        /// <param name="speedPerc"></param>
+        /// <returns></returns>
+        public static bool SetRobotSpeed(int speedPerc)
+        {
+            int errSpeed = robot.SetSpeed(speedPerc);
+            if (errSpeed != 0)
+            {
+                log.Error("Errore durante update robot speed : " + errSpeed);
+                GenerateAlarm(0, 4);
+                return false;
+            }
+            log.Info("[Speed] velocita robot impostata a : " + speedPerc);
+            return true;
+        }
+
+        /// <summary>
+        /// Imposta il payload
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        public static bool SetRobotPayload(int payload)
+        {
+            int errPayload = robot.SetLoadWeight(0, payload);
+            if (errPayload != 0)
+            {
+                log.Error("Errore durante update robot payload : " + errPayload);
+                GenerateAlarm(0, 4);
+                return false;
+            }
+            log.Info("[Payload] Peso robot impostato a : " + payload);
+            return true;
+        }
+
+        /// <summary>
+        /// Imposta le proprietà principali del robot: speed-frame-tool-collision levels
+        /// </summary>
+        /// <returns></returns>
+        private static bool SetRobotProperties()
+        {
+            if (!SetRobotSpeed(robotProperties.Speed))
+                return false;
+
+            if (!toolManager.ChangeRobotTool(tool))
+                return false;
+
+            if (!frameManager.ChangeRobotFrame(user))
+                return false;
+
+            if (!collisionManager.ChangeRobotCollision(currentCollisionLevel))
+                return false;
+
+            if (!SetRobotPayload(robotProperties.Weight))
+                return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Metodo per reset errori Robot
+        /// </summary>
+        public static int ClearRobotAlarm()
+        {
+            int err = robot.ResetAllError();
+            if (err != 0)
+            {
+                log.Error("reset robot alarms err: " + err);
+            }
+            else
+            {
+                log.Info("reset robot alarms err: " + err);
+            }
+            return err;
+        }
+
+        /// <summary>
+        /// Invia comando al robot per calcolare la cinematica inversa e ottenere la posizione dei giunti a partire dalle coordinate
+        /// </summary>
+        /// <param name="pose"></param>
+        /// <param name="jPos"></param>
+        /// <param name="type"></param>
+        /// <param name="config"></param>
+        public static int GetInverseKin(DescPose pose, ref JointPos jPos, int type = 0, int config = -1)
+        {
+            int err = robot.GetInverseKin(type, pose, config, ref jPos);
+
+            if (err != 0)
+            {
+                log.Error("Errore durante calcolo cinematica inversa : " + err);
+            }
+
+            return err;
+        }
+
+        /// <summary>
+        /// Invia comando al robot per calcolare la cinematica inversa 
+        /// </summary>
+        /// <param name="jPos"></param>
+        /// <param name="pose"></param>
+        public static int GetForwardKin(JointPos jPos, ref DescPose pose)
+        {
+            int err = robot.GetForwardKin(jPos, ref pose);
+
+            if (err != 0)
+            {
+                log.Error("Errore durante calcolo cinematica diretta : " + err);
+            }
+
+            return err;
+        }
+
+        /// <summary>
+        /// Ottiene lo stato corrente del robot sotto forma di struct
+        /// </summary>
+        /// <param name="robot_state_pkg"></param>
+        /// <returns></returns>
+        public static int GetRobotRealTimeState(ref ROBOT_STATE_PKG robot_state_pkg)
+        {
+            int err = robot.GetRobotRealTimeState(ref robot_state_pkg);
+
+            if (err != 0)
+            {
+                log.Error("Errore durante get status robot : " + err);
+            }
+
+            return err;
+        }
+
+        public static int MoveL(JointPos jPos, DescPose pose, int tool, int user, float vel, float acc, float ovl,
+            float blendR, ExaxisPos epos, byte search, byte offsetFlag, DescPose offsetPos, int overSpeedStrategy = 0, int speedPercent = 10)
+        {
+            int err = robot.MoveL(jPos, pose, tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offsetPos, overSpeedStrategy, speedPercent);
+            if (err != 0)
+            {
+                GetRobotMovementCode(err);
+            }
+            return err;
+        }
+
+        public static int MoveL(JointPos jPos, DescPose pose, int tool, int user, float vel, float acc, float ovl,
+            float blendR, int blendMode, ExaxisPos epos, byte search, byte offsetFlag, DescPose offsetPos, int overSpeedStrategy = 0, int speedPercent = 10)
+        {
+            int err = robot.MoveL(jPos, pose, tool, user, vel, acc, ovl, blendR, blendMode, epos, search, offsetFlag, offsetPos, overSpeedStrategy, speedPercent);
+            if (err != 0)
+            {
+                GetRobotMovementCode(err);
+            }
+            return err;
+        }
+
+        public static int MoveJ(JointPos jPos, DescPose pose, int tool, int user, float vel, float acc, float ovl,
+           ExaxisPos epos, float blendT, byte offsetFlag, DescPose offsetPos)
+        {
+            int err = robot.MoveJ(jPos, pose, tool, user, vel, acc, ovl, epos, blendT, offsetFlag, offsetPos);
+            if (err != 0)
+            {
+                GetRobotMovementCode(err);
+            }
+            return err;
+        }
+
+        public static int StartJOG(byte refType, byte nb, byte dir, float vel, float acc, float maxDis)
+        {
+            int err = robot.StartJOG(refType, nb, dir, vel, acc, maxDis);
+            if (err != 0)
+            {
+
+            }
+            return err;
+        }
+
+        public static int StopJOG(byte stopByte)
+        {
+            int err = robot.StopJOG(stopByte);
+            if (err != 0)
+            {
+
+            }
+            return err;
+        }
+
+        public static int ImmStopJOG()
+        {
+            int err = robot.ImmStopJOG();
+            if (err != 0)
+            {
+
+            }
+            return err;
+        }
+
+        #endregion
+
         #region Struttura checker position
 
         /// <summary>
@@ -1059,9 +1365,8 @@ namespace RM.src.RM250714
             // Istanzio il robot
             RobotIpAddress = robotIpAddress;
             robot = new Robot();
-            robot.LoggerInit(FrLogType.DIRECT, FrLogLevel.INFO,
-                "C:\\Users\\WIN10\\source\\repos\\RM250714_RobotPanini\\RM250714_RobotPanini\\bin\\Debug\\Logs", 5, 5);
-
+            string logDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
+            robot.LoggerInit(FrLogType.ASYNC, FrLogLevel.ERROR, logDirectory, 2, 2);
             robot.RPC(RobotIpAddress);
             AlarmManager.isRobotConnected = true;
 
@@ -1069,6 +1374,13 @@ namespace RM.src.RM250714
             frameManager = new Frames(robot);
             toolManager = new Tools(robot);
             collisionManager = new Collisions(robot);
+
+            // Inizializzazione mode
+            ROBOT_STATE_PKG robot_state_pkg = new ROBOT_STATE_PKG();
+            //robot.GetRobotRealTimeState(ref robot_state_pkg);
+            GetRobotRealTimeState(ref robot_state_pkg);
+            currentRobotMode = robot_state_pkg.robot_mode;
+            isAutomaticMode = currentRobotMode == 0;
 
             // Faccio partire i task
             taskManager.AddTask(TaskCheckRobotConneciton, CheckRobotConnection, TaskType.LongRunning, true);
@@ -1089,8 +1401,6 @@ namespace RM.src.RM250714
 
             log.Info("Task di background del robot avviati tramite TaskManager.");
 
-            GetRobotInfo();
-
             if (err == -4)
             {
                 log.Error("RPC exception durante Init del Robot");
@@ -1098,10 +1408,18 @@ namespace RM.src.RM250714
             }
 
             // Se fallisce setting della proprietà del Robot
+            if (!GetRobotProperties())
+                return false;
+
+            // Se fallisce setting della proprietà del Robot
             if (!SetRobotProperties())
                 return false;
 
-            robot.SetSpeed(robotProperties.Speed);
+            log.Info("Parametri del robot assegnati");
+
+            GetRobotInfo();
+
+            ResetPLCVariables();
 
             return true;
         }
@@ -1113,10 +1431,56 @@ namespace RM.src.RM250714
         /// </summary>
         private static async Task AuxiliaryWorker(CancellationToken token)
         {
-            // Get del punto di home dal dizionario delle posizioni
+            // Lista di aggiornamenti da inviare al PLC
+            List<(string key, bool value, string type)> updates = new List<(string, bool, string)>();
+
+            #region ingombro
+            /*
+            // Zone di ingombro
+            var pickPose = ApplicationConfig.applicationsManager.GetPosition("101", "RM");
+            var placePose = ApplicationConfig.applicationsManager.GetPosition("1101", "RM");
+            var homePose = ApplicationConfig.applicationsManager.GetPosition("1", "RM");
+
+            DescPose[] startPoints = new DescPose[]
+            {
+                new DescPose(pickPose.x, pickPose.y, pickPose.z, pickPose.rx, pickPose.ry, pickPose.rz),
+                new DescPose(placePose.x, placePose.y, placePose.z, placePose.rx, placePose.ry, placePose.rz),
+                new DescPose(homePose.x, homePose.y, homePose.z, homePose.rx, homePose.ry, homePose.rz),
+            };
+
+            // Oggetto che rileva ingombro pick
+            double delta_ingombro_pick = 500.0;
+            checker_ingombro_pick = new PositionChecker(delta_ingombro_pick);
+
+            // Oggetto che rileva ingombro place
+            double delta_ingombro_place = 500.0;
+            checker_ingombro_place = new PositionChecker(delta_ingombro_place);
+
+            // Oggetto che rileva ingombro home
+            double delta_ingombro_home = 500.0;
+            checker_ingombro_home = new PositionChecker(delta_ingombro_home);
+            */
+            #endregion
+
+            #region Safe zone
+
+            // Dichiarazione del punto di safe
+            var pSafeZone = ApplicationConfig.applicationsManager.GetPosition("pSafeZone", "RM");
+
+            DescPose pointSafeZone = new DescPose(pSafeZone.x, pSafeZone.y, pSafeZone.z, pSafeZone.rx, pSafeZone.ry, pSafeZone.rz);
+
+            // Dichiarazione del punto di home
             var pHome = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
-            // Creazione della DescPose del punto di Home
-            DescPose homePose = new DescPose(pHome.x, pHome.y, pHome.z, pHome.rx, pHome.ry, pHome.rz);
+
+            DescPose pointHome = new DescPose(pHome.x, pHome.y, pHome.z, pHome.rx, pHome.ry, pHome.rz);
+
+            // Oggetto che rileva safe zone
+            double delta_safeZone = 300.0; // soglia
+            checker_safeZone = new PositionChecker(delta_safeZone);
+
+            #endregion
+
+            checker_pos = new PositionChecker(5.0);
 
             try
             {
@@ -1125,9 +1489,10 @@ namespace RM.src.RM250714
                     if (AlarmManager.isRobotConnected)
                     {
                         await CheckIsRobotEnable();
-                        await CheckRobotMode();
-                        await CheckCurrentToolAndUser();
-                        await CheckGripperStatus();
+                        CheckRobotMode();
+                        CheckCurrentToolAndUser();
+                        CheckGripperStatus();
+                        //CheckIsRobotInObstructionArea(startPoints, updates);
                     }
 
                     await Task.Delay(auxiliaryThreadRefreshPeriod, token);
@@ -1159,49 +1524,12 @@ namespace RM.src.RM250714
             // Lista di aggiornamenti da inviare al PLC
             List<(string key, bool value, string type)> updates = new List<(string, bool, string)>();
 
-
-            #region ingombro
-            /*
-            // Zone di ingombro
-            var pickPose = ApplicationConfig.applicationsManager.GetPosition("101", "RM");
-            var placePose = ApplicationConfig.applicationsManager.GetPosition("1101", "RM");
-            var homePose = ApplicationConfig.applicationsManager.GetPosition("1", "RM");
-
-            DescPose[] startPoints = new DescPose[]
-            {
-                new DescPose(pickPose.x, pickPose.y, pickPose.z, pickPose.rx, pickPose.ry, pickPose.rz),
-                new DescPose(placePose.x, placePose.y, placePose.z, placePose.rx, placePose.ry, placePose.rz),
-                new DescPose(homePose.x, homePose.y, homePose.z, homePose.rx, homePose.ry, homePose.rz),
-            };
-
-            // Oggetto che rileva ingombro pick
-            double delta_ingombro_pick = 500.0;
-            checker_ingombro_pick = new PositionChecker(delta_ingombro_pick);
-
-            // Oggetto che rileva ingombro place
-            double delta_ingombro_place = 500.0;
-            checker_ingombro_place = new PositionChecker(delta_ingombro_place);
-
-            // Oggetto che rileva ingombro home
-            double delta_ingombro_home = 500.0;
-            checker_ingombro_home = new PositionChecker(delta_ingombro_home);
-            */
-            #endregion
-
-            checker_pos = new PositionChecker(15.0);
-
-
             #region Safe zone
 
             // Dichiarazione del punto di safe
             var pSafeZone = ApplicationConfig.applicationsManager.GetPosition("pSafeZone", "RM");
 
             DescPose pointSafeZone = new DescPose(pSafeZone.x, pSafeZone.y, pSafeZone.z, pSafeZone.rx, pSafeZone.ry, pSafeZone.rz);
-
-            // Dichiarazione del punto di home
-            var pHome = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
-
-            DescPose pointHome = new DescPose(pHome.x, pHome.y, pHome.z, pHome.rx, pHome.ry, pHome.rz);
 
             // Oggetto che rileva safe zone
             double delta_safeZone = 300.0; // soglia
@@ -1219,13 +1547,11 @@ namespace RM.src.RM250714
                     {
                         try
                         {
-                            await Task.Run(() => robot.GetActualTCPPose(flag, ref TCPCurrentPosition)); // Leggo posizione robot TCP corrente
+                            robot.GetActualTCPPose(flag, ref TCPCurrentPosition); // Leggo posizione robot TCP corrente
                             CheckIsRobotMoving(updates);
-                           // CheckIsRobotInObstructionArea(startPoints, updates);
                             CheckIsRobotInSafeZone(pointSafeZone);
-                            CheckIsRobotInHomePosition(pointHome);
                             CheckIsRobotInPos();
-                            await CheckStatusRobot();
+                            CheckStatusRobot();
                         }
                         catch (Exception e)
                         {
@@ -1289,7 +1615,7 @@ namespace RM.src.RM250714
             {
                 while (!token.IsCancellationRequested)
                 {
-                    await CheckRobotPosition(jPos);
+                    CheckRobotPosition(jPos);
 
                     GetPLCErrorCode(alarmValues, alarmDescriptions, now, unixTimestamp,
                         dateTime, formattedDate);
@@ -1357,6 +1683,9 @@ namespace RM.src.RM250714
         /// <returns></returns>
         private async static Task CheckRobotConnection(CancellationToken token)
         {
+            const int MAX_FAILURE_ATTEMPTS = 2; // Tentativi consecutivi prima di dichiarare la disconnessione
+            int consecutiveFailures = 0;
+
             try
             {
                 //Istanzio il proxy che interfaccia il controllore in maniera diretta
@@ -1397,7 +1726,10 @@ namespace RM.src.RM250714
                     }
                     else //Connessione assente
                     {
-                        if (AlarmManager.isRobotConnected)
+                        if (consecutiveFailures < MAX_FAILURE_ATTEMPTS)
+                            consecutiveFailures++;
+
+                        if (consecutiveFailures >= MAX_FAILURE_ATTEMPTS && AlarmManager.isRobotConnected)
                         {
                             // È la prima volta che rileviamo la disconnessione
                             log.Error("[Robot COM] Connessione al robot PERSA. Avvio tentativi di riconnessione...");
@@ -1424,6 +1756,7 @@ namespace RM.src.RM250714
                             {
                                 CreateRobotAlarm(id, description, formattedDate, device, state);
                                 MarkAlarmAsSignaled(id);
+                                robotError = 1;
                             }
                         }
                     }
@@ -1447,6 +1780,10 @@ namespace RM.src.RM250714
             }
         }
 
+        /// <summary>
+        /// Esegue check apertura/chiusura pinza
+        /// </summary>
+        /// <returns></returns>
         private static async Task CheckGripperStatus()
         {
 
@@ -1471,6 +1808,87 @@ namespace RM.src.RM250714
 
           
         }
+
+        /// <summary>
+        /// Esegue controlli su modalità robot, task in uso e sceglie quali task fermare/partire
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private async static Task ApplicationTaskManager(CancellationToken token)
+        {
+            try
+            {
+                await Task.Delay(2000);
+
+                while (!token.IsCancellationRequested)
+                {
+                   // await CheckCommandStart();
+                   // await CheckCommandGoToHome();
+
+                  //  await CheckCommandRecordPoint();
+                   // await CheckVelCommand();
+                    //await CheckCloseGripper();
+                   // CheckCommandResetAlarms();
+
+                    //SetRobotMode();
+                    //ManageTasks();
+
+                    await Task.Delay(applicationTaskManagerRefreshPeriod);
+                }
+                token.ThrowIfCancellationRequested();
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                log.Error($"[TASK] {TaskApplicationManager}: {ex}");
+                throw;
+            }
+            finally
+            {
+
+            }
+        }
+
+        /// <summary>
+        /// Esegue controlli sui comandi safety: barriere->pause/resume e stop
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private async static Task SafetyTaskManager(CancellationToken token)
+        {
+            try
+            {
+                while (!token.IsCancellationRequested)
+                {
+                   // await CheckCommandStop();
+                   // await CheckPauseStatus();
+                    // CheckResumeStatus();
+
+                    await Task.Delay(safetyTaskManagerRefreshPeriod);
+                }
+                token.ThrowIfCancellationRequested();
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                log.Error($"[TASK] {TaskSafetyManager}: {ex}");
+                throw;
+            }
+            finally
+            {
+
+            }
+        }
+
+        #endregion
+
+        #region Altri task
 
         /// <summary>
         /// Esegue ciclo teglie iperal
@@ -2216,7 +2634,7 @@ namespace RM.src.RM250714
                             movementResult = robot.MoveJ(jointPosApproachPlaceTeglia2, descPosApproachPlaceTeglia2,
                                 tool, user, vel, acc, ovl, epos, blendT, 1, offset);
                             offset = new DescPose(0, 0, 0, 0, 0, 0);
-                            
+
                             blendR = 50;
                             // Movimentoa punto di place teglia 2
                             movementResult = robot.MoveL(jointPosPlaceTeglia2, descPosPlaceTeglia2,
@@ -2510,110 +2928,12 @@ namespace RM.src.RM250714
 
         }
 
-
-        /// <summary>
-        /// Esegue controlli su modalità robot, task in uso e sceglie quali task fermare/partire
-        /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        private async static Task ApplicationTaskManager(CancellationToken token)
-        {
-            try
-            {
-                await Task.Delay(2000);
-
-                while (!token.IsCancellationRequested)
-                {
-                   // await CheckCommandStart();
-                   // await CheckCommandGoToHome();
-
-                  //  await CheckCommandRecordPoint();
-                   // await CheckVelCommand();
-                    //await CheckCloseGripper();
-                   // CheckCommandResetAlarms();
-
-                    //SetRobotMode();
-                    //ManageTasks();
-
-                    await Task.Delay(applicationTaskManagerRefreshPeriod);
-                }
-                token.ThrowIfCancellationRequested();
-            }
-            catch (OperationCanceledException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                log.Error($"[TASK] {TaskApplicationManager}: {ex}");
-                throw;
-            }
-            finally
-            {
-
-            }
-        }
-
-        /// <summary>
-        /// Esegue controlli sui comandi safety: barriere->pause/resume e stop
-        /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        private async static Task SafetyTaskManager(CancellationToken token)
-        {
-            try
-            {
-                while (!token.IsCancellationRequested)
-                {
-                   // await CheckCommandStop();
-                   // await CheckPauseStatus();
-                    // CheckResumeStatus();
-
-                    await Task.Delay(safetyTaskManagerRefreshPeriod);
-                }
-                token.ThrowIfCancellationRequested();
-            }
-            catch (OperationCanceledException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                log.Error($"[TASK] {TaskSafetyManager}: {ex}");
-                throw;
-            }
-            finally
-            {
-
-            }
-        }
-
-        #endregion
-
-        #region Altri task
-
-  
-
         /// <summary>
         /// Routine di go to home position
         /// </summary>
         /// <returns></returns>
         public static async Task HomeRoutine(CancellationToken token)
         {
-            /*
-            int frameErr = frameManager.ChangeRobotFrame("frNastro");
-            if (frameManager.IsErrorBlocking(frameErr))
-            {
-                GenerateAlarm(0, 1);
-                return;
-            }
-            int toolErr = toolManager.ChangeRobotTool("tVentosa");
-            if (toolManager.IsErrorBlocking(toolErr))
-            {
-                GenerateAlarm(0, 2);
-                return;
-            }
-            */
 
             // Get del punto di home
             var restPose = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
@@ -2772,8 +3092,6 @@ namespace RM.src.RM250714
 
         #region Comandi interfaccia
 
-
-
         /// <summary>
         /// Esegue check su cambio velocità derivante dal plc
         /// </summary>
@@ -2799,11 +3117,6 @@ namespace RM.src.RM250714
                 log.Warn("Comando cambio override speed completato");
             }
         }
-
-       
-      
-
-      
 
         /// <summary>
         /// Check su comando di registrazione punto derivante da plc
@@ -2852,8 +3165,6 @@ namespace RM.src.RM250714
                 previousRecordPointRequest = 0;
             }
         }
-
-      
 
         #endregion
 
@@ -3001,33 +3312,6 @@ namespace RM.src.RM250714
         }
 
         /// <summary>
-        /// Metodo per reset errori Robot
-        /// </summary>
-        public static void ClearRobotAlarm()
-        {
-            int err = robot.ResetAllError();
-        }
-
-        /// <summary>
-        /// Imposta la modalità operativa del robot: 
-        /// <para>0 = automatico</para>
-        /// <para>1 = manuale</para>
-        /// </summary>
-        /// <param name="mode"></param>
-        public static void SetRobotMode(int mode)
-        {
-            if (mode != 0 && mode != 1)
-                return;
-
-
-            //if(isAutomaticMode && mode == 1) 
-            //  RequestStopCycle();
-
-            robot.Mode(mode);
-            isAutomaticMode = mode == 0;
-        }
-
-        /// <summary>
         /// Esegue check su Robot enable
         /// </summary>
         public static async Task CheckIsRobotEnable()
@@ -3039,7 +3323,7 @@ namespace RM.src.RM250714
             {
                 // Abilitazione del robot
                 log.Warn("[ENABLE] Richiesta abilitazione robot");
-                await Task.Run(() => robot.RobotEnable(1));
+                robot.RobotEnable(1);
                 prevIsEnable = true;
                 prevIsNotEnable = false; // Resetta lo stato "non abilitato"
                 AlarmManager.blockingAlarm = false;
@@ -3051,11 +3335,11 @@ namespace RM.src.RM250714
             {
                 // Disabilitazione del robot
                 log.Warn("[ENABLE] Richiesta disabilitazione robot");
-                await Task.Run(() => robot.StopMotion()); // Cancellazione della coda di punti
+                robot.StopMotion(); // Cancellazione della coda di punti
                 AlarmManager.blockingAlarm = true;
-                JogMovement.StopJogRobotThread(); // Ferma il thread di Jog
+                JogMovement.StopJogRobotTask(); // Ferma il thread di Jog
                 await Task.Delay(10);
-                await Task.Run(() => robot.RobotEnable(0));
+                robot.RobotEnable(0);
                 prevIsNotEnable = true;
                 prevIsEnable = false; // Resetta lo stato "abilitato"
                 prevIsManual = false;
@@ -3066,7 +3350,6 @@ namespace RM.src.RM250714
                 log.Warn("[ENABLE] Disabilitazione robot completata");
             }
         }
-
         /// <summary>
         /// Metodo che ferma il robot e cancella la coda di punti
         /// </summary>
@@ -3187,23 +3470,6 @@ namespace RM.src.RM250714
         #region Metodi movimento
 
         /// <summary>
-        /// Metodo che mette in pausa il Robot
-        /// </summary>
-        public static void PauseMotion()
-        {
-            robot.PauseMotion();
-            log.Warn("Il robot è stato messo in pausa");
-        }
-
-        /// <summary>
-        /// Metodo che riprende movimento Robot
-        /// </summary>
-        public static void ResumeMotion()
-        {
-            robot.ResumeMotion();
-        }
-
-        /// <summary>
         /// Metodo che porta il Robot in HomePosition
         /// </summary>
         public static void GoToHomePosition()
@@ -3251,41 +3517,38 @@ namespace RM.src.RM250714
         #region Metodi helper
 
         /// <summary>
-        /// Calcola la  pose in cui mettere la scatola nel pallet. <br/>
-        /// Il calcolo si basa sulla divisione del pallet (messo per il lato lungo in basso) in una matrice di place in questa maniera: <br/>
-        /// /  (Larghezza) = Divisione in colonne <br/>
-        /// -- (Lunghezza) = Divisione in righe <br/>
-        /// I  (Altezza)   = Divisione in strati <br/>
-        /// Inoltre sono necessiarie le misure Larg,Lung,Alt della scatola <br/>
-        /// NB: le scatole devono essere necessariamente tutte grandi uguali nello stesso pallet <br/>
+        /// Legge lo stato di una singola Uscita Digitale (DO) del controllore.
         /// </summary>
-        /// <param name="riga">Riga che identifica il posto in cui mettere la nuova scatola</param>
-        /// <param name="colonna">Colonna che identifica il posto in cui mettere la nuova scatola</param>
-        /// <param name="strato">Strato in cui mettere la nuova scatola</param>
-        /// <param name="larghezzaScatola">Larghezza della scatola(mm)</param>
-        /// <param name="profonditaScatola">Lunghezza della scatola(mm)</param>
-        /// <param name="altezzaScatola">Altezza della scatola(mm)</param>
-        /// <param name="originePallet">Punto di origine del pallet, cioè il punto dell'angolo in alto a sinistra. Posizionare il TCP proprio sopra di esso.</param>
-        /// <returns></returns>
-        static DescPose CalcolaPosizioneScatola(
-            int riga,
-            int colonna,
-            int strato,
-            double larghezzaScatola,
-            double profonditaScatola,
-            double altezzaScatola,
-            DescPose originePallet
-            )
+        /// <param name="doIndex">L'indice dell'uscita da leggere (da 0 a 15).</param>
+        /// <param name="isOn">True se l'uscita è ON, False se è OFF.</param>
+        /// <param name="do_state_h"></param>
+        /// <param name="do_state_l"></param>
+        /// <returns>True se la lettura ha avuto successo, False in caso di errore.</returns>
+        public static bool TryGetSingleDOState(int doIndex, out bool isOn, int do_state_h, int do_state_l)
         {
-            double x = originePallet.tran.x + (colonna * larghezzaScatola) + (larghezzaScatola / 2.0);
-            double y = originePallet.tran.y + (riga * profonditaScatola) + (profonditaScatola / 2.0);
-            double z = originePallet.tran.z + (strato * altezzaScatola);
+            isOn = false;
+            if (doIndex < 0 || doIndex > 15)
+            {
+                log.Error($"Indice DO non valido: {doIndex}. Deve essere tra 0 e 15.");
+                return false;
+            }
 
-            double rx = originePallet.rpy.rx;
-            double ry = originePallet.rpy.ry;
-            double rz = originePallet.rpy.rz;
+            if (doIndex <= 7)
+            {
+                // L'uscita è nel registro "basso" (do_state_l)
+                // Usiamo l'operatore AND bitwise per isolare il bit che ci interessa.
+                // (1 << doIndex) crea una maschera con un solo '1' nella posizione giusta.
+                // Esempio per DO2: la maschera è 00000100 in binario.
+                isOn = (do_state_l & (1 << doIndex)) != 0;
+            }
+            else
+            {
+                // L'uscita è nel registro "alto" (do_state_h)
+                int bitIndexInHighRegister = doIndex - 8; // DO8 è il bit 0, DO9 è il bit 1, etc.
+                isOn = (do_state_h & (1 << bitIndexInHighRegister)) != 0;
+            }
 
-            return new DescPose(x, y, z, rx, ry, rz);
+            return true;
         }
 
         /// <summary>
@@ -3293,7 +3556,7 @@ namespace RM.src.RM250714
         /// </summary>
         /// <param name="maincode"></param>
         /// <param name="subcode"></param>
-        private static void GenerateAlarm(int maincode, int subcode)
+        public static void GenerateAlarm(int maincode, int subcode)
         {
             DataRow robotAlarm;
             DateTime now;
@@ -3566,6 +3829,7 @@ namespace RM.src.RM250714
         /// </summary>
         private static void ResetPLCVariables()
         {
+            /*
             var HomePoint = ApplicationConfig.applicationsManager.GetPosition("1", "RM"); // Get punto di home point
             RefresherTask.AddUpdate(PLCTagName.HomePoint_X, HomePoint.x, "FLOAT"); // Scrittura xCoord punto di home point
             RefresherTask.AddUpdate(PLCTagName.HomePoint_Y, HomePoint.y, "FLOAT"); // Scrittura yCoord punto di home point
@@ -3646,6 +3910,7 @@ namespace RM.src.RM250714
             RefresherTask.AddUpdate(PLCTagName.CycleRun_Home, 0, "INT16"); // Reset valore di avvio ciclo home 
             RefresherTask.AddUpdate(PLCTagName.CycleRun_Pick, 0, "INT16"); // Reset valore di avvio ciclo pick 
             RefresherTask.AddUpdate(PLCTagName.CycleRun_Place, 0, "INT16"); // Reset valore di avvio ciclo place 
+            */
         }
 
         /// <summary>
@@ -3681,7 +3946,10 @@ namespace RM.src.RM250714
         /// <summary>
         /// Esegue check su modalità Robot
         /// </summary>
-        private static async Task CheckRobotMode()
+        /// <summary>
+        /// Esegue check su modalità Robot
+        /// </summary>
+        private static void CheckRobotMode()
         {
             // Ottieni la modalità operativa dal PLC
             mode = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Operating_Mode));
@@ -3705,8 +3973,8 @@ namespace RM.src.RM250714
                 if (stableMode == 1 && !prevIsAuto) // Passaggio alla modalità automatica
                 {
                     isAutomaticMode = true;
-                    await Task.Run(() => SetRobotMode(0)); // Imposta il robot in modalità automatica
-                    JogMovement.StopJogRobotThread(); // Ferma il thread di movimento manuale
+                    SetRobotMode(0); // Imposta il robot in modalità automatica
+                    JogMovement.StopJogRobotTask(); // Ferma il thread di movimento manuale
                     prevIsAuto = true;
                     prevIsManual = false;
                     prevIsOff = false;
@@ -3716,7 +3984,7 @@ namespace RM.src.RM250714
                 else if (stableMode == 2 && !prevIsManual) // Passaggio alla modalità manuale
                 {
                     isAutomaticMode = false;
-                    await Task.Run(() => SetRobotMode(1)); // Imposta il robot in modalità manuale
+                    SetRobotMode(1); // Imposta il robot in modalità manuale
                     prevIsManual = true;
                     prevIsAuto = false;
                     prevIsOff = false;
@@ -3736,21 +4004,24 @@ namespace RM.src.RM250714
             // Esegui logiche aggiuntive come il movimento manuale (Jog)
             if (isEnabledNow && stableMode == 2)
             {
-                JogMovement.StartJogRobotThread(); // Avvia il thread di movimento manuale (Jog)
+                JogMovement.StartJogRobotTask(); // Avvia il thread di movimento manuale (Jog)
             }
         }
 
         /// <summary>
         /// Legge lo stato del robot
         /// </summary>
-        private static async Task CheckStatusRobot()
+        private static void CheckStatusRobot()
         {
             ROBOT_STATE_PKG robot_state_pkg = new ROBOT_STATE_PKG();
-            byte mov_robot_state = 0;
+            byte mov_robot_state;
 
-            await Task.Run(() => robot.GetRobotRealTimeState(ref robot_state_pkg));
+            //robot.GetRobotRealTimeState(ref robot_state_pkg);
+            GetRobotRealTimeState(ref robot_state_pkg);
             mov_robot_state = robot_state_pkg.robot_state;
             robotStatus = mov_robot_state;
+            currentRobotMode = robot_state_pkg.robot_mode;
+            currentRobotEnableStatus = robot_state_pkg.rbtEnableState;
         }
 
         /// <summary>
@@ -3764,10 +4035,10 @@ namespace RM.src.RM250714
         /// <summary>
         /// Controlla il tool e user correnti
         /// </summary>
-        private static async Task CheckCurrentToolAndUser()
+        private static void CheckCurrentToolAndUser()
         {
-            await Task.Run(() => robot.GetActualTCPNum(1, ref currentTool));
-            await Task.Run(() => robot.GetActualWObjNum(1, ref currentUser));
+            robot.GetActualTCPNum(1, ref currentTool);
+            robot.GetActualWObjNum(1, ref currentUser);
         }
 
         /// <summary>
@@ -3818,20 +4089,30 @@ namespace RM.src.RM250714
             }
         }
 
+        
         /// <summary>
         /// Verifica se il punto corrente è all'interno dell'area di ingombro rispetto a uno qualsiasi dei punti di partenza
         /// </summary>
         /// <param name="startPoints">Array con i punti di partenza per Pick, Place e Home</param>
         /// <param name="updates">Lista di aggiornamenti</param>
         private static void CheckIsRobotInObstructionArea(DescPose[] startPoints, List<(string key, bool value, string type)> updates)
-        {
-            isInPositionPick = checker_ingombro_pick.IsInObstruction(startPoints[0], TCPCurrentPosition);
-            isInPositionPlace = checker_ingombro_place.IsInObstruction(startPoints[1], TCPCurrentPosition);
-            isInPositionHome = checker_ingombro_home.IsInObstruction(startPoints[2], TCPCurrentPosition);
+        {/*
+            isInPositionHome = checker_ingombro_home.IsInCubeObstruction(startPoints[0], TCPCurrentPosition);
+            isInPositionPick = checker_ingombro_pick.IsInCubeObstruction(startPoints[1], TCPCurrentPosition);
+            //isInPositionPlace1 = checker_ingombro_place_pallet_1.IsInCubeObstruction(startPoints[2], TCPCurrentPosition);
+            //isInPositionPlace2 = checker_ingombro_place_pallet_2.IsInCubeObstruction(startPoints[3], TCPCurrentPosition);
+            isInPositionPlace1 = checker_ingombro_place_pallet_1.IsInParallelepipedObstruction(startPoints[2], TCPCurrentPosition);
+            isInPositionPlace2 = checker_ingombro_place_pallet_2.IsInParallelepipedObstruction(startPoints[3], TCPCurrentPosition);
 
+            bool plcIsInPositionHome = Convert.ToBoolean(PLCConfig.appVariables.getValue(PLCTagName.RET_Zone_Home_inPos));
+            bool plcIsInPositionPick = Convert.ToBoolean(PLCConfig.appVariables.getValue(PLCTagName.RET_Zone_Pick_inPos));
+            bool plcIsInPositionPlacePallet1 = Convert.ToBoolean(PLCConfig.appVariables.getValue(PLCTagName.RET_Zone_Place_1_inPos));
+            bool plcIsInPositionPlacePallet2 = Convert.ToBoolean(PLCConfig.appVariables.getValue(PLCTagName.RET_Zone_Place_2_inPos));
+            */
+            /*
             if (isInPositionPick)
             {
-                if (prevRobotOutPick != false)
+                if (/*prevRobotOutPick ||*/ /*!plcIsInPositionPick)
                 {
                     prevRobotOutPick = false;
                     prevRobotOutPlace = true;
@@ -3839,13 +4120,14 @@ namespace RM.src.RM250714
                     prevFuoriIngombro = false;
 
                     RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Pick_inPos, 1, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos_pallet1, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos_pallet2, 0, "INT16");
                     RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Home_inPos, 0, "INT16");
                 }
             }
-            else if (isInPositionPlace)
+            else if (isInPositionPlace1)
             {
-                if (prevRobotOutPlace != false)
+                if (/*prevRobotOutPlace ||*/ /*!plcIsInPositionPlacePallet1)
                 {
                     prevRobotOutPlace = false;
                     prevRobotOutPick = true;
@@ -3853,13 +4135,30 @@ namespace RM.src.RM250714
                     prevFuoriIngombro = false;
 
                     RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Pick_inPos, 0, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos, 1, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos_pallet1, 1, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos_pallet2, 0, "INT16");
                     RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Home_inPos, 0, "INT16");
                 }
             }
+            else if (isInPositionPlace2)
+            {
+                if (/*prevRobotOutPlace ||*/ /*!plcIsInPositionPlacePallet2)
+                {
+                    prevRobotOutPlace = false;
+                    prevRobotOutPick = true;
+                    prevInHomePos = true;
+                    prevFuoriIngombro = false;
+
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Pick_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos_pallet1, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos_pallet2, 1, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Home_inPos, 0, "INT16");
+                }
+            }
+
             else if (isInPositionHome)
             {
-                if (prevInHomePos != false)
+                if (/*prevInHomePos != false ||*/ /*!plcIsInPositionHome)
                 {
                     prevInHomePos = false;
                     prevRobotOutPick = true;
@@ -3867,13 +4166,15 @@ namespace RM.src.RM250714
                     prevFuoriIngombro = false;
 
                     RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Pick_inPos, 0, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos_pallet1, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos_pallet2, 0, "INT16");
                     RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Home_inPos, 1, "INT16");
                 }
             }
             else
             {
-                if (prevFuoriIngombro != true)
+                bool plcIsFuoriIngombro = !plcIsInPositionHome && !plcIsInPositionPick && !plcIsInPositionPlacePallet1 && !plcIsInPositionPlacePallet2;
+                if (/*!prevFuoriIngombro ||*/ /*!plcIsFuoriIngombro)
                 {
                     prevFuoriIngombro = true;
                     prevRobotOutPick = true;
@@ -3881,12 +4182,13 @@ namespace RM.src.RM250714
                     prevInHomePos = true;
 
                     RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Pick_inPos, 0, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos_pallet1, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos_pallet2, 0, "INT16");
                     RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Home_inPos, 0, "INT16");
                 }
-            }
+            }*/
         }
-
+            
         /// <summary>
         /// Verifica se il punto corrente è all'interno dell'area di safe zone
         /// </summary>
@@ -3948,7 +4250,7 @@ namespace RM.src.RM250714
             if (isBlocking)
             {
                 ClearRobotAlarm();
-                ClearRobotQueue();
+                //ClearRobotQueue();
 
                 // Segnalo che non ci sono più allarmi bloccanti
                 AlarmManager.blockingAlarm = false;
@@ -4008,7 +4310,7 @@ namespace RM.src.RM250714
         /// Imposta le proprietà del robot prelevandole dal database.
         /// </summary>
         /// <returns>True se l'operazione ha successo, altrimenti False.</returns>
-        public static bool SetRobotProperties()
+        public static bool GetRobotProperties()
         {
             try
             {
@@ -4027,7 +4329,7 @@ namespace RM.src.RM250714
                     [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
                 float velocity = float.Parse(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_VELOCITY_ROW_INDEX]
                     [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
-                float blend = float.Parse(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_BLEND_ROW_INDEX]
+                float blendT = float.Parse(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_BLENDT_ROW_INDEX]
                     [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
                 float acceleration = float.Parse(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_ACCELERATION_ROW_INDEX]
                     [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
@@ -4041,33 +4343,26 @@ namespace RM.src.RM250714
                     [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
                 int velRec = Convert.ToInt16(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_VELREC_ROW_INDEX]
                     [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
+                int collLev = Convert.ToInt16(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_COLLISION_LEVELS_ROW_INDEX]
+                    [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
+                float blendR = float.Parse(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_BLENDR_ROW_INDEX]
+                    [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
 
                 // Creazione dell'oggetto robotProperties
-                robotProperties = new RobotProperties(speed, velocity, blend, acceleration, ovl, tool, user, weight, velRec);
-
-                /*
-                 DescPose coord = new DescPose(
-                    -1115.359,
-                    212.482,
-                    -541.592,
-                    179.973,
-                    0.010,
-                    0.765
-                    );
-
-               robot.SetWObjCoord(1, coord);
-                */
+                robotProperties = new RobotProperties(speed, velocity, blendT, acceleration, ovl, tool, user, weight, velRec);
 
                 log.Info($"SetRobotProperties completata: " +
-                         $"\n Speed: {speed}" +
-                         $"\n Velocity: {velocity}" +
-                         $"\n Blend: {blend}" +
-                         $"\n Acceleration: {acceleration}" +
-                         $"\n Ovl: {ovl}" +
-                         $"\n Tool: {tool}" +
-                         $"\n User: {user}" +
-                         $"\n Weight: {weight}" +
-                         $"\n VelRec: {velRec}");
+                         $" Speed: {speed}" +
+                         $" Velocity: {velocity}" + 
+                         $" Blend T: {blendT}" +
+                         $" Acceleration: {acceleration}" +
+                         $" Ovl: {ovl}" +
+                         $" Tool: {tool}" +
+                         $" User: {user}" +
+                         $" Weight: {weight}" +
+                         $" VelRec: {velRec}" +
+                         $" CollLev: {collLev}" +
+                         $" Blend R: {blendR}");
 
                 // Modifica delle variabili statiche e globali di RobotManager
                 RobotManager.speed = robotProperties.Speed;
@@ -4079,6 +4374,8 @@ namespace RM.src.RM250714
                 RobotManager.user = robotProperties.User;
                 RobotManager.weight = robotProperties.Weight;
                 RobotManager.velRec = robotProperties.VelRec;
+                currentCollisionLevel = collLev;
+                RobotManager.blendR = blendR;
 
                 return true;
             }
