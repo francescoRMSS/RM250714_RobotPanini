@@ -822,11 +822,11 @@ namespace RM.src.RM250714
             byte ris = 0;
             RobotManager.robot.GetDI(0, 1, ref ris);
 
-           /* if (!RobotManager.isInSafeZone) // Se il robot non si trova in safeZone
+            if (!RobotManager.isInSafeZone) // Se il robot non si trova in safeZone
             {
                 CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Robot fuori dalla safe zone. Impossibile avviare il ciclo.");
                 return;
-            }*/
+            }
 
             if (ris == 0) // Se la pinza è chiusa
             {
