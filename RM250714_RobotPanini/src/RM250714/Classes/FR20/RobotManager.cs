@@ -1009,7 +1009,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// Nome del task check robot com
         /// </summary>
-        public static string TaskPickAndPlaceTeglia3 = nameof(PickAndPlaceTegliaFiera);
+        public static string TaskPickAndPlaceTegliaIperal = nameof(PickAndPlaceTegliaIperal);
 
         #endregion
 
@@ -1466,6 +1466,1050 @@ namespace RM.src.RM250714
             }
 
           
+        }
+
+        /// <summary>
+        /// Esegue ciclo teglie
+        /// </summary>
+        public async static Task PickAndPlaceTegliaIperal(CancellationToken token)
+        {
+
+            // Parametro necessario al comando MoveL
+            DescPose offset = new DescPose(0, 0, 0, 0, 0, 0); // Nessun offset
+
+            int offsetAllontamento = 850;
+            int offsetAvvicinamento = 400;
+            int offsetPrePlace = 850;
+            int offsetAllontamentoPostPlace = 300;
+            int zOffsetPrePickTeglia = 40;
+            int zOffsetPostPickTeglia = 40;
+            int zOffsetAllontanamentoPostPickTeglia1 = 40;
+            int zOffsetPrePlace = 20;
+
+            #region Punto home
+
+            // Oggetto jointPos
+            JointPos jointPosHome = new JointPos(0, 0, 0, 0, 0, 0);
+
+            // Get delle coordinate del punto dal database
+            var home = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
+
+            // Creazione oggetto descPose
+            DescPose descPosHome = new DescPose(
+                home.x,
+                home.y,
+                home.z,
+                home.rx,
+                home.ry,
+                home.rz
+                );
+
+            // Calcolo del jointPos
+            robot.GetInverseKin(0, descPosHome, -1, ref jointPosHome);
+
+            #endregion
+
+            #region Pick teglia 1
+
+            #region Punto di pick teglia 1
+
+            // Oggetto jointPos
+            JointPos jointPosPickTeglia1 = new JointPos(0, 0, 0, 0, 0, 0);
+
+            // Get delle coordinate del punto dal database
+            var pickTeglia1 = ApplicationConfig.applicationsManager.GetPosition("pPickTegliaIperal", "RM");
+
+            // Creazione oggetto descPose
+            DescPose descPosPickTeglia1 = new DescPose(
+                pickTeglia1.x,
+                pickTeglia1.y,
+                pickTeglia1.z,
+                pickTeglia1.rx,
+                pickTeglia1.ry,
+                pickTeglia1.rz
+                );
+
+            // Calcolo del jointPos
+            robot.GetInverseKin(0, descPosPickTeglia1, -1, ref jointPosPickTeglia1);
+
+            #endregion
+
+            #region Punto avvicinamento pick teglia 1
+
+            // Oggetto jointPos
+            JointPos jointPosApproachPickTeglia1 = new JointPos(0, 0, 0, 0, 0, 0);
+
+            // Creazione oggetto descPose
+            DescPose descPosApproachPickTeglia1 = new DescPose(
+                pickTeglia1.x,
+                pickTeglia1.y - offsetAvvicinamento,
+                pickTeglia1.z - zOffsetPrePickTeglia,
+                pickTeglia1.rx,
+                pickTeglia1.ry,
+                pickTeglia1.rz
+                );
+
+            // Calcolo del jointPos
+            robot.GetInverseKin(0, descPosApproachPickTeglia1, -1, ref jointPosApproachPickTeglia1);
+
+            #endregion
+
+            #region Punto post pick teglia 1
+
+            // Oggetto jointPos
+            JointPos jointPosPostPickTeglia1 = new JointPos(0, 0, 0, 0, 0, 0);
+
+            // Creazione oggetto descPose
+            DescPose descPosPostPickTeglia1 = new DescPose(
+                pickTeglia1.x,
+                pickTeglia1.y,
+                pickTeglia1.z + zOffsetPostPickTeglia,
+                pickTeglia1.rx,
+                pickTeglia1.ry,
+                pickTeglia1.rz
+                );
+
+            // Calcolo del jointPos
+            robot.GetInverseKin(0, descPosPostPickTeglia1, -1, ref jointPosPostPickTeglia1);
+
+            #endregion
+
+            #region Punto allontanamento post pick teglia 1
+
+            // Oggetto jointPos
+            JointPos jointPosAllontanamentoPickTeglia1 = new JointPos(0, 0, 0, 0, 0, 0);
+
+            // Creazione oggetto descPose
+            DescPose descPosAllontanamentoPickTeglia1 = new DescPose(
+                descPosApproachPickTeglia1.tran.x,
+                descPosApproachPickTeglia1.tran.y - offsetAllontamento,
+                descPosApproachPickTeglia1.tran.z + zOffsetAllontanamentoPostPickTeglia1,
+                descPosApproachPickTeglia1.rpy.rx,
+                descPosApproachPickTeglia1.rpy.ry,
+                descPosApproachPickTeglia1.rpy.rz
+                );
+
+            // Calcolo del jointPos
+            robot.GetInverseKin(0, descPosAllontanamentoPickTeglia1, -1, ref jointPosAllontanamentoPickTeglia1);
+
+            #endregion
+
+            #endregion
+
+            #region Place teglia 1
+
+            #region Punto di place teglia 1
+
+            // Oggetto jointPos
+            JointPos jointPosPlaceTeglia1 = new JointPos(0, 0, 0, 0, 0, 0);
+
+            // Get delle coordinate del punto dal database
+            var placeTeglia1 = ApplicationConfig.applicationsManager.GetPosition("pPlaceTegliaIperal", "RM");
+
+            // Creazione oggetto descPose
+            DescPose descPosPlaceTeglia1 = new DescPose(
+                placeTeglia1.x,
+                placeTeglia1.y,
+                placeTeglia1.z,
+                placeTeglia1.rx,
+                placeTeglia1.ry,
+                placeTeglia1.rz
+                );
+
+            // Calcolo del jointPos
+            robot.GetInverseKin(0, descPosPlaceTeglia1, -1, ref jointPosPlaceTeglia1);
+
+            #endregion
+
+            #region Punto di rotazione da pick a place teglia 1
+
+            // Oggetto jointPos
+            JointPos jointPosRotationPrePlaceTeglia1 = new JointPos(0, 0, 0, 0, 0, 0);
+
+            // Creazione oggetto descPose
+            DescPose descPosRotationPrePlaceTeglia1 = new DescPose(
+                descPosHome.tran.x,
+                descPosHome.tran.y,
+                descPosHome.tran.z,
+                placeTeglia1.rx,
+                placeTeglia1.ry,
+                placeTeglia1.rz
+                );
+
+            // Calcolo del jointPos
+            robot.GetInverseKin(0, descPosRotationPrePlaceTeglia1, -1, ref jointPosRotationPrePlaceTeglia1);
+
+            #endregion
+
+            #region Punto avvicinamento place teglia 1
+
+            // Oggetto jointPos
+            JointPos jointPosApproachPlaceTeglia1 = new JointPos(0, 0, 0, 0, 0, 0);
+
+            // Creazione oggetto descPose
+            DescPose descPosApproachPlaceTeglia1 = new DescPose(
+                placeTeglia1.x - offsetPrePlace,
+                placeTeglia1.y,
+                placeTeglia1.z,
+                placeTeglia1.rx,
+                placeTeglia1.ry,
+                placeTeglia1.rz
+                );
+
+            // Calcolo del jointPos
+            robot.GetInverseKin(0, descPosApproachPlaceTeglia1, -1, ref jointPosApproachPlaceTeglia1);
+
+            #endregion
+
+            #region Punto post place teglia 1
+
+            // Oggetto jointPos
+            JointPos jointPosPostPlaceTeglia1 = new JointPos(0, 0, 0, 0, 0, 0);
+
+            // Creazione oggetto descPose
+            DescPose descPosPostPlaceTeglia1 = new DescPose(
+                placeTeglia1.x,
+                placeTeglia1.y,
+                placeTeglia1.z,
+                placeTeglia1.rx,
+                placeTeglia1.ry,
+                placeTeglia1.rz
+                );
+
+            // Calcolo del jointPos
+            robot.GetInverseKin(0, descPosPostPlaceTeglia1, -1, ref jointPosPostPlaceTeglia1);
+
+            #endregion
+
+            #region Punto allontanamento place teglia 1
+
+            // Oggetto jointPos
+            JointPos jointPosAllontanamentoPlaceTeglia1 = new JointPos(0, 0, 0, 0, 0, 0);
+
+            // Creazione oggetto descPose
+            DescPose descPosAllontanamentoPlaceTeglia1 = new DescPose(
+                placeTeglia1.x - offsetAllontamento,
+                placeTeglia1.y,
+                placeTeglia1.z,
+                placeTeglia1.rx,
+                placeTeglia1.ry,
+                placeTeglia1.rz);
+
+            // Calcolo del jointPos
+            robot.GetInverseKin(0, descPosAllontanamentoPlaceTeglia1, -1, ref jointPosAllontanamentoPlaceTeglia1);
+
+            #endregion
+
+            #endregion
+
+            #region Place teglia 2
+
+            #region Punto di place teglia 2
+
+            // Oggetto jointPos
+            JointPos jointPosPlaceTeglia2 = new JointPos(0, 0, 0, 0, 0, 0);
+
+            // Get delle coordinate del punto dal database
+            var placeTeglia2 = ApplicationConfig.applicationsManager.GetPosition("pPlaceTegliaIperal2", "RM");
+
+            // Creazione oggetto descPose
+            DescPose descPosPlaceTeglia2 = new DescPose(
+                placeTeglia2.x,
+                placeTeglia2.y,
+                placeTeglia2.z,
+                placeTeglia2.rx,
+                placeTeglia2.ry,
+                placeTeglia2.rz
+                );
+
+            // Calcolo del jointPos
+            robot.GetInverseKin(0, descPosPlaceTeglia2, -1, ref jointPosPlaceTeglia2);
+
+            #endregion
+
+            #region Punto avvicinamento place teglia 2
+
+            // Oggetto jointPos
+            JointPos jointPosApproachPlaceTeglia2 = new JointPos(0, 0, 0, 0, 0, 0);
+
+            // Creazione oggetto descPose
+            DescPose descPosApproachPlaceTeglia2 = new DescPose(
+                placeTeglia2.x,
+                placeTeglia2.y - offsetPrePlace,
+                placeTeglia2.z + 20,
+                placeTeglia2.rx,
+                placeTeglia2.ry,
+                placeTeglia2.rz
+                );
+
+            // Calcolo del jointPos
+            robot.GetInverseKin(0, descPosApproachPlaceTeglia2, -1, ref jointPosApproachPlaceTeglia2);
+
+            #endregion
+
+            #region Punto di rotazione da place teglia 1 a place teglia 2
+
+            // Oggetto jointPos
+            JointPos jointPosRotationPrePlaceTeglia2 = new JointPos(0, 0, 0, 0, 0, 0);
+
+            // Creazione oggetto descPose
+            DescPose descPosRotationPrePlaceTeglia2 = new DescPose(
+                home.x,
+                home.y,
+                placeTeglia2.z + 20,
+                placeTeglia2.rx,
+                placeTeglia2.ry,
+                placeTeglia2.rz
+                );
+
+            // Calcolo del jointPos
+            robot.GetInverseKin(0, descPosRotationPrePlaceTeglia2, -1, ref jointPosRotationPrePlaceTeglia2);
+
+            #endregion
+
+            #region Punto allontanamento place teglia 2
+
+            // Oggetto jointPos
+            JointPos jointPosAllontanamentoPlaceTeglia2 = new JointPos(0, 0, 0, 0, 0, 0);
+
+            // Creazione oggetto descPose
+            DescPose descPosAllontanamentoPlaceTeglia2 = new DescPose(
+                placeTeglia2.x,
+                placeTeglia2.y - offsetAllontamentoPostPlace,
+                placeTeglia2.z,
+                placeTeglia2.rx,
+                placeTeglia2.ry,
+                placeTeglia2.rz
+                );
+
+            // Calcolo del jointPos
+            robot.GetInverseKin(0, descPosAllontanamentoPlaceTeglia2, -1, ref jointPosAllontanamentoPlaceTeglia2);
+
+            #endregion
+
+
+            #endregion
+
+            #region Pick teglia1
+
+            #region Punto di pick teglia 1
+
+            // Oggetto jointPos
+            JointPos jointPosPickTeglia2 = new JointPos(0, 0, 0, 0, 0, 0);
+
+            // Get delle coordinate del punto dal database
+            var pickTeglia2 = ApplicationConfig.applicationsManager.GetPosition("pPickTegliaIperal2", "RM");
+
+            // Creazione oggetto descPose
+            DescPose descPosPickTeglia2 = new DescPose(
+                pickTeglia2.x,
+                pickTeglia2.y,
+                pickTeglia2.z,
+                pickTeglia2.rx,
+                pickTeglia2.ry,
+                pickTeglia2.rz
+                );
+
+            // Calcolo del jointPos
+            robot.GetInverseKin(0, descPosPickTeglia2, -1, ref jointPosPickTeglia2);
+
+            #endregion
+
+            #region Punto avvicinamento pick teglia 2
+
+            // Oggetto jointPos
+            JointPos jointPosApproachPickTeglia2 = new JointPos(0, 0, 0, 0, 0, 0);
+
+            // Creazione oggetto descPose
+            DescPose descPosApproachPickTeglia2 = new DescPose(
+                pickTeglia2.x,
+                pickTeglia2.y - offsetAvvicinamento,
+                pickTeglia2.z - zOffsetPrePickTeglia,
+                pickTeglia2.rx,
+                pickTeglia2.ry,
+                pickTeglia2.rz
+                );
+
+            // Calcolo del jointPos
+            robot.GetInverseKin(0, descPosApproachPickTeglia2, -1, ref jointPosApproachPickTeglia2);
+
+            #endregion
+
+            #region Punto post pick teglia 2
+
+            // Oggetto jointPos
+            JointPos jointPosPostPickTeglia2 = new JointPos(0, 0, 0, 0, 0, 0);
+
+            // Creazione oggetto descPose
+            DescPose descPosPostPickTeglia2 = new DescPose(
+                pickTeglia2.x,
+                pickTeglia2.y,
+                pickTeglia2.z + zOffsetPostPickTeglia,
+                pickTeglia2.rx,
+                pickTeglia2.ry,
+                pickTeglia2.rz
+                );
+
+            // Calcolo del jointPos
+            robot.GetInverseKin(0, descPosPostPickTeglia2, -1, ref jointPosPostPickTeglia2);
+
+            #endregion
+
+            #region Punto allontanamento post pick teglia 2
+
+            // Oggetto jointPos
+            JointPos jointPosAllontanamentoPickTeglia2 = new JointPos(0, 0, 0, 0, 0, 0);
+
+            // Creazione oggetto descPose
+            DescPose descPosAllontanamentoPickTeglia2 = new DescPose(
+                descPosApproachPickTeglia2.tran.x,
+                descPosApproachPickTeglia2.tran.y - offsetAllontamento,
+                descPosApproachPickTeglia2.tran.z + zOffsetAllontanamentoPostPickTeglia1,
+                descPosApproachPickTeglia2.rpy.rx,
+                descPosApproachPickTeglia2.rpy.ry,
+                descPosApproachPickTeglia2.rpy.rz
+                );
+
+            // Calcolo del jointPos
+            robot.GetInverseKin(0, descPosAllontanamentoPickTeglia2, -1, ref jointPosAllontanamentoPickTeglia2);
+
+            #endregion
+
+            #endregion
+
+            #region Place teglia 3
+
+            #region Punto di place teglia 3
+
+            // Oggetto jointPos
+            JointPos jointPosPlaceTeglia3 = new JointPos(0, 0, 0, 0, 0, 0);
+
+            // Get delle coordinate del punto dal database
+            var placeTeglia3 = ApplicationConfig.applicationsManager.GetPosition("pPlaceTegliaIperal3", "RM");
+
+            // Creazione oggetto descPose
+            DescPose descPosPlaceTeglia3 = new DescPose(
+                placeTeglia3.x,
+                placeTeglia3.y,
+                placeTeglia3.z,
+                placeTeglia3.rx,
+                placeTeglia3.ry,
+                placeTeglia3.rz
+                );
+
+            // Calcolo del jointPos
+            robot.GetInverseKin(0, descPosPlaceTeglia3, -1, ref jointPosPlaceTeglia3);
+
+            #endregion
+
+            #region Punto avvicinamento place teglia 3
+
+            // Oggetto jointPos
+            JointPos jointPosApproachPlaceTeglia3 = new JointPos(0, 0, 0, 0, 0, 0);
+
+            // Creazione oggetto descPose
+            DescPose descPosApproachPlaceTeglia3 = new DescPose(
+                placeTeglia3.x,
+                placeTeglia3.y - offsetPrePlace,
+                placeTeglia3.z + 40,
+                placeTeglia3.rx,
+                placeTeglia3.ry,
+                placeTeglia3.rz
+                );
+
+            // Calcolo del jointPos
+            robot.GetInverseKin(0, descPosApproachPlaceTeglia3, -1, ref jointPosApproachPlaceTeglia3);
+
+            #endregion
+
+            #region Punto di rotazione da place teglia 1 a place teglia 3
+
+            // Oggetto jointPos
+            JointPos jointPosRotationPrePlaceTeglia3 = new JointPos(0, 0, 0, 0, 0, 0);
+
+            // Creazione oggetto descPose
+            DescPose descPosRotationPrePlaceTeglia3 = new DescPose(
+                home.x,
+                home.y,
+                placeTeglia3.z + 20,
+                placeTeglia3.rx,
+                placeTeglia3.ry,
+                placeTeglia3.rz
+                );
+
+            // Calcolo del jointPos
+            robot.GetInverseKin(0, descPosRotationPrePlaceTeglia3, -1, ref jointPosRotationPrePlaceTeglia3);
+
+            #endregion
+
+            #region Punto allontanamento place teglia 3
+
+            // Oggetto jointPos
+            JointPos jointPosAllontanamentoPlaceTeglia3 = new JointPos(0, 0, 0, 0, 0, 0);
+
+            // Creazione oggetto descPose
+            DescPose descPosAllontanamentoPlaceTeglia3 = new DescPose(
+                placeTeglia3.x,
+                placeTeglia3.y - offsetAllontamentoPostPlace,
+                placeTeglia3.z,
+                placeTeglia3.rx,
+                placeTeglia3.ry,
+                placeTeglia3.rz
+                );
+
+            // Calcolo del jointPos
+            robot.GetInverseKin(0, descPosAllontanamentoPlaceTeglia3, -1, ref jointPosAllontanamentoPlaceTeglia3);
+
+            #endregion
+
+            #endregion
+
+            #region Parametri movimento
+
+            ExaxisPos epos = new ExaxisPos(0, 0, 0, 0); // Nessun asse esterno
+            byte offsetFlag = 0; // Flag per offset (0 = disabilitato)
+            byte search = 0;
+            int velAccParamMode = 0;
+            int overSpeedStrategy = 0;
+            int speedPercent = 0;
+
+            // Indica il codice risultante del movimento del Robot
+            int movementResult = -1;
+
+            // Reset condizione di stop ciclo
+            stopCycleRoutine = false;
+
+            // Reset richiesta di stop ciclo
+            stopCycleRequested = false;
+
+            // Reset step routine
+            step = 0;
+
+            // Segnale di pick
+            bool prendidaNastro = true;
+
+            #endregion
+
+            double[] levelCollision1 = new double[] { 1, 1, 1, 1, 1, 1 };
+            double[] levelCollision2 = new double[] { 2, 2, 2, 2, 2, 2 };
+            double[] levelCollision3 = new double[] { 3, 3, 3, 3, 3, 3 };
+            double[] levelCollision4 = new double[] { 4, 4, 4, 4, 4, 4 };
+            double[] levelCollision5 = new double[] { 5, 5, 5, 5, 5, 5 };
+            double[] levelCollision6 = new double[] { 6, 6, 6, 6, 6, 6 };
+            double[] levelCollision7 = new double[] { 7, 7, 7, 7, 7, 7 };
+            double[] levelCollision8 = new double[] { 8, 8, 8, 8, 8, 8 };
+
+            robot.SetAnticollision(0, levelCollision6, 1);
+
+            byte ris = 0;
+
+            // Aspetto che il metodo termini, ma senza bloccare il thread principale
+            // La routine è incapsulata come 'async' per supportare futuri operatori 'await' nel caso ci fosse la necessità
+            await Task.Run(async () =>
+            {
+                // Fino a quando la condizione di stop routine non è true e non sono presenti allarmi bloccanti
+                while (!token.IsCancellationRequested && !AlarmManager.blockingAlarm && !stopCycleRoutine)
+                {
+                    switch (step)
+                    {
+                        case 0:
+                            #region Check richiesta interruzione ciclo
+
+                            if (!stopCycleRequested) // Se non è stata richiesta nessuna interruzione
+                            {
+                                step = 10;
+                            }
+                            else // Se è stata richiesta l'interruzione
+                            {
+                                // Ritorno del Robot a casa
+                                GoToHomePosition();
+
+                                // Reset inPosition
+                                inPosition = false;
+
+                                // Assegnazione del pHome come ending point
+                                endingPoint = descPosHome;
+
+                                step = 5;
+                            }
+
+                            log.Info("STEP 0 - Check richiesta interruzione ciclo");
+                            break;
+
+                        #endregion
+
+                        case 5:
+                            #region Termine routine
+
+                            if (inPosition) // Se il Robot è arrivato in HomePosition
+                            {
+                                // Abilito il tasto Start per avviare nuovamente la routine
+                                EnableButtonCycleEvent?.Invoke(1, EventArgs.Empty);
+
+                                // Imposto a false il booleano che fa terminare il thread della routine
+                                stopCycleRoutine = true;
+
+                            }
+
+                            log.Info("STEP 5 - Termine routine");
+                            break;
+
+                        #endregion
+
+                        case 10:
+                            #region Movimento a punto di Pick teglia 1
+
+                            inPosition = false; // Reset inPosition
+
+                            blendR = 50;
+                            // Movimento a punto di avvicinamento pick teglia 1
+                            movementResult = robot.MoveL(jointPosApproachPickTeglia1, descPosApproachPickTeglia1,
+                                tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                            blendR = 50;
+                            // Movimento a pick teglia 1
+                            movementResult = robot.MoveL(jointPosPickTeglia1, descPosPickTeglia1,
+                                tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+                            GetRobotMovementCode(movementResult); // Stampo risultato del movimento
+
+                            endingPoint = descPosPickTeglia1; // Assegnazione endingPoint
+
+                            step = 30; // Passaggio a step 30
+
+                            log.Info("STEP 10 - Movimento a punto di Pick teglia 1");
+
+                            break;
+
+                        #endregion
+
+                        case 30:
+                            #region Attesa inPosition punto di Pick teglia 1 e chiusura pinza
+
+                            if (inPosition) // Se il Robot è arrivato in posizione di Pick 1
+                            {
+                                // Chiudo la pinza
+                                robot.SetDO(0, 1, 0, 0);
+
+                                step = 40; // Passaggio a step 40
+                            }
+
+                            log.Info("STEP 30 - Attesa inPosition punto di Pick teglia 1 e chiusura pinza");
+
+                            break;
+
+                        #endregion
+
+                        case 40:
+                            #region Check chiusura pinza
+
+                            robot.GetDI(0, 1, ref ris);
+
+                            if (ris == 0)
+                            {
+
+                                await Task.Delay(100); // Ritardo per evitare che il robot riparta senza aver finito di chiudere la pinza
+                                step = 50;
+                            }
+
+                            formDiagnostics.UpdateRobotStepDescription("STEP 40 - Check chiusura pinza");
+
+                            break;
+
+                        #endregion
+
+                        case 50:
+                            #region Movimento di uscita dal carrello dopo pick teglia 1
+
+                            blendR = 50;
+                            // Movimento per uscire dal carrelo dopo pick 1
+                            movementResult = robot.MoveL(jointPosPostPickTeglia1, descPosPostPickTeglia1,
+                                tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                            offset = new DescPose(0, 0, 0, 3, 0, 0);
+                            // Movimento a punto di avvicinamento place teglia 1
+                            movementResult = robot.MoveJ(jointPosPostPickTeglia1, descPosPostPickTeglia1,
+                                tool, user, vel, acc, ovl, epos, blendT, 1, offset);
+                            offset = new DescPose(0, 0, 0, 0, 0, 0);
+
+                            blendR = 50;
+                            // Movimento per uscire dal carrelo dopo pick 1
+                            movementResult = robot.MoveL(jointPosAllontanamentoPickTeglia1, descPosAllontanamentoPickTeglia1,
+                                tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                            log.Info("STEP 50 - Movimento di uscita dal carrello dopo pick teglia 1");
+
+                            step = 60;
+
+                            break;
+
+                        #endregion
+
+                        case 60:
+                            #region Ritorno in home e movimento in place teglia 1
+
+                            blendR = 50;
+                            // Ritorno in posizione di home
+                            movementResult = robot.MoveL(jointPosHome, descPosHome,
+                                tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                            /*  blendR = 50;
+                              // Movimento di rotazione pre place teglia 1
+                              movementResult = robot.MoveL(jointPosRotationPrePlaceTeglia1, descPosRotationPrePlaceTeglia1,
+                                  tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);*/
+
+                            blendR = 50;
+                            // Movimento a punto di avvicinamento place teglia 1
+                            movementResult = robot.MoveL(jointPosApproachPlaceTeglia1, descPosApproachPlaceTeglia1,
+                                tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                            blendR = 50;
+                            // Movimento a  place teglia 1
+                            movementResult = robot.MoveL(jointPosPlaceTeglia1, descPosPlaceTeglia1,
+                               tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                            endingPoint = descPosPlaceTeglia1; // Assegnazione ending point
+
+
+                            log.Info("STEP 60 - Ritorno in home e movimento in place teglia 1");
+
+                            step = 70;
+
+                            break;
+
+                        #endregion
+
+                        case 70:
+                            #region Check arrivo in place teglia 1
+
+                            if (inPosition)
+                            {
+                                step = 80;
+                            }
+
+                            break;
+
+                        #endregion
+
+                        case 80:
+                            #region Ritorno in home e movimento in place teglia 2
+
+                            blendR = 50;
+                            // Movimento a punto di avvicinamento place teglia 1
+                            movementResult = robot.MoveL(jointPosApproachPlaceTeglia1, descPosApproachPlaceTeglia1,
+                                tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+
+                            blendR = 50;
+                            // Movimento di rotazione pre place teglia 2
+                            movementResult = robot.MoveL(jointPosRotationPrePlaceTeglia2, descPosRotationPrePlaceTeglia2,
+                                tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                            offset = new DescPose(0, 0, 0, 3, 0, 0);
+                            // Movimento a punto di avvicinamento place teglia 1
+                            movementResult = robot.MoveJ(jointPosApproachPlaceTeglia2, descPosApproachPlaceTeglia2,
+                                tool, user, vel, acc, ovl, epos, blendT, 1, offset);
+                            offset = new DescPose(0, 0, 0, 0, 0, 0);
+                            /*
+                                                        blendR = 50;
+                                                        // Movimento di rotazione pre place teglia 1
+                                                        movementResult = robot.MoveL(jointPosApproachPlaceTeglia2, descPosApproachPlaceTeglia2,
+                                                            tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);*/
+
+                            blendR = 50;
+                            // Movimento di rotazione pre place teglia 1
+                            movementResult = robot.MoveL(jointPosPlaceTeglia2, descPosPlaceTeglia2,
+                                tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                            endingPoint = descPosPlaceTeglia2;
+
+                            step = 90;
+
+                            break;
+                        #endregion
+
+                        case 90:
+                            #region Attesa inPosition punto di place teglia 2 e apertura pinza
+
+                            if (inPosition) // Se il Robot è arrivato in posizione di Pick 1
+                            {
+                                // Chiudo la pinza
+                                robot.SetDO(0, 0, 0, 0);
+
+                                step = 100; // Passaggio a step 40
+                            }
+
+                            log.Info("STEP 30 - Attesa inPosition punto di Pick teglia 1 e chiusura pinza");
+
+                            break;
+
+                        #endregion
+
+                        case 100:
+                            #region Check apertura pinza
+
+                            robot.GetDI(0, 1, ref ris);
+
+                            if (ris == 1)
+                            {
+
+                                await Task.Delay(100); // Ritardo per evitare che il robot riparta senza aver finito di chiudere la pinza
+                                step = 110;
+                            }
+
+                            formDiagnostics.UpdateRobotStepDescription("STEP 40 - Check chiusura pinza");
+
+                            break;
+
+                        #endregion
+
+                        case 110:
+                            #region Ritorno in home e movimento in place teglia 2
+
+                            blendR = 50;
+
+                            offset = new DescPose(0, 0, 0, -3, 0, 0);
+                            // Movimento a punto di avvicinamento place teglia 1
+                            movementResult = robot.MoveJ(jointPosPlaceTeglia2, descPosPlaceTeglia2,
+                                tool, user, vel, acc, ovl, epos, blendT, 1, offset);
+
+                            blendR = 50;
+                            // Movimento di rotazione pre place teglia 2
+                            movementResult = robot.MoveL(jointPosAllontanamentoPlaceTeglia2, descPosAllontanamentoPlaceTeglia2,
+                                tool, user, vel, acc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                            offset = new DescPose(0, 0, 0, 0, 0, 0); // Nessun offset
+
+                            blendR = 50;
+                            // Movimento di rotazione pre place teglia 2
+                            movementResult = robot.MoveL(jointPosApproachPickTeglia2, descPosApproachPickTeglia2,
+                                tool, user, vel, acc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                            blendR = 50;
+                            // Movimento di rotazione pre place teglia 2
+                            movementResult = robot.MoveL(jointPosPickTeglia2, descPosPickTeglia2,
+                                tool, user, vel, acc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                            endingPoint = descPosPickTeglia2;
+
+                            step = 120;
+
+                            break;
+                        #endregion
+
+
+                        case 120:
+                            #region Attesa inPosition punto di Pick teglia 1 e chiusura pinza
+
+                            if (inPosition) // Se il Robot è arrivato in posizione di Pick 1
+                            {
+                                // Chiudo la pinza
+                                robot.SetDO(0, 1, 0, 0);
+
+                                step = 130; // Passaggio a step 40
+                            }
+
+                            log.Info("STEP 30 - Attesa inPosition punto di Pick teglia 1 e chiusura pinza");
+
+                            break;
+
+                        #endregion
+
+                        case 130:
+                            #region Check chiusura pinza
+
+                            robot.GetDI(0, 1, ref ris);
+
+                            if (ris == 0)
+                            {
+
+                                await Task.Delay(100); // Ritardo per evitare che il robot riparta senza aver finito di chiudere la pinza
+                                step = 140;
+                            }
+
+                            formDiagnostics.UpdateRobotStepDescription("STEP 40 - Check chiusura pinza");
+
+                            break;
+
+                        #endregion
+
+                        case 140:
+                            #region Movimento di uscita dal carrello dopo pick teglia 1
+
+                            blendR = 50;
+                            // Movimento per uscire dal carrelo dopo pick 1
+                            movementResult = robot.MoveL(jointPosPostPickTeglia2, descPosPostPickTeglia2,
+                                tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                            offset = new DescPose(0, 0, 0, 3, 0, 0);
+                            // Movimento a punto di avvicinamento place teglia 1
+                            movementResult = robot.MoveJ(jointPosPostPickTeglia2, descPosPostPickTeglia2,
+                                tool, user, vel, acc, ovl, epos, blendT, 1, offset);
+                            offset = new DescPose(0, 0, 0, 0, 0, 0);
+
+                            blendR = 50;
+                            // Movimento per uscire dal carrelo dopo pick 1
+                            movementResult = robot.MoveL(jointPosAllontanamentoPickTeglia2, descPosAllontanamentoPickTeglia2,
+                                tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                            log.Info("STEP 50 - Movimento di uscita dal carrello dopo pick teglia 1");
+
+                            step = 150;
+
+                            break;
+
+                        #endregion
+
+                        case 150:
+                            #region Ritorno in home e movimento in place teglia 1
+
+                            blendR = 50;
+                            // Ritorno in posizione di home
+                            movementResult = robot.MoveL(jointPosHome, descPosHome,
+                                tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                            /*  blendR = 50;
+                              // Movimento di rotazione pre place teglia 1
+                              movementResult = robot.MoveL(jointPosRotationPrePlaceTeglia1, descPosRotationPrePlaceTeglia1,
+                                  tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);*/
+
+                            blendR = 50;
+                            // Movimento a punto di avvicinamento place teglia 1
+                            movementResult = robot.MoveL(jointPosApproachPlaceTeglia1, descPosApproachPlaceTeglia1,
+                                tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                            blendR = 50;
+                            // Movimento a  place teglia 1
+                            movementResult = robot.MoveL(jointPosPlaceTeglia1, descPosPlaceTeglia1,
+                               tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                            endingPoint = descPosPlaceTeglia1; // Assegnazione ending point
+
+
+                            log.Info("STEP 60 - Ritorno in home e movimento in place teglia 1");
+
+                            step = 160;
+
+                            break;
+
+                        #endregion
+
+                        case 160:
+                            #region Check arrivo in place teglia 1
+
+                            if (inPosition)
+                            {
+                                step = 170;
+                            }
+
+                            break;
+
+                        #endregion
+
+                        case 170:
+                            #region Ritorno in home e movimento in place teglia 2
+
+                            blendR = 50;
+                            // Movimento a punto di avvicinamento place teglia 1
+                            movementResult = robot.MoveL(jointPosApproachPlaceTeglia1, descPosApproachPlaceTeglia1,
+                                tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+
+                            blendR = 50;
+                            // Movimento di rotazione pre place teglia 2
+                            movementResult = robot.MoveL(jointPosRotationPrePlaceTeglia3, descPosRotationPrePlaceTeglia3,
+                                tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                            blendR = 50;
+                            /*  offset = new DescPose(0, 0, 0, 3, 0, 0);
+                              // Movimento di rotazione pre place teglia 1
+                              movementResult = robot.MoveL(jointPosApproachPlaceTeglia3, descPosApproachPlaceTeglia3,
+                                  tool, user, vel, acc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);*/
+
+                            offset = new DescPose(0, 0, 0, 3, 0, 0);
+                            // Movimento a punto di avvicinamento place teglia 1
+                            movementResult = robot.MoveJ(jointPosApproachPlaceTeglia3, descPosApproachPlaceTeglia3,
+                                tool, user, vel, acc, ovl, epos, blendT, 1, offset);
+                            offset = new DescPose(0, 0, 0, 0, 0, 0);
+
+                            blendR = 50;
+                            // Movimento di rotazione pre place teglia 1
+                            movementResult = robot.MoveL(jointPosPlaceTeglia3, descPosPlaceTeglia3,
+                                tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                            endingPoint = descPosPlaceTeglia3;
+
+                            step = 180;
+
+                            break;
+                        #endregion
+
+                        case 180:
+                            #region Attesa inPosition punto di place teglia 2 e apertura pinza
+
+                            if (inPosition) // Se il Robot è arrivato in posizione di Pick 1
+                            {
+                                // Chiudo la pinza
+                                robot.SetDO(0, 0, 0, 0);
+
+                                step = 190; // Passaggio a step 40
+                            }
+
+                            log.Info("STEP 30 - Attesa inPosition punto di Pick teglia 1 e chiusura pinza");
+
+                            break;
+
+                        #endregion
+
+                        case 190:
+                            #region Check apertura pinza
+
+                            robot.GetDI(0, 1, ref ris);
+
+                            if (ris == 1)
+                            {
+
+                                await Task.Delay(100); // Ritardo per evitare che il robot riparta senza aver finito di chiudere la pinza
+                                step = 200;
+                            }
+
+                            formDiagnostics.UpdateRobotStepDescription("STEP 40 - Check chiusura pinza");
+
+                            break;
+
+                        #endregion
+
+                        case 200:
+                            #region Ritorno in home e movimento in place teglia 2
+
+                            blendR = 50;
+
+                            offset = new DescPose(0, 0, 0, -3, 0, 0);
+                            // Movimento a punto di avvicinamento place teglia 1
+                            movementResult = robot.MoveJ(jointPosPlaceTeglia3, descPosPlaceTeglia3,
+                                tool, user, vel, acc, ovl, epos, blendT, 1, offset);
+
+                            blendR = 50;
+                            // Movimento di rotazione pre place teglia 2
+                            movementResult = robot.MoveL(jointPosAllontanamentoPlaceTeglia3, descPosAllontanamentoPlaceTeglia3,
+                                tool, user, vel, acc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                            offset = new DescPose(0, 0, 0, 0, 0, 0); // Nessun offset
+
+                            blendR = 50;
+                            // Movimento di rotazione pre place teglia 2
+                            movementResult = robot.MoveL(jointPosHome, descPosHome,
+                                tool, user, vel, acc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                            step = 0;
+
+                            break;
+                            #endregion
+
+                    }
+                    Thread.Sleep(50); // Delay routine
+                }
+            });
+
         }
 
         public async static Task PickAndPlaceTegliaFiera(CancellationToken token)
@@ -2789,7 +3833,7 @@ namespace RM.src.RM250714
             }
             catch (Exception ex)
             {
-                log.Error($"[TASK] {TaskPickAndPlaceTeglia3}: {ex}");
+                log.Error($"[TASK] {TaskPickAndPlaceTegliaIperal}: {ex}");
                 throw;
             }
             finally

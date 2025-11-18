@@ -847,7 +847,7 @@ namespace RM.src.RM250714
             }
 
             // Avvio ciclo di teglie
-            RobotManager.taskManager.AddAndStartTask(RobotManager.TaskPickAndPlaceTeglia3, RobotManager.PickAndPlaceTegliaGiroCompleto, TaskType.Default, false);
+            RobotManager.taskManager.AddAndStartTask(RobotManager.TaskPickAndPlaceTegliaIperal, RobotManager.PickAndPlaceTegliaIperal, TaskType.Default, false);
             RobotManager_EnableButtonCycleEvent(0,EventArgs.Empty);
         }
 
