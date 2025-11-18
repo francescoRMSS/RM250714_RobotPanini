@@ -570,7 +570,7 @@ namespace RM.src.RM250714.Forms.DragMode
             EnableScreenElements();
 
             // Impostazione del carico del robot
-            RobotManager.robot.SetLoadWeight(RobotManager.robotProperties.Weight);
+            RobotManager.robot.SetLoadWeight(0, RobotManager.robotProperties.Weight);
 
             if (dragMode == 0) // PTP
             {

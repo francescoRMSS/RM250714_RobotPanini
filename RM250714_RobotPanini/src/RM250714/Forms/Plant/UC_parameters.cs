@@ -408,7 +408,7 @@ namespace RM.src.RM250714.Forms.Plant
             else
             {
                 robotDAO.SetRobotWeight(ConnectionString, Convert.ToInt16(newWeight));
-                RobotManager.robot.SetLoadWeight(float.Parse(newWeight));
+                RobotManager.robot.SetLoadWeight(0, float.Parse(newWeight));
                 lbl_weight.Text = newWeight;
             }
         }

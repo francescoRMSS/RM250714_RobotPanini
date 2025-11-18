@@ -2495,6 +2495,11 @@
             Valore che rappresenta la smoothness dei movimenti del robot (blend).
             </summary>
         </member>
+        <member name="F:RM.src.RM250714.RobotManager.blendR">
+            <summary>
+            Valore che rappresenta la smoothness dei movimenti lineari del robot (blend).
+            </summary>
+        </member>
         <member name="F:RM.src.RM250714.RobotManager.config">
             <summary>
             Configurazione dello spazio giunto.
@@ -3501,7 +3506,7 @@
             Nome del task home routine
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.TaskPickAndPlaceTeglia3">
+        <member name="F:RM.src.RM250714.RobotManager.TaskPickAndPlaceTegliaIperal">
             <summary>
             Nome del task check robot com
             </summary>
@@ -3560,6 +3565,11 @@
             </summary>
             <param name="token"></param>
             <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.PickAndPlaceTegliaIperal(System.Threading.CancellationToken)">
+            <summary>
+            Esegue ciclo teglie iperal
+            </summary>
         </member>
         <member name="M:RM.src.RM250714.RobotManager.ApplicationTaskManager(System.Threading.CancellationToken)">
             <summary>
@@ -3869,26 +3879,6 @@
             </summary>
             <param name="dp">Contiene il riferimento allo struct che contiene i valori da approssimare</param>
             <param name="digits">Numero di cifre decimali desiderate</param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.PickAndPlaceTeglia">
-            <summary>
-            Esegue ciclo di test per pick e place teglia
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.PickAndPlaceScatola">
-            <summary>
-            Esegue ciclo di pick di una scatola e place dentro al pallet in una determinata posizione
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.PickAndPlaceTegliaGiroCompleto(System.Threading.CancellationToken)">
-            <summary>
-            Esegue ciclo teglie
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.PickAndPlaceTeglia5">
-            <summary>
-            Esegue ciclo teglie
-            </summary>
         </member>
         <member name="T:RM.src.RM250714.RobotProperties">
             <summary>

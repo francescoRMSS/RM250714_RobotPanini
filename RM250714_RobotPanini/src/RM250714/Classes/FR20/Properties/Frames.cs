@@ -129,7 +129,7 @@ namespace RM.src.RM250714.Classes.FR20
             if (_data.Value.id == currentFrame)
                 return 2;
 
-            _robot.SetWObjCoord(frameId, _data.Value.pose);
+            _robot.SetWObjCoord(frameId, _data.Value.pose, 0);
             _robot.GetActualWObjNum(0, ref _checkNewFrame);
 
             if (_checkNewFrame != frameId)    // ID di risposta diverso da ID settato
@@ -160,7 +160,7 @@ namespace RM.src.RM250714.Classes.FR20
             if(_data.Value.id == currentFrame)
                 return 2;
 
-            _robot.SetWObjCoord(_data.Value.id, _data.Value.pose);
+            _robot.SetWObjCoord(_data.Value.id, _data.Value.pose, 0);
             _robot.GetActualWObjNum(0, ref _checkNewFrame);
 
             if (_checkNewFrame != _data.Value.id)    // ID di risposta diverso da ID settato

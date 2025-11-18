@@ -133,7 +133,7 @@ namespace RM.src.RM250714.Classes.FR20
             if (_data.Value.id == currentTool)
                 return 2;
 
-            _robot.SetToolCoord(toolId, _data.Value.pose, _data.Value.type, _data.Value.install);
+            _robot.SetToolCoord(toolId, _data.Value.pose, _data.Value.type, _data.Value.install, 0, 0);
             _robot.GetActualTCPNum(0, ref _checkNewTool);
 
             if (_checkNewTool != toolId)    // ID di risposta diverso da ID settato
@@ -164,7 +164,7 @@ namespace RM.src.RM250714.Classes.FR20
             if (_data.Value.id == currentTool)
                 return 2;
 
-            _robot.SetToolCoord(_data.Value.id, _data.Value.pose, _data.Value.type, _data.Value.install);
+            _robot.SetToolCoord(_data.Value.id, _data.Value.pose, _data.Value.type, _data.Value.install, 0, 0);
             _robot.GetActualTCPNum(0, ref _checkNewTool);
 
             if (_checkNewTool != _data.Value.id)    // ID di risposta diverso da ID settato
