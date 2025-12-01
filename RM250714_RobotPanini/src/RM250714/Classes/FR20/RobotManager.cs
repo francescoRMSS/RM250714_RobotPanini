@@ -3969,16 +3969,17 @@ namespace RM.src.RM250714
                 lastModeChangeTime = DateTime.Now;
                 return; // Aspettiamo che il valore si stabilizzi
             }
-
+            /*
             // Verifica se la modalità è rimasta invariata per almeno 1 secondo
-            if (DateTime.Now - lastModeChangeTime >= TimeSpan.FromSeconds(2) && mode != stableMode)
+            if (DateTime.Now - lastModeChangeTime < TimeSpan.FromSeconds(1) && mode != stableMode)
             {
                 // Modalità confermata stabile: aggiorniamo lo stato
                 stableMode = mode;
 
                 // Cambia la modalità del robot in base alla modalità stabile
                 if (stableMode == 1 && !prevIsAuto) // Passaggio alla modalità automatica
-                {
+                { 
+                    log.Warn("[Mode] Cambio modalità in AUTO");
                     isAutomaticMode = true;
                     SetRobotMode(0); // Imposta il robot in modalità automatica
                     JogMovement.StopJogRobotTask(); // Ferma il thread di movimento manuale
@@ -3986,25 +3987,24 @@ namespace RM.src.RM250714
                     prevIsManual = false;
                     prevIsOff = false;
                     TriggerRobotModeChangedEvent(1);  // Evento: modalità automatica
-                    log.Warn("[Mode] Cambio modalità in AUTO");
                 }
                 else if (stableMode == 2 && !prevIsManual) // Passaggio alla modalità manuale
                 {
+                    log.Warn("[Mode] Cambio modalità in MANUAL");
                     isAutomaticMode = false;
                     SetRobotMode(1); // Imposta il robot in modalità manuale
                     prevIsManual = true;
                     prevIsAuto = false;
                     prevIsOff = false;
                     TriggerRobotModeChangedEvent(0);  // Evento: modalità manuale
-                    log.Warn("[Mode] Cambio modalità in MANUAL");
                 }
                 else if (stableMode == 0 && !prevIsOff) // Passaggio alla modalità Off
                 {
+                    log.Warn("[Mode] Cambio modalità in OFF");
                     prevIsOff = true;
                     prevIsAuto = false;
                     prevIsManual = false;
                     TriggerRobotModeChangedEvent(3);  // Evento: modalità Off
-                    log.Warn("[Mode] Cambio modalità in OFF");
                 }
             }
 
@@ -4012,6 +4012,62 @@ namespace RM.src.RM250714
             if (isEnabledNow && stableMode == 2)
             {
                 JogMovement.StartJogRobotTask(); // Avvia il thread di movimento manuale (Jog)
+            }*/
+            if (DateTime.Now - lastModeChangeTime < TimeSpan.FromSeconds(1))
+            {
+                return; // Aspetta che il valore del PLC sia stabile
+            }
+            // CASO A: Il PLC vuole la modalità AUTOMATICA
+            if (mode == 1) // 1 = AUTO secondo la tua logica PLC
+            {
+                // Se il robot NON è GIA' in automatico...
+                if (currentRobotMode != 0) // 0 = AUTOMATICO secondo la libreria robot
+                {
+                    log.Warn("[Mode] Cambio modalità in AUTO");
+                    isAutomaticMode = true;
+                    SetRobotMode(0); // Imposta il robot in modalità automatica
+                    JogMovement.StopJogRobotTask(); // Ferma il thread di movimento manuale
+                    prevIsAuto = true;
+                    prevIsManual = false;
+                    prevIsOff = false;
+                    TriggerRobotModeChangedEvent(1);  // Evento: modalità automatica
+                }
+            }
+            // CASO B: Il PLC vuole la modalità MANUALE
+            else if (mode == 2) // 2 = MANUALE secondo la tua logica PLC
+            {
+                // Se il robot NON è GIA' in manuale...
+                if (currentRobotMode != 1) // 1 = MANUALE secondo la libreria robot
+                {
+                    log.Warn("[Mode] Cambio modalità in MANUAL");
+                    isAutomaticMode = false;
+                    SetRobotMode(1); // Imposta il robot in modalità manuale
+                    prevIsManual = true;
+                    prevIsAuto = false;
+                    prevIsOff = false;
+                    TriggerRobotModeChangedEvent(0);  // Evento: modalità manuale
+                }
+
+                // La logica per avviare il JOG va qui.
+                // Se siamo in manuale (lo siamo, altrimenti saremmo entrati nell'if sopra)
+                // e il robot è abilitato, avvia il task di JOG.
+                if (isEnabledNow)
+                {
+                    JogMovement.StartJogRobotTask(); // Questo ha già il controllo per non partire più volte
+                }
+            }
+            // CASO C: Il PLC vuole la modalità OFF o un valore non valido
+            else
+            {
+                if (!prevIsOff)
+                {
+                    log.Warn("[Mode] Cambio modalità in OFF");
+                    isAutomaticMode = false;
+                    prevIsOff = true;
+                    prevIsAuto = false;
+                    prevIsManual = false;
+                    TriggerRobotModeChangedEvent(3);  // Evento: modalità Off
+                }
             }
         }
 
