@@ -472,7 +472,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// Periodo di refresh all'interno del metodo ApplicationTaskManager
         /// </summary>
-        private readonly static int applicationTaskManagerRefreshPeriod = 200;
+        private readonly static int applicationTaskManagerRefreshPeriod = 100;
         /// <summary>
         /// Periodo di refresh all'interno del metodo SafetyYaskManager
         /// </summary>
