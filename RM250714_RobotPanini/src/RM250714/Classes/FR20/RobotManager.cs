@@ -3101,9 +3101,9 @@ namespace RM.src.RM250714
             int velocity = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_OverrideAuto));
 
             // Check su cambio di stato
-            if (velocity != previousVel && velocity >= 0 && velocity <= 100)
+            if (velocity != previousVel && velocity >= 1 && velocity <= 100)
             {
-                log.Warn("Richiesto comando cambio override speed da: " + previousVel + " a : " + velocity);
+                log.Info("[Override speed] Richiesto comando cambio override speed da: " + previousVel + " a : " + velocity);
 
                 await Task.Run(() => RobotDAO.SetRobotVelocity(ConnectionString, Convert.ToInt16(velocity)));
                 await Task.Run(() => RobotDAO.SetRobotAcceleration(ConnectionString, Convert.ToInt16(velocity)));
@@ -3114,7 +3114,11 @@ namespace RM.src.RM250714
                 // Aggiornamento della velocità precendete
                 previousVel = velocity;
 
-                log.Warn("Comando cambio override speed completato");
+                log.Info("[Override speed] Comando cambio override speed completato");
+            }
+            else
+            {
+                log.Warn("[Override speed] Valore cambio override speed non valido.");
             }
         }
 
