@@ -4151,7 +4151,6 @@ namespace RM.src.RM250714
                 }
             }
         }
-
         
         /// <summary>
         /// Verifica se il punto corrente è all'interno dell'area di ingombro rispetto a uno qualsiasi dei punti di partenza

@@ -83,7 +83,8 @@ namespace RM.src.RM250714.Classes.FR20.Jog
                     case PLCTagName.x_threshold:
                         #region Get soglia asse X [mm]
 
-                        jog.JogX_treshold = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.x_threshold));
+                        //jog.JogX_treshold = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.x_threshold));
+                        jog.JogX_treshold = (float)(Convert.ToDouble(PLCConfig.appVariables.getValue(PLCTagName.x_threshold))) / 10;
 
                         break;
 
@@ -92,7 +93,8 @@ namespace RM.src.RM250714.Classes.FR20.Jog
                     case PLCTagName.y_threshold:
                         #region Get soglia asse Y [mm]
 
-                        jog.JogY_treshold = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.y_threshold));
+                        //jog.JogY_treshold = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.y_threshold));
+                        jog.JogY_treshold = (float)(Convert.ToDouble(PLCConfig.appVariables.getValue(PLCTagName.y_threshold))) / 10;
 
                         break;
 
@@ -101,7 +103,8 @@ namespace RM.src.RM250714.Classes.FR20.Jog
                     case PLCTagName.z_threshold:
                         #region Get soglia asse Z [mm]
 
-                        jog.JogZ_treshold = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.z_threshold));
+                        //jog.JogZ_treshold = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.z_threshold));
+                        jog.JogZ_treshold = (float)(Convert.ToDouble(PLCConfig.appVariables.getValue(PLCTagName.z_threshold))) / 10;
 
                         break;
 
@@ -110,7 +113,8 @@ namespace RM.src.RM250714.Classes.FR20.Jog
                     case PLCTagName.rx_threshold:
                         #region Get soglia rx [°]
 
-                        jog.JogRX_treshold = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.rx_threshold));
+                        //jog.JogRX_treshold = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.rx_threshold));
+                        jog.JogRX_treshold = (float)(Convert.ToDouble(PLCConfig.appVariables.getValue(PLCTagName.rx_threshold))) / 10;
 
                         break;
 
@@ -119,7 +123,8 @@ namespace RM.src.RM250714.Classes.FR20.Jog
                     case PLCTagName.ry_threshold:
                         #region Get soglia ry [°]
 
-                        jog.JogRY_treshold = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.ry_threshold));
+                        //jog.JogRY_treshold = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.ry_threshold));
+                        jog.JogRY_treshold = (float)(Convert.ToDouble(PLCConfig.appVariables.getValue(PLCTagName.ry_threshold))) / 10;
 
                         break;
 
@@ -128,7 +133,8 @@ namespace RM.src.RM250714.Classes.FR20.Jog
                     case PLCTagName.rz_threshold:
                         #region Get soglia rz [°]
 
-                        jog.JogRZ_treshold = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.rz_threshold));
+                        //jog.JogRZ_treshold = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.rz_threshold));
+                        jog.JogRZ_treshold = (float)(Convert.ToDouble(PLCConfig.appVariables.getValue(PLCTagName.rz_threshold))) / 10;
 
                         break;
 
