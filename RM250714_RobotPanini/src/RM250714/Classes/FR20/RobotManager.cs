@@ -3203,8 +3203,6 @@ namespace RM.src.RM250714
                     // Diamo un secondo per stabilizzare
                     await Task.Delay(1000);
 
-                    await Task.Run(() => robot.SetSpeed(speedRobot));
-
                     log.Warn("[Reconnect] Oggetto Robot ricreato.");
 
                     //Reset stati precedenti
@@ -3220,7 +3218,16 @@ namespace RM.src.RM250714
                     toolManager = new Tools(robot);
                     collisionManager = new Collisions(robot);
 
-                    await Task.Run(() => GetRobotInfo());
+                    SetRobotProperties();
+
+                    // Inizializzazione mode
+                    ROBOT_STATE_PKG robot_state_pkg = new ROBOT_STATE_PKG();
+                    //robot.GetRobotRealTimeState(ref robot_state_pkg);
+                    GetRobotRealTimeState(ref robot_state_pkg);
+                    currentRobotMode = robot_state_pkg.robot_mode;
+                    isAutomaticMode = currentRobotMode == 0;
+
+                    GetRobotInfo();
                 }
                 else
                 {
