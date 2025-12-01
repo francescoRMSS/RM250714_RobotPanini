@@ -15,6 +15,21 @@ namespace RM.src.RM250714
         /// </summary>
         private double delta;
 
+        /// <summary>
+        /// Soglia lunghezza
+        /// </summary>
+        private double length;
+
+        /// <summary>
+        /// Soglia larghezza
+        /// </summary>
+        private double width;
+
+        /// <summary>
+        /// Soglia altezza
+        /// </summary>
+        private double height;
+
         #endregion
 
         /// <summary>
@@ -65,12 +80,12 @@ namespace RM.src.RM250714
         }
 
         /// <summary>
-        /// Controlla se il robot si trova in un'area passando un punto come parametro
+        /// Controlla se il robot si trova in un'area [cubo] passando un punto come parametro
         /// </summary>
         /// <param name="endingPoint">Punto da cui parte l'area</param>
         /// <param name="currentPoint">Poszione corrente</param>
         /// <returns></returns>
-        public bool IsInObstruction(DescPose endingPoint, DescPose currentPoint)
+        public bool IsInCubeObstruction(DescPose endingPoint, DescPose currentPoint)
         {
             double dx = Math.Abs(endingPoint.tran.x - currentPoint.tran.x);
             double dy = Math.Abs(endingPoint.tran.y - currentPoint.tran.y);
@@ -82,6 +97,26 @@ namespace RM.src.RM250714
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Controlla se il robot si trova in un'area [parallelepipedo] passando un punto come parametro
+        /// </summary>
+        /// <param name="origin">Angolo di riferimento del pallet (es. punto in basso a sinistra)</param>
+        /// <param name="currentPoint">Posizione corrente del robot</param>
+        /// <param name="length">Lunghezza del pallet in mm</param>
+        /// <param name="width">Larghezza del pallet in mm</param>
+        /// <param name="height">Altezza totale in mm</param>
+        /// <returns>True se il punto è dentro il parallelepipedo, false altrimenti</returns>
+        public bool IsInParallelepipedObstruction(DescPose origin, DescPose currentPoint)
+        {
+            double x = currentPoint.tran.x;
+            double y = currentPoint.tran.y;
+            double z = currentPoint.tran.z;
+
+            return (x >= origin.tran.x && x <= origin.tran.x + length) &&
+                   (y >= origin.tran.y && y <= origin.tran.y + width) &&
+                   (z >= origin.tran.z && z <= origin.tran.z + height);
         }
 
         /// <summary>
