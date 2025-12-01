@@ -3116,10 +3116,6 @@ namespace RM.src.RM250714
 
                 log.Info("[Override speed] Comando cambio override speed completato");
             }
-            else
-            {
-                log.Warn("[Override speed] Valore cambio override speed non valido.");
-            }
         }
 
         /// <summary>
