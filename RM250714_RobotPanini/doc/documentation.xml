@@ -218,6 +218,11 @@
             <param name="name">name posizione</param>
             <param name="gunSettings">gunSettings</param>
         </member>
+        <member name="M:RM.src.RM250714.ApplicationPositions.#ctor">
+            <summary>
+            Costruttore vuoto
+            </summary>
+        </member>
         <member name="T:RM.src.RM250714.Classes.FR20.Applications.Application.GunSettings">
             <summary>
             Contiene la struttura delle impostazioni della pistola relative ad ogni posizione di un'applicazione Robot
@@ -1502,6 +1507,11 @@
             Enable robot from PLC
             </summary>
         </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.MovePause">
+             <summary>
+            
+             </summary>
+        </member>
         <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.Operating_Mode">
             <summary>
             0=Off, 1=auto, 2=man
@@ -1565,6 +1575,226 @@
         <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.JogRZ_neg">
             <summary>
             0...1(bool)
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.CMD_StartCicloAuto">
+            <summary>
+            A 1 per far girare il main
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.CMD_StopCicloAuto">
+            <summary>
+            A 1 per fermare il main
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.Alarm_Presence">
+            <summary>
+            0...1(bool)
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.CMD_GoHome">
+            <summary>
+            A 1 per avvia routine per tornare in home
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.Manual_Mode">
+            <summary>
+            A 1 quando il robot è in manuale
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.Automatic_Mode">
+            <summary>
+            A 1 quando il robot è in automatico
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.CMD_SelectedFormat">
+            <summary>
+            Formato selezionato
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.CMD_ResetAlarms">
+            <summary>
+            A 1 per resettare gli allarmi
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.CMD_Resume">
+            <summary>
+            A 1 per far riprendere il movimento al robot
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.spare_3_to_read">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.spare_4_to_read">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.CMD_Box_Rotate_180">
+            <summary>
+            Scatola ruotata/non ruotata
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.SET_LimitMaxProdotto">
+            <summary>
+            Limite massimo prodotto
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.spare_1_to_read">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.Enable_To_Pick">
+            <summary>
+            A 1 per consenso di pick
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.Enable_To_Place">
+            <summary>
+            A 1 per consenso di place
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.spare_5_to_read">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.spare_6_to_read">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.CMD_Pick">
+            <summary>
+            A 1 per eseguire pick
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.CMD_Place">
+            <summary>
+            A 1 per eseguire place
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.spare_7_to_read">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.Vacuostato_OK_1">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.Vacuostato_OK_2">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.Vacuostato_OK_3">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.CMD_AUTO_closeGripper_1">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.CMD_AUTO_closeGripper_2">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.CMD_AUTO_closeGripper_3">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.CMD_MAN_closeGripper_1">
+            <summary>
+            apertura manuale pinze
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.CMD_MAN_closeGripper_2">
+            <summary>
+            chiusura manuale pinze
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.CMD_MAN_closeGripper_3">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.CMD_RegisterPoint">
+            <summary>
+            Registra punto robot
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.spare_62">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.spare_63">
+            <summary>
+            spare
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.MobilePanel_CommError">
+            <summary>
+            Errore comunicazione pulsantiera
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.OFFSET_Pick_X">
+            <summary>
+            xOffset punto di pick
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.OFFSET_Pick_Y">
+            <summary>
+            yOffset punto di pick
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.OFFSET_Pick_Z">
+            <summary>
+            zOffset punto di pick
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.OFFSET_Place_X">
+            <summary>
+            xOffset punto di place
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.OFFSET_Place_Y">
+            <summary>
+            yOffset punto di place
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.OFFSET_Place_Z">
+            <summary>
+            zOffset punto di place
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.RET_Zone_Home_inPos">
+            <summary>
+            Zona di ingombro home (copia da altro registro)
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.RET_Zone_Pick_inPos">
+            <summary>
+            Zona di ingombro pick (copia da altro registro)
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.RET_Zone_Place_1_inPos">
+            <summary>
+            Zona di ingombro place (copia da altro registro)
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.RET_Zone_Place_2_inPos">
+            <summary>
+            Zona di ingombro place (copia da altro registro)
             </summary>
         </member>
         <member name="T:RM.src.RM250714.RobotApplication">
@@ -3292,14 +3522,16 @@
             Metodo per reset errori Robot
             </summary>
         </member>
-        <member name="M:RM.src.RM250714.RobotManager.GetInverseKin(fairino.DescPose,fairino.JointPos@,System.Int32,System.Int32)">
+        <member name="M:RM.src.RM250714.RobotManager.GetInverseKin(fairino.DescPose,fairino.JointPos@,System.String,System.Int32,System.Int32)">
             <summary>
-            Invia comando al robot per calcolare la cinematica inversa e ottenere la posizione dei giunti a partire dalle coordinate
+            Invia comando al robot per calcolare la cinematica inversa e ottenere la posizione dei giunti a partire dalle coordinate.
+            Lancia una eccezione se si verifica un errore.
             </summary>
             <param name="pose"></param>
             <param name="jPos"></param>
             <param name="type"></param>
             <param name="config"></param>
+            <param name="pointName"></param>
         </member>
         <member name="M:RM.src.RM250714.RobotManager.GetForwardKin(fairino.JointPos,fairino.DescPose@)">
             <summary>
@@ -3724,6 +3956,11 @@
         <member name="M:RM.src.RM250714.RobotManager.PickAndPlaceTegliaIperal(System.Threading.CancellationToken)">
             <summary>
             Esegue ciclo teglie iperal
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.MainCycleFast(System.Threading.CancellationToken)">
+            <summary>
+            Gestisce routine di pick e di place, parte solo se si ha sia il pick che il place. In position non controllati
             </summary>
         </member>
         <member name="M:RM.src.RM250714.RobotManager.HomeRoutine(System.Threading.CancellationToken)">
