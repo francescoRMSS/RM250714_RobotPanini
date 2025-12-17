@@ -926,24 +926,33 @@ namespace RM.src.RM250714
         }
 
         /// <summary>
-        /// Invia comando al robot per calcolare la cinematica inversa e ottenere la posizione dei giunti a partire dalle coordinate
+        /// Invia comando al robot per calcolare la cinematica inversa e ottenere la posizione dei giunti a partire dalle coordinate.
+        /// Lancia una eccezione se si verifica un errore.
         /// </summary>
         /// <param name="pose"></param>
         /// <param name="jPos"></param>
         /// <param name="type"></param>
         /// <param name="config"></param>
-        public static int GetInverseKin(DescPose pose, ref JointPos jPos, int type = 0, int config = -1)
+        /// <param name="pointName"></param>
+        public static int GetInverseKin(DescPose pose, ref JointPos jPos, string pointName, int type = 0, int config = -1)
         {
             int err = robot.GetInverseKin(type, pose, config, ref jPos);
 
             if (err != 0)
             {
                 log.Error("Errore durante calcolo cinematica inversa : " + err);
+                if (!string.IsNullOrEmpty(pointName))
+                {
+                    throw new Exception("Errore durante calcolo cinematica inversa per il punto " + pointName + " : Codice errore " + err);
+                }
+                else
+                {
+                    throw new Exception("Errore durante calcolo cinematica inversa per il punto con codice errore " + err);
+                }
             }
 
             return err;
         }
-
         /// <summary>
         /// Invia comando al robot per calcolare la cinematica inversa 
         /// </summary>
@@ -2930,6 +2939,588 @@ namespace RM.src.RM250714
                 }
             });
 
+        }
+
+        /// <summary>
+        /// Gestisce routine di pick e di place, parte solo se si ha sia il pick che il place. In position non controllati
+        /// </summary>
+        public static async Task MainCycleFast(CancellationToken token)
+        {
+            #region Variabili necessarie per funzionamento ciclo
+
+            // Reset condizione di stop ciclo
+            stopCycleRoutine = false;
+
+            // Reset richiesta di stop ciclo
+            stopCycleRequested = false;
+
+            // Reset step routine
+            step = 0;
+
+            stepPick = 0; // Step ciclo di pick
+            stopPickRoutine = false; // Segnale di stop della pick routine
+
+            stepPlace = 0; // Step ciclo di place
+            stopPlaceRoutine = false; // Segnale di stop della place routine
+
+            // Segnale di pick
+            int execPick;
+
+            // Segnale di place
+            int execPlace;
+
+            // Consensi di pick
+            int enableToPick;
+
+            // Consensi di place
+            int enableToPlace;
+
+            ApplicationPositions pick = new ApplicationPositions();
+            ApplicationPositions place = new ApplicationPositions();
+
+            #endregion
+
+            #region Altre variabili
+
+            int valve1_value = 0; // Valore comando valvola 1
+            int valve2_value = 0; // Valore comando valvola 2
+            int valve3_value = 0; // Valore comando valvola 3
+            int vac1_value = 0; // Valore vacuostato 1
+            int vac2_value = 0; // Valore vacuostato 2
+            int vac3_value = 0; // Valore vacuostato 3
+            bool anyValve = false; // A true se c'è almeno una valvola attiva
+
+            int selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
+
+            int selectedProduct;
+
+            int pointNumber = selectedFormat % 100; //Estrazione ultime 2 cifre
+            int indexInGroup = (pointNumber - 1) % 6;
+            bool isPuntoCritico = (indexInGroup >= 2 && indexInGroup <= 4); // se è il punto 3, 4 o 5 del piano corrente allora è un punto critico (solo per 3200)
+
+            int xOffsetPick;
+            int yOffsetPick;
+            int zOffsetPick;
+
+            int xOffsetPlace;
+            int yOffsetPlace;
+            int zOffsetPlace;
+
+            #endregion
+
+            #region Dichiarazione punti routine pick
+
+            // home
+            JointPos jHome = new JointPos();
+            var home = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
+            DescPose descPosHome = new DescPose();
+
+            // passaggio
+            JointPos jPassaggio = new JointPos();
+            var passaggio = ApplicationConfig.applicationsManager.GetPosition("pPassaggio", "RM");
+            DescPose descPosePassaggio = new DescPose();
+
+            // pick target
+            JointPos jointPosPick = new JointPos();
+            DescPose descPosPick = new DescPose();
+
+            // pick avvicinamento
+            JointPos jointPosApproachPick = new JointPos();
+            DescPose descPosApproachPick = new DescPose();
+
+            // pick allontanamento
+            JointPos jointPosRialzoPick = new JointPos();
+            DescPose descPoseRialzoPick = new DescPose();
+
+            #endregion
+
+            #region Dichiarazione dei punti place
+
+            // place target
+            JointPos jointPosPlace = new JointPos();
+            DescPose descPosPlace = new DescPose();
+
+            // place avvicinamento
+            JointPos jointPosApproachPlace = new JointPos();
+            DescPose descPosApproachPlace = new DescPose();
+
+            #endregion
+
+            #region Parametri movimento
+
+            DescPose offset = new DescPose(0, 0, 0, 0, 0, 0); // Nessun offset
+            DescPose offsetRotatedPassaggio = new DescPose(0, 0, 0, 0, 0, 90);
+            ExaxisPos epos = new ExaxisPos(0, 0, 0, 0); // Nessun asse esterno
+            byte offsetFlag = 0; // Flag per offset (0 = disabilitato)
+            byte offsetFlagRobot = 1; // Flag per offset in base al robot
+
+            int err1 = 0;
+            int err2 = 0;
+            int err3 = 0;
+            int errKin = 0;
+
+            #endregion
+
+            try
+            {
+                #region Calcolo punti 
+                // I punti di home, passaggio e pick vengono calcolati una sola volta all'inizio
+
+                selectedProduct = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat)) / 1000;
+                var pPick = ApplicationConfig.applicationsManager.GetPosition(selectedProduct.ToString(), "RM");
+
+                // Check su presenza del punto nel dizionario
+                if (pPick != null)
+                {
+                    // Check validità del punto
+                    if (pPick.x != 0 && pPick.y != 0 && pPick.z != 0 && pPick.rx != 0 && pPick.ry != 0 && pPick.rz != 0)
+                    {
+                        pick = pPick;
+                    }
+                    else
+                        throw new Exception("Punto di pick non presente nel dizionario");
+                }
+                else
+                    throw new Exception("Punto di pick non presente nel dizionario");
+
+                xOffsetPick = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_X));
+                yOffsetPick = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_Y));
+                zOffsetPick = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Pick_Z));
+
+                // home
+                jHome = new JointPos(0, 0, 0, 0, 0, 0);
+                descPosHome = new DescPose(home.x, home.y, home.z, pick.rx, pick.ry, pick.rz);
+                GetInverseKin(descPosHome, ref jHome, "Home");
+
+                // passaggio
+                jPassaggio = new JointPos(0, 0, 0, 0, 0, 0);
+                descPosePassaggio = new DescPose(passaggio.x, passaggio.y, passaggio.z, passaggio.rx, passaggio.ry, passaggio.rz);
+                GetInverseKin(descPosePassaggio, ref jPassaggio, "Passaggio");
+
+                // pick target
+                jointPosPick = new JointPos(0, 0, 0, 0, 0, 0);
+                descPosPick = new DescPose(pick.x + xOffsetPick, pick.y + yOffsetPick, pick.z + zOffsetPick, pick.rx, pick.ry, pick.rz);
+                GetInverseKin(descPosPick, ref jointPosPick, "Pick");
+
+                // pick avvicinamento
+                jointPosApproachPick = new JointPos(0, 0, 0, 0, 0, 0);
+                descPosApproachPick = new DescPose(pick.x + xOffsetPick, pick.y + yOffsetPick, pick.z + zOffsetPick + 400, pick.rx, pick.ry, pick.rz);
+                GetInverseKin(descPosApproachPick, ref jointPosApproachPick, "Avvicinamento pick");
+
+                // pick allontanamento
+                jointPosRialzoPick = new JointPos(0, 0, 0, 0, 0, 0);
+                descPoseRialzoPick = new DescPose(pick.x + xOffsetPick, pick.y + yOffsetPick, pick.z + zOffsetPick + 100, pick.rx, pick.ry, pick.rz);
+                GetInverseKin(descPoseRialzoPick, ref jointPosRialzoPick, "Allontanamento pick");
+
+                #endregion
+
+                if (!collisionManager.ChangeRobotCollision(currentCollisionLevel))
+                {
+                    throw new Exception("Il comando per aggiornare il ivello di collisioni ha generato un errore");
+                }
+
+                // Fino a quando la condizione di stop routine non è true e non sono presenti allarmi bloccanti
+                while (!stopCycleRoutine && !AlarmManager.blockingAlarm && !token.IsCancellationRequested)
+                {
+                    switch (step)
+                    {
+                        case 0:
+                            #region Check richiesta interruzione ciclo
+                            // In questo step scrivo al plc che il ciclo di main è stato avviato e passo subito allo step successivo
+
+                            // Aggiorno la variabile globale e statica che scrivo al PLC nel metodo SendUpdatesToPLC 
+                            // per informare il plc che il ciclo main è in esecuzione
+                            CycleRun_Main = 1;
+
+                            // Passaggio allo step 10
+                            step = 10;
+
+                            break;
+
+                        #endregion
+
+                        case 10:
+                            #region Check richiesta routine e consensi
+                            // Controllo di avere sia pick che place da fare
+
+                            // Get comando di place da plc
+                            execPlace = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Place));
+                            // Get consensi di place da plc
+                            enableToPlace = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Enable_To_Place));
+                            // Get comando di pick da plc
+                            execPick = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Pick));
+                            // Get consensi di pick da plc
+                            enableToPick = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Enable_To_Pick));
+
+                            if (execPick == 1) //&& execPlace == 1) // Check richiesta di pick e place
+                            {
+                                if (enableToPick == 1 && enableToPlace == 1) // Check consensi
+                                {
+                                    step = 20; // Passaggio allo step dedicato alla preparazione dei punti
+                                }
+                            }
+
+                            break;
+
+                        #endregion
+
+                        case 20:
+                            #region Get punto di pick
+                            // In questo step eseguo la get del punto di pick dal dizionario generato tramite database
+                            // e controllo prima se il punto è presente nel dizionario e dopo se le coordinate sono valide
+                            // verificando che tutte siano diverse da 0
+
+                            step = 21; // punti di pick già calcolati
+
+                            break;
+
+                        #endregion
+
+                        case 21:
+                            #region Preparazione punti di pick
+
+                            // punti di pick già calcolati
+
+                            step = 30;
+                            stepPick = 0;
+
+                            break;
+
+                        #endregion
+
+                        case 30:
+                            #region Get punto di place
+
+                            step = 31; // Punti di place da calcolare successivamente
+
+                            break;
+
+                        #endregion
+
+                        case 31:
+                            #region Preparazione punti di place
+
+                            step = 40;
+                            stepPlace = 0;
+
+                            break;
+
+                        #endregion
+
+                        case 40:
+                            #region Movimento a punto di Pick
+
+                            log.Info("[PICK] invio punto di pick : " + pick.name);
+
+                            CycleRun_Pick = 1;
+                            CycleRun_Place = 1;
+
+                            inPosition = false; // Reset inPosition
+
+                            // Invio punto di avvicinamento Pick
+                            float slowVel = vel * 0.9f;
+                            float slowAcc = acc * 0.75f;
+                            blendR = 0;
+                            err = MoveL(jointPosPick, descPosPick, tool, user, slowVel, slowAcc, ovl, blendR, 1, epos, 0, offsetFlag, offset);
+
+                            if (err == 99)
+                            {
+                                await Task.Delay(500);
+                            }
+                            else
+                            {
+                                endingPoint = descPosPick; // Assegnazione endingPoint
+
+                                step = 42; // Passaggio allo step successivo
+                                stepPick = 10;
+                            }
+
+                            break;
+
+                        #endregion
+
+                        case 42:
+                            #region Attesa inPosition punto di Pick e calcolo punti place
+                            // In questo step attendo che il robot arrivi nella posizione di pick
+
+                            if (inPosition && robotStatus == 1) // con robot fermo
+                            {
+                                valve1_value = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_MAN_closeGripper_1));
+                                valve2_value = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_MAN_closeGripper_2));
+                                valve3_value = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_MAN_closeGripper_3));
+
+                                if (valve1_value == 1 && valve2_value == 1 && valve3_value == 1) // tutte le valvole
+                                {
+
+                                    //await Task.Delay(500);
+                                    robot.SetDO(1, 1, 0, 0);
+                                    robot.SetDO(2, 1, 0, 0);
+                                    robot.SetDO(0, 1, 0, 0);
+                                    anyValve = true;
+                                }
+                                else
+                                {
+                                    if (valve1_value == 1)
+                                    {
+                                        robot.SetDO(0, 1, 0, 0);
+                                        anyValve = true;
+                                    }
+
+                                    if (valve2_value == 1)
+                                    {
+                                        robot.SetDO(1, 1, 0, 0);
+                                        anyValve = true;
+                                    }
+
+                                    if (valve3_value == 1)
+                                    {
+                                        robot.SetDO(2, 1, 0, 0);
+                                        anyValve = true;
+                                    }
+                                }
+
+                                if (anyValve)
+                                {
+                                    step = 43; // Passaggio allo step successivo
+                                    stepPick = 30;
+                                }
+
+                                // Calcolo punti di place
+                                selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
+                                var pPlace = ApplicationConfig.applicationsManager.GetPosition(selectedFormat.ToString(), "RM");
+
+                                if (pPlace != null)
+                                {
+                                    // Check validità del punto
+                                    if (pPlace.x != 0 && pPlace.y != 0 && pPlace.z != 0 && pPlace.rx != 0 && pPlace.ry != 0 && pPlace.rz != 0) // Se il punto è valido
+                                    {
+                                        place = pPlace;
+                                    }
+                                    else
+                                        throw new Exception("Punto di place non presente nel dizionario");
+                                }
+                                else
+                                    throw new Exception("Punto di place non presente nel dizionario");
+
+                                xOffsetPlace = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_X));
+                                yOffsetPlace = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_Y));
+                                zOffsetPlace = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.OFFSET_Place_Z));
+
+                                // place target
+                                jointPosPlace = new JointPos(0, 0, 0, 0, 0, 0);
+                                descPosPlace = new DescPose(place.x + xOffsetPlace, place.y + yOffsetPlace, place.z + zOffsetPlace, place.rx, place.ry, place.rz);
+                                GetInverseKin(descPosPlace, ref jointPosPlace, "Place");
+
+                                // place avvicinamento
+                                jointPosApproachPlace = new JointPos(0, 0, 0, 0, 0, 0);
+                                descPosApproachPlace = new DescPose(place.x + xOffsetPlace, place.y + yOffsetPlace, place.z + zOffsetPlace + 480, place.rx, place.ry, place.rz);
+                                GetInverseKin(descPosApproachPlace, ref jointPosApproachPlace, "Avvicinamento place");
+                            }
+
+                            break;
+
+                        #endregion
+
+                        case 43:
+                            #region Check presa ventosa
+
+                            anyValve = false; // Reset presenza valvola attiva
+
+                            // In questo step verifico che la ventosa si sia attivata
+                            if (valve1_value == 1 && valve2_value == 0 && valve3_value == 0) // Se aperta solo valve 1
+                            {
+                                vac1_value = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Vacuostato_OK_1));
+                                if (vac1_value == 1)
+                                {
+                                    step = 44;
+                                    stepPick = 40;
+                                }
+                                else
+                                    break;
+
+                            }
+                            else if (valve1_value == 0 && valve2_value == 1 && valve3_value == 0) // Se aperta solo valve 2
+                            {
+                                vac2_value = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Vacuostato_OK_2));
+
+                                if (vac2_value == 1)
+                                {
+                                    step = 44;
+                                    stepPick = 40;
+                                }
+                                else
+                                    break;
+                            }
+                            else if (valve1_value == 0 && valve2_value == 0 && valve3_value == 1) // Se aperta solo valve 3
+                            {
+                                vac3_value = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Vacuostato_OK_3));
+
+                                if (vac3_value == 1)
+                                {
+                                    step = 44;
+                                    stepPick = 40;
+                                }
+                                else
+                                    break;
+                            }
+                            else if (valve1_value == 1 && valve2_value == 1 && valve3_value == 1) // Se aperte tutte le valvole
+                            {
+                                vac1_value = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Vacuostato_OK_1));
+                                vac2_value = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Vacuostato_OK_2));
+                                vac3_value = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Vacuostato_OK_3));
+
+                                if (vac1_value == 1 && (vac2_value == 1 || vac3_value == 1))
+                                {
+                                    step = 44;
+                                    stepPick = 40;
+                                }
+                                else
+                                    break;
+                            }
+
+                            break;
+
+                        #endregion
+
+                        case 44:
+                            #region Movimento a punto di Approccio
+
+                            log.Info("[PICK] ritorno a home");
+
+                            inPosition = false; // Reset inPosition
+
+                            // Invio punto allontanamento pick
+                            slowVel = vel * 0.6f;
+                            slowAcc = acc * 0.4f;
+                            blendR = 200;
+                            err = MoveL(jointPosApproachPick, descPosApproachPick, tool, user, slowVel, slowAcc, ovl, blendR, 1, epos, 0, offsetFlag, offset);
+
+                            // Invio punto di passaggio
+                            blendT = 500;
+                            slowVel = vel * 1f;
+                            slowAcc = acc * 0.8f;
+                            if (selectedFormat > 3200 && selectedFormat < 3231 && isPuntoCritico) // punti 3, 4 e 5
+                            {
+                                err = MoveJ(jPassaggio, descPosePassaggio, tool, user, slowVel, slowAcc, ovl, epos, blendT, offsetFlagRobot, offsetRotatedPassaggio);
+                            }
+                            else
+                            {
+                                err = MoveJ(jPassaggio, descPosePassaggio, tool, user, slowVel, slowAcc, ovl, epos, blendT, offsetFlag, offset);
+                            }
+
+                            // Invio punto di avvicinamento place
+                            blendT = 500;
+                            slowVel = vel * 1f;
+                            slowAcc = acc * 0.5f;
+                            err1 = MoveJ(jointPosApproachPlace, descPosApproachPlace, tool, user, slowVel, slowAcc, ovl, epos, blendT, offsetFlag, offset);
+
+                            // Invio punto di place
+                            blendR = 100;
+                            slowVel = vel * 0.8f;
+                            slowAcc = acc * 0.8f;
+                            err2 = MoveL(jointPosPlace, descPosPlace, tool, user, slowVel, slowAcc, ovl, blendR, 1, epos, 0, offsetFlag, offset);
+
+                            endingPoint = descPosPlace;
+
+                            step = 62;
+                            break;
+
+                        #endregion
+
+                        case 62:
+                            #region Attesa inPosition punto di Place
+
+                            if (inPosition && robotStatus == 1) // con robot fermo
+                            {
+                                robot.SetDO(0, 0, 0, 0);
+                                robot.SetDO(1, 0, 0, 0);
+                                robot.SetDO(2, 0, 0, 0);
+
+                                step = 64;
+                                stepPlace = 30;
+                            }
+
+                            break;
+
+                        #endregion
+
+                        case 64:
+                            #region Movimento a punto di approccio
+
+                            log.Info("[PLACE] ritorno in home");
+
+                            inPosition = false; // Reset inPosition
+
+                            // Invio punto di allintamento place
+                            blendR = 100;
+                            err1 = MoveL(jointPosApproachPlace, descPosApproachPlace, tool, user, vel, acc, ovl, blendR, 1, epos, 0, offsetFlag, offset);
+
+                            // Invio punto di home
+                            blendT = 250;
+                            err1 = MoveJ(jPassaggio, descPosePassaggio, tool, user, vel, acc, ovl, epos, blendT, offsetFlag, offset);
+
+                            blendR = 0;
+                            slowVel = vel * 0.9f;
+                            slowAcc = acc * 0.75f;
+                            err2 = MoveL(jHome, descPosHome, tool, user, slowVel, slowAcc, ovl, blendR, 1, epos, 0, offsetFlag, offset);
+
+                            step = 68;
+
+                            break;
+
+                        #endregion
+
+                        case 68:
+                            #region Attesa reset comando di place
+
+                            //int placeSignal = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Place)); // Get segnale di place
+
+                            //if (placeSignal == 0) // Se è stato resettato, termino la routine
+                            {
+                                stepPlace = 0;
+                                //CycleRun_Place = 0;
+                                stopPlaceRoutine = true;
+                                step = 10;
+                            }
+
+                            break;
+
+                        #endregion
+
+                        case 1001:
+                            #region Errore punto di pick
+                            // In questa fase stampiamo semplicemente l'errore relativo al punto di pick sul log
+
+                            break;
+
+                        #endregion
+
+                        case 1002:
+                            #region Errore punto di place
+                            // In questa fase stampiamo semplicemente l'errore relativo al punto di place sul log
+
+                            break;
+
+                            #endregion
+                    }
+
+                    await Task.Delay(40); // Delay routine
+                }
+                token.ThrowIfCancellationRequested();
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                log.Error($"[TASK] : {ex}");
+                throw;
+            }
+            finally
+            {
+
+            }
         }
 
         /// <summary>

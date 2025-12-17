@@ -87,5 +87,22 @@ namespace RM.src.RM250714
             this.name = name;
             this.gunSettings = gunSettings;
         }
+
+        /// <summary>
+        /// Costruttore vuoto
+        /// </summary>
+        public ApplicationPositions()
+        {
+            guid = "";
+            id = 0;
+            x = 0;
+            y = 0;
+            z = 0;
+            rx = 0;
+            ry = 0;
+            rz = 0;
+            name = "";
+            gunSettings = null;
+        }
     }
 }

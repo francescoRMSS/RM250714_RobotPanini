@@ -589,69 +589,299 @@ namespace RM.src.RM250714.Classes.PLC
         public const string Enable = "PLC1_" + "com_robot_15";
 
         /// <summary>
+        ///
+        /// </summary>
+        public const string MovePause = "PLC1_" + "com_robot_16";
+
+        /// <summary>
         /// 0=Off, 1=auto, 2=man
         /// </summary>
-        public const string Operating_Mode = "PLC1_" + "com_robot_16";
+        public const string Operating_Mode = "PLC1_" + "com_robot_17";
 
         /// <summary>
         /// 0...1(bool)
         /// </summary>
-        public static string JogX_pos = "PLC1_" + "com_robot_17";
+        public static string JogX_pos = "PLC1_" + "com_robot_18";
 
         /// <summary>
         /// 0...1(bool)
         /// </summary>
-        public static string JogX_neg = "PLC1_" + "com_robot_18";
+        public static string JogX_neg = "PLC1_" + "com_robot_19";
 
         /// <summary>
         /// 0...1(bool)
         /// </summary>
-        public static string JogY_pos = "PLC1_" + "com_robot_29";
+        public static string JogY_pos = "PLC1_" + "com_robot_20";
 
         /// <summary>
         /// 0...1(bool)
         /// </summary>
-        public static string JogY_neg = "PLC1_" + "com_robot_20";
+        public static string JogY_neg = "PLC1_" + "com_robot_21";
 
         /// <summary>
         /// 0...1(bool)
         /// </summary>
-        public static string JogZ_pos = "PLC1_" + "com_robot_21";
+        public static string JogZ_pos = "PLC1_" + "com_robot_22";
 
         /// <summary>
         /// 0...1(bool)
         /// </summary>
-        public static string JogZ_neg = "PLC1_" + "com_robot_22";
+        public static string JogZ_neg = "PLC1_" + "com_robot_23";
 
         /// <summary>
         /// 0...1(bool)
         /// </summary>
-        public static string JogRX_pos = "PLC1_" + "com_robot_23";
+        public static string JogRX_pos = "PLC1_" + "com_robot_24";
 
         /// <summary>
         /// 0...1(bool)
         /// </summary>
-        public static string JogRX_neg = "PLC1_" + "com_robot_24";
+        public static string JogRX_neg = "PLC1_" + "com_robot_25";
 
         /// <summary>
         /// 0...1(bool)
         /// </summary>
-        public static string JogRY_pos = "PLC1_" + "com_robot_25";
+        public static string JogRY_pos = "PLC1_" + "com_robot_26";
 
         /// <summary>
         /// 0...1(bool)
         /// </summary>
-        public static string JogRY_neg = "PLC1_" + "com_robot_26";
+        public static string JogRY_neg = "PLC1_" + "com_robot_27";
 
         /// <summary>
         /// 0...1(bool)
         /// </summary>
-        public static string JogRZ_pos = "PLC1_" + "com_robot_27";
+        public static string JogRZ_pos = "PLC1_" + "com_robot_28";
 
         /// <summary>
         /// 0...1(bool)
         /// </summary>
-        public static string JogRZ_neg = "PLC1_" + "com_robot_28";
+        public static string JogRZ_neg = "PLC1_" + "com_robot_29";
+
+        #endregion
+
+
+        #region HMI
+
+        /// <summary>
+        /// A 1 per far girare il main
+        /// </summary>
+        public static string CMD_StartCicloAuto = "PLC1_" + "com_robot_50";
+
+        /// <summary>
+        /// A 1 per fermare il main
+        /// </summary>
+        public static string CMD_StopCicloAuto = "PLC1_" + "com_robot_51";
+
+        /// <summary>
+        /// 0...1(bool)
+        /// </summary>
+        public static string Alarm_Presence = "PLC1_" + "com_robot_52";
+
+        /// <summary>
+        /// A 1 per avvia routine per tornare in home
+        /// </summary>
+        public static string CMD_GoHome = "PLC1_" + "com_robot_53";
+
+        /// <summary>
+        /// A 1 quando il robot è in manuale
+        /// </summary>
+        public static string Manual_Mode = "PLC1_" + "com_robot_54";
+
+        /// <summary>
+        /// A 1 quando il robot è in automatico
+        /// </summary>
+        public static string Automatic_Mode = "PLC1_" + "com_robot_55";
+
+        /// <summary>
+        /// Formato selezionato
+        /// </summary>
+        public static string CMD_SelectedFormat = "PLC1_" + "com_robot_56";
+
+        /// <summary>
+        /// A 1 per resettare gli allarmi
+        /// </summary>
+        public static string CMD_ResetAlarms = "PLC1_" + "com_robot_57";
+
+        /// <summary>
+        /// A 1 per far riprendere il movimento al robot
+        /// </summary>
+        public static string CMD_Resume = "PLC1_" + "com_robot_58";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string spare_3_to_read = "PLC1_" + "com_robot_59";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string spare_4_to_read = "PLC1_" + "com_robot_60";
+
+        /// <summary>
+        /// Scatola ruotata/non ruotata
+        /// </summary>
+        public static string CMD_Box_Rotate_180 = "PLC1_" + "com_robot_61";
+
+        /// <summary>
+        /// Limite massimo prodotto
+        /// </summary>
+        public static string SET_LimitMaxProdotto = "PLC1_" + "com_robot_62";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string spare_1_to_read = "PLC1_" + "com_robot_63";
+
+        /// <summary>
+        /// A 1 per consenso di pick
+        /// </summary>
+        public static string Enable_To_Pick = "PLC1_" + "com_robot_64";
+
+        /// <summary>
+        /// A 1 per consenso di place
+        /// </summary>
+        public static string Enable_To_Place = "PLC1_" + "com_robot_65";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string spare_5_to_read = "PLC1_" + "com_robot_66";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string spare_6_to_read = "PLC1_" + "com_robot_67";
+
+        /// <summary>
+        /// A 1 per eseguire pick
+        /// </summary>
+        public static string CMD_Pick = "PLC1_" + "com_robot_68";
+
+        /// <summary>
+        /// A 1 per eseguire place
+        /// </summary>
+        public static string CMD_Place = "PLC1_" + "com_robot_69";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string spare_7_to_read = "PLC1_" + "com_robot_70";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string Vacuostato_OK_1 = "PLC1_" + "com_robot_71";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string Vacuostato_OK_2 = "PLC1_" + "com_robot_72";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string Vacuostato_OK_3 = "PLC1_" + "com_robot_73";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string CMD_AUTO_closeGripper_1 = "PLC1_" + "com_robot_74";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string CMD_AUTO_closeGripper_2 = "PLC1_" + "com_robot_75";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string CMD_AUTO_closeGripper_3 = "PLC1_" + "com_robot_76";
+
+        /// <summary>
+        /// apertura manuale pinze
+        /// </summary>
+        public static string CMD_MAN_closeGripper_1 = "PLC1_" + "com_robot_77";
+
+        /// <summary>
+        /// chiusura manuale pinze
+        /// </summary>
+        public static string CMD_MAN_closeGripper_2 = "PLC1_" + "com_robot_78";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string CMD_MAN_closeGripper_3 = "PLC1_" + "com_robot_79";
+
+        /// <summary>
+        /// Registra punto robot
+        /// </summary>
+        public static string CMD_RegisterPoint = "PLC1_" + "com_robot_80";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string spare_62 = "PLC1_" + "com_robot_81";
+
+        /// <summary>
+        /// spare
+        /// </summary>
+        public static string spare_63 = "PLC1_" + "com_robot_82";
+
+        /// <summary>
+        /// Errore comunicazione pulsantiera
+        /// </summary>
+        public static string MobilePanel_CommError = "PLC1_" + "com_robot_83";
+
+        /// <summary>
+        /// xOffset punto di pick
+        /// </summary>
+        public static string OFFSET_Pick_X = "PLC1_" + "com_robot_94";
+
+        /// <summary>
+        /// yOffset punto di pick
+        /// </summary>
+        public static string OFFSET_Pick_Y = "PLC1_" + "com_robot_95";
+
+        /// <summary>
+        /// zOffset punto di pick
+        /// </summary>
+        public static string OFFSET_Pick_Z = "PLC1_" + "com_robot_96";
+
+        /// <summary>
+        /// xOffset punto di place
+        /// </summary>
+        public static string OFFSET_Place_X = "PLC1_" + "com_robot_97";
+
+        /// <summary>
+        /// yOffset punto di place
+        /// </summary>
+        public static string OFFSET_Place_Y = "PLC1_" + "com_robot_98";
+
+        /// <summary>
+        /// zOffset punto di place
+        /// </summary>
+        public static string OFFSET_Place_Z = "PLC1_" + "com_robot_99";
+
+        /// <summary>
+        /// Zona di ingombro home (copia da altro registro)
+        /// </summary>
+        public static string RET_Zone_Home_inPos = "PLC1_" + "com_robot_103";
+
+        /// <summary>
+        /// Zona di ingombro pick (copia da altro registro)
+        /// </summary>
+        public static string RET_Zone_Pick_inPos = "PLC1_" + "com_robot_104";
+
+        /// <summary>
+        /// Zona di ingombro place (copia da altro registro)
+        /// </summary>
+        public static string RET_Zone_Place_1_inPos = "PLC1_" + "com_robot_105";
+
+        /// <summary>
+        /// Zona di ingombro place (copia da altro registro)
+        /// </summary>
+        public static string RET_Zone_Place_2_inPos = "PLC1_" + "com_robot_106";
 
         #endregion
 
