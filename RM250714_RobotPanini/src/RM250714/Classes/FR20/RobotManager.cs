@@ -2515,7 +2515,7 @@ namespace RM.src.RM250714
 
                             if (inPosition) // Se il Robot è arrivato in posizione di Pick 1
                             {
-                                // Chiudo la pinza
+                                // Abilitazione pick
                                 robot.SetDO(0, 1, 0, 0);
 
                                 step = 40; // Passaggio a step 40
@@ -2532,7 +2532,8 @@ namespace RM.src.RM250714
 
                             robot.GetDI(0, 1, ref ris);
 
-                            if (ris == 0)
+                            // Se pick done
+                            if (ris == 1)
                             {
 
                                 await Task.Delay(100); // Ritardo per evitare che il robot riparta senza aver finito di chiudere la pinza
@@ -2652,8 +2653,8 @@ namespace RM.src.RM250714
 
                             if (inPosition) // Se il Robot è arrivato in posizione di Place teglia 2
                             {
-                                // Apro la pinza
-                                robot.SetDO(0, 0, 0, 0);
+                                // Abilitazione place
+                                robot.SetDO(1, 1, 0, 0);
 
                                 step = 100;
                             }
@@ -2667,8 +2668,9 @@ namespace RM.src.RM250714
                         case 100:
                             #region Check apertura pinza
 
-                            robot.GetDI(0, 1, ref ris);
+                            robot.GetDI(1, 1, ref ris);
 
+                            // se place done
                             if (ris == 1)
                             {
 
@@ -2723,7 +2725,7 @@ namespace RM.src.RM250714
 
                             if (inPosition) // Se il Robot è arrivato in posizione di Pick teglia 2
                             {
-                                // Chiudo la pinza
+                                // Abilitazione pick
                                 robot.SetDO(0, 1, 0, 0);
 
                                 step = 130;
@@ -2740,7 +2742,8 @@ namespace RM.src.RM250714
 
                             robot.GetDI(0, 1, ref ris);
 
-                            if (ris == 0)
+                            // Se pick done
+                            if (ris == 1)
                             {
 
                                 await Task.Delay(100); // Ritardo per evitare che il robot riparta senza aver finito di chiudere la pinza
@@ -2862,8 +2865,8 @@ namespace RM.src.RM250714
 
                             if (inPosition) // Se il Robot è arrivato in posizione di Pick 1
                             {
-                                // Chiudo la pinza
-                                robot.SetDO(0, 0, 0, 0);
+                                // Abilitazione place
+                                robot.SetDO(1, 1, 0, 0);
 
                                 step = 190;
                             }
@@ -2877,8 +2880,9 @@ namespace RM.src.RM250714
                         case 190:
                             #region Check apertura pinza
 
-                            robot.GetDI(0, 1, ref ris);
+                            robot.GetDI(1, 1, ref ris);
 
+                            // Se place done
                             if (ris == 1)
                             {
 
@@ -2954,7 +2958,7 @@ namespace RM.src.RM250714
             stopHomeRoutine = false; // Reset segnale di stop ciclo home
             stepHomeRoutine = 0; // Reset degli step della HomeRoutine
 
-            robot.RobotEnable(1);
+            //robot.RobotEnable(1);
             await Task.Delay(1000);
 
             try
@@ -3061,7 +3065,7 @@ namespace RM.src.RM250714
                             stopHomeRoutine = true;
 
                             await Task.Delay(1000);
-                            robot.RobotEnable(0);
+                           // robot.RobotEnable(0);
                             
 
                             break;

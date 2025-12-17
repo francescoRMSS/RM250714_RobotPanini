@@ -921,5 +921,10 @@ namespace RM.src.RM250714
         {
             RobotManager.robot.SetDO(0, 0, 0, 0);
         }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            RobotManager.taskManager.AddAndStartTask(RobotManager.TaskHomeRoutine, RobotManager.HomeRoutine, TaskType.Default, false);
+        }
     } 
 }

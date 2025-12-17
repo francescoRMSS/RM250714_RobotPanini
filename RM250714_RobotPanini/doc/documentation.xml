@@ -2209,6 +2209,21 @@
             Soglia da utilizzare
             </summary>
         </member>
+        <member name="F:RM.src.RM250714.PositionChecker.length">
+            <summary>
+            Soglia lunghezza
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.PositionChecker.width">
+            <summary>
+            Soglia larghezza
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.PositionChecker.height">
+            <summary>
+            Soglia altezza
+            </summary>
+        </member>
         <member name="M:RM.src.RM250714.PositionChecker.#ctor(System.Double)">
             <summary>
             Costruttore con soglia da utilizzare
@@ -2231,13 +2246,24 @@
             <param name="currentPoint">Posizione attuale del robot</param>
             <returns></returns>
         </member>
-        <member name="M:RM.src.RM250714.PositionChecker.IsInObstruction(fairino.DescPose,fairino.DescPose)">
+        <member name="M:RM.src.RM250714.PositionChecker.IsInCubeObstruction(fairino.DescPose,fairino.DescPose)">
             <summary>
-            Controlla se il robot si trova in un'area passando un punto come parametro
+            Controlla se il robot si trova in un'area [cubo] passando un punto come parametro
             </summary>
             <param name="endingPoint">Punto da cui parte l'area</param>
             <param name="currentPoint">Poszione corrente</param>
             <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.PositionChecker.IsInParallelepipedObstruction(fairino.DescPose,fairino.DescPose)">
+            <summary>
+            Controlla se il robot si trova in un'area [parallelepipedo] passando un punto come parametro
+            </summary>
+            <param name="origin">Angolo di riferimento del pallet (es. punto in basso a sinistra)</param>
+            <param name="currentPoint">Posizione corrente del robot</param>
+            <param name="length">Lunghezza del pallet in mm</param>
+            <param name="width">Larghezza del pallet in mm</param>
+            <param name="height">Altezza totale in mm</param>
+            <returns>True se il punto è dentro il parallelepipedo, false altrimenti</returns>
         </member>
         <member name="M:RM.src.RM250714.PositionChecker.CalculateDistance(fairino.DescPose,fairino.DescPose)">
             <summary>
