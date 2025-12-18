@@ -375,7 +375,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// Speed utilizzata in home routine
         /// </summary>
-        private static readonly int homeRoutineSpeed = 2;
+        private static readonly int homeRoutineSpeed = 5;
         /// <summary>
         /// Velocity utilizzata in home routine
         /// </summary>
@@ -2984,9 +2984,10 @@ namespace RM.src.RM250714
 
             #region Offset spostamenti
 
-            int offsetAllontamento = 600;
+            int offsetAllontamento = 700;
             int offsetAvvicinamento = 400;
-            int offsetPrePlace = 850;
+            int offsetPrePlace = 600;
+            int offsetPreBeor = 600;
             int offsetAllontamentoPostPlace = 300;
             int zOffsetPrePickTeglia = 40;
             int zOffsetPostPickTeglia = 40;
@@ -3072,6 +3073,9 @@ namespace RM.src.RM250714
             JointPos jointPosAllontanamentoPlace = new JointPos();
             DescPose descPosAllontanamentoPlace = new DescPose();
 
+            JointPos jointPosPostPlace = new JointPos();
+            DescPose descPosPostPlace = new DescPose();
+
             #endregion
 
             #region Beor
@@ -3126,7 +3130,7 @@ namespace RM.src.RM250714
 
             // Creazione oggetto descPose
             DescPose descPosApproachBeor = new DescPose(
-                beor.x - offsetPrePlace,
+                beor.x - offsetPreBeor,
                 beor.y,
                 beor.z,
                 beor.rx,
@@ -3336,7 +3340,7 @@ namespace RM.src.RM250714
                                     // Creazione oggetto descPose
                                     descPosAllontanamentoPick = new DescPose(
                                         pick.x,
-                                        pick.y - offsetAllontamento,
+                                        home.y,
                                         pick.z + zOffsetAllontanamentoPostPickTeglia1,
                                         pick.rx,
                                         pick.ry,
@@ -3412,6 +3416,26 @@ namespace RM.src.RM250714
 
                                     // Calcolo del jointPos
                                     GetInverseKin(descPosRotationPrePlace, ref jointPosRotationPrePlace, "Rotazione pre place");
+
+                                    #endregion
+
+                                    #region Punto post place
+
+                                    // Oggetto jointPos
+                                    jointPosPostPlace = new JointPos(0, 0, 0, 0, 0, 0);
+
+                                    // Creazione oggetto descPose
+                                    descPosPostPlace = new DescPose(
+                                       place.x,
+                                       place.y,
+                                       place.z - 10,
+                                       place.rx,
+                                       place.ry,
+                                       place.rz
+                                       );
+
+                                    // Calcolo del jointPos
+                                    GetInverseKin(descPosPostPlace, ref jointPosPostPlace, "Post place");
 
                                     #endregion
 
@@ -3732,8 +3756,8 @@ namespace RM.src.RM250714
                             if (inPosition && robotStatus == 1) // con robot fermo
                             {
                                 // Abilitazione pick
-                                robot.SetDO(0, 1, 0, 0);
-
+                                // robot.SetDO(0, 1, 0, 0);
+                                await Task.Delay(500);
                                 step = 43; // Passaggio a step 40
                             }
 
@@ -3761,6 +3785,8 @@ namespace RM.src.RM250714
                         case 44:
                             #region Movimento di uscita dal carrello dopo pick e movimento verso beor
 
+                            inPosition = false;
+
                             #region Movimento post Pick
 
                             blendR = 50;
@@ -3772,11 +3798,13 @@ namespace RM.src.RM250714
 
                             #region Movimento post pick con offset
 
+                            /*
                             offset = new DescPose(0, 0, 0, 3, 0, 0); // Creazione offset
                             // Movimento a punto di avvicinamento place teglia 1
                             err = robot.MoveJ(jointPosPostPick, descPosPostPick,
                                 tool, user, vel, acc, ovl, epos, blendT, 1, offset);
                             offset = new DescPose(0, 0, 0, 0, 0, 0); // Reset offset
+                            */
 
                             #endregion
 
@@ -3793,8 +3821,8 @@ namespace RM.src.RM250714
 
                             blendR = 50;
                             // Ritorno in posizione di home
-                            err = robot.MoveL(jHome, descPosHome,
-                                tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+                          //  err = robot.MoveL(jHome, descPosHome,
+                           //     tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
                             #endregion
 
@@ -3829,6 +3857,7 @@ namespace RM.src.RM250714
 
                             if (inPosition)
                             {
+                                await Task.Delay(2000);
                                 step = 65;
                             }
 
@@ -3858,13 +3887,13 @@ namespace RM.src.RM250714
                             #endregion
 
                             #region Movimento a punto di avvicinamento place
-
-                            offset = new DescPose(0, 0, 0, 3, 0, 0);
+                          
+                           // offset = new DescPose(0, 0, 0, 3, 0, 0);
                             // Movimento a punto di avvicinamento place teglia 2
                             err = robot.MoveJ(jointPosApproachPlace, descPosApproachPlace,
                                 tool, user, vel, acc, ovl, epos, blendT, 1, offset);
-                            offset = new DescPose(0, 0, 0, 0, 0, 0);
-
+                           // offset = new DescPose(0, 0, 0, 0, 0, 0);
+                           
                             #endregion
 
                             #region Movimento a place
@@ -3889,7 +3918,9 @@ namespace RM.src.RM250714
                             if (inPosition & robotStatus == 1) // Se il Robot è arrivato in posizione di Place ed è fermo
                             {
                                 // Abilitazione place
-                                robot.SetDO(1, 1, 0, 0);
+                                //robot.SetDO(1, 1, 0, 0);
+
+                                await Task.Delay(500);
 
                                 #region Calcolo nuovo punto di pick e place
 
@@ -3898,7 +3929,8 @@ namespace RM.src.RM250714
                                 #region Punto di Pick
 
                                 // Get punto di pick da PLC
-                                selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
+                                // selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
+                                selectedFormat = 1001;
                                 var pPick = ApplicationConfig.applicationsManager.GetPosition(selectedFormat.ToString(), "RM");
 
                                 if (pPick != null)
@@ -3976,7 +4008,7 @@ namespace RM.src.RM250714
                                 // Creazione oggetto descPose
                                 descPosAllontanamentoPick = new DescPose(
                                     pick.x,
-                                    pick.y - offsetAllontamento,
+                                    home.y,
                                     pick.z + zOffsetAllontanamentoPostPickTeglia1,
                                     pick.rx,
                                     pick.ry,
@@ -4055,6 +4087,26 @@ namespace RM.src.RM250714
 
                                 #endregion
 
+                                #region Punto post place
+
+                                // Oggetto jointPos
+                                jointPosPostPlace = new JointPos(0, 0, 0, 0, 0, 0);
+
+                                // Creazione oggetto descPose
+                                descPosPostPlace = new DescPose(
+                                   place.x,
+                                   place.y,
+                                   place.z - 10,
+                                   place.rx,
+                                   place.ry,
+                                   place.rz
+                                   );
+
+                                // Calcolo del jointPos
+                                GetInverseKin(descPosPostPlace, ref jointPosPostPlace, "Post place");
+
+                                #endregion
+
                                 #region Punto allontanamento place
 
                                 // Oggetto jointPos
@@ -4092,7 +4144,7 @@ namespace RM.src.RM250714
                             robot.GetDI(1, 1, ref ris);
 
                             // se place done
-                            if (ris == 1)
+                           // if (ris == 1)
                             {
                                 await Task.Delay(100); // Ritardo per evitare che il robot riparta senza aver finito di chiudere la pinza
                                 step = 110;
@@ -4108,12 +4160,10 @@ namespace RM.src.RM250714
                             #region Movimento post place
 
                             blendR = 50;
-
-                            offset = new DescPose(0, 0, 0, -3, 0, 0);
-                            // Movimento a punto di post place teglia 2
-                            err = robot.MoveJ(jointPosPlace, descPosPlace,
-                                tool, user, vel, acc, ovl, epos, blendT, 1, offset);
-                            offset = new DescPose(0, 0, 0, 0, 0, 0); // Nessun offset
+                           
+                            // Movimento a punto di allontanamento place teglia 2
+                            err = robot.MoveL(jointPosPostPlace, descPosPostPlace,
+                                tool, user, vel, acc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
                             #endregion
 

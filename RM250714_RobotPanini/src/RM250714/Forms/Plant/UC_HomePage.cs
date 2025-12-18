@@ -882,6 +882,7 @@ namespace RM.src.RM250714
         {
             // Alzo richiesta di stop ciclo
             RobotManager.stopCycleRequested = true;
+
         }
 
         /// <summary>
