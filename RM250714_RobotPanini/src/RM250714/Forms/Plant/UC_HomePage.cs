@@ -924,6 +924,11 @@ namespace RM.src.RM250714
 
         private void button4_Click(object sender, EventArgs e)
         {
+            if (CustomMessageBox.Show(MessageBoxTypeEnum.WARNING, "Posizionare il Robot in Home position?") != DialogResult.OK)
+            {
+                return;
+            }
+
             RobotManager.taskManager.AddAndStartTask(RobotManager.TaskHomeRoutine, RobotManager.HomeRoutine, TaskType.Default, false);
         }
     } 

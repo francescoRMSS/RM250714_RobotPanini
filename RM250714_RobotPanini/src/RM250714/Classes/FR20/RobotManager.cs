@@ -4151,7 +4151,6 @@ namespace RM.src.RM250714
             var safeZone = ApplicationConfig.applicationsManager.GetPosition("pSafeZone", "RM");
             DescPose pSafeZone = new DescPose(safeZone.x, safeZone.y, safeZone.z, safeZone.rx, safeZone.ry, safeZone.rz);
 
-            int offsetDangerousPose = 300;
             bool robotDangerousPose = false;
 
             if (TCPCurrentPosition.tran.y >= pSafeZone.tran.y)
@@ -4512,8 +4511,6 @@ namespace RM.src.RM250714
         public static void SetHomeRoutineSpeed()
         {
             robot.SetSpeed(homeRoutineSpeed);
-            vel = homeRoutineVel;
-            acc = homeRoutineAcc;
         }
 
         /// <summary>
@@ -4522,8 +4519,6 @@ namespace RM.src.RM250714
         public static void ResetHomeRoutineSpeed()
         {
             robot.SetSpeed(robotProperties.Speed);
-            vel = robotProperties.Velocity;
-            acc = robotProperties.Acceleration;
         }
 
         /// <summary>
@@ -4692,7 +4687,7 @@ namespace RM.src.RM250714
             var restPose = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
             DescPose pHome = new DescPose(restPose.x, restPose.y, restPose.z, restPose.rx, restPose.ry, restPose.rz);
 
-            int result = robot.MoveCart(pHome, tool, user, vel, acc, ovl, blendT, config);
+            int result = robot.MoveCart(pHome, tool, user, homeRoutineVel, homeRoutineAcc, ovl, blendT, config);
 
             GetRobotMovementCode(result);
 
@@ -4719,7 +4714,7 @@ namespace RM.src.RM250714
             robot.GetInverseKin(0, target, -1, ref jointTarget);
 
             int result = robot.MoveL(jointTarget, target,
-                tool, user, vel, acc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+                tool, user, homeRoutineVel, homeRoutineAcc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
             GetRobotMovementCode(result);
 
