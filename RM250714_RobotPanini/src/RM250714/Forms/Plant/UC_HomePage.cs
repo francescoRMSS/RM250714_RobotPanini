@@ -828,11 +828,11 @@ namespace RM.src.RM250714
                 return;
             }
 
-            if (ris == 0) // Se la pinza è chiusa
+           /* if (ris == 0) // Se la pinza è chiusa
             {
                 CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Pinza chiusa. Impossibile avviare il ciclo.");
                 return;
-            }
+            }*/
 
             // Se l'avvio dell'applicazione parte dal primo punto
             if (RobotManager.currentIndex < 0)

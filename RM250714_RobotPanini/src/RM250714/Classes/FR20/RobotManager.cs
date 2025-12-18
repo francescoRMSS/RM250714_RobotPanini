@@ -1902,7 +1902,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// Esegue ciclo teglie iperal
         /// </summary>
-        public async static Task PickAndPlaceTegliaIperal(CancellationToken token)
+        public async static Task _PickAndPlaceTegliaIperal(CancellationToken token)
         {
             #region Parametri movimento
 
@@ -2944,7 +2944,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// Gestisce routine di pick e di place, parte solo se si ha sia il pick che il place. In position non controllati
         /// </summary>
-        public static async Task MainCycleFast(CancellationToken token)
+        public static async Task PickAndPlaceTegliaIperal(CancellationToken token)
         {
             #region Variabili necessarie per funzionamento ciclo
 
@@ -2984,7 +2984,7 @@ namespace RM.src.RM250714
 
             #region Offset spostamenti
 
-            int offsetAllontamento = 850;
+            int offsetAllontamento = 600;
             int offsetAvvicinamento = 400;
             int offsetPrePlace = 850;
             int offsetAllontamentoPostPlace = 300;
@@ -3060,11 +3060,6 @@ namespace RM.src.RM250714
 
             #endregion
 
-            // beor
-            JointPos jointPosBeor = new JointPos();
-            var beor = ApplicationConfig.applicationsManager.GetPosition("pBeor", "RM");
-            DescPose descPosBeor = new DescPose();
-           
             #region Dichiarazione dei punti place
 
             // place target
@@ -3079,15 +3074,15 @@ namespace RM.src.RM250714
 
             #endregion
 
-            #region Punto Beor
+            #region Beor
 
             #region Punto Beor
 
-            // Oggetto jointPos
-            jointPosBeor = new JointPos(0, 0, 0, 0, 0, 0);
-
+            // beor
+            JointPos jointPosBeor = new JointPos();
+            var beor = ApplicationConfig.applicationsManager.GetPosition("pBeor", "RM");
             // Creazione oggetto descPose
-            descPosBeor = new DescPose(
+            DescPose descPosBeor = new DescPose(
                 beor.x,
                 beor.y,
                 beor.z,
@@ -3095,6 +3090,11 @@ namespace RM.src.RM250714
                 beor.ry,
                 beor.rz
                 );
+
+            // Oggetto jointPos
+            jointPosBeor = new JointPos(0, 0, 0, 0, 0, 0);
+
+
 
             GetInverseKin(descPosBeor, ref jointPosBeor, "Beor");
 
@@ -3208,9 +3208,6 @@ namespace RM.src.RM250714
                 descPosHome = new DescPose(home.x, home.y, home.z, home.rx, home.ry, home.rz);
                 GetInverseKin(descPosHome, ref jHome, "Home");
 
-               
-
-                #endregion
 
                 if (!collisionManager.ChangeRobotCollision(currentCollisionLevel))
                 {
@@ -3242,6 +3239,15 @@ namespace RM.src.RM250714
                             // Get consensi di pick da plc
                             enableToPick = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Enable_To_Pick));
 
+                            #region Simulazione
+
+                            execPick = 1;
+                            execPlace = 1;
+                            enableToPick = 1;
+                            enableToPlace = 1;
+
+                            #endregion
+
                             if (execPick == 1) // Check richiesta di pick
                             {
                                 if (enableToPick == 1 && enableToPlace == 1) // Check consensi
@@ -3251,7 +3257,8 @@ namespace RM.src.RM250714
                                     #region Punto di Pick
 
                                     // Get punto di pick da PLC
-                                    selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
+                                    // selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
+                                    selectedFormat = 1001;
                                     var pPick = ApplicationConfig.applicationsManager.GetPosition(selectedFormat.ToString(), "RM");
 
                                     if (pPick != null)
@@ -3451,6 +3458,15 @@ namespace RM.src.RM250714
                             execPick = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Pick));
                             // Get consensi di pick da plc
                             enableToPick = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Enable_To_Pick));
+
+                            #region Simulazione
+
+                            execPick = 1;
+                            execPlace = 1;
+                            enableToPick = 1;
+                            enableToPlace = 1;
+
+                            #endregion
 
                             if (execPick == 1) // Check richiesta di pick
                             {
@@ -3731,11 +3747,11 @@ namespace RM.src.RM250714
                             robot.GetDI(0, 1, ref ris);
 
                             // Se pick done
-                            if (ris == 1)
+                           // if (ris == 1)
                             {
 
                                 await Task.Delay(100); // Ritardo per evitare che il robot riparta senza aver finito di chiudere la pinza
-                                step = 50;
+                                step = 44;
                             }
 
                             break;
@@ -4147,15 +4163,26 @@ namespace RM.src.RM250714
             var restPose = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
             DescPose pHome = new DescPose(restPose.x, restPose.y, restPose.z, restPose.rx, restPose.ry, restPose.rz);
 
-            // Get del punto di home
+            // Get del punto di safeZone
             var safeZone = ApplicationConfig.applicationsManager.GetPosition("pSafeZone", "RM");
             DescPose pSafeZone = new DescPose(safeZone.x, safeZone.y, safeZone.z, safeZone.rx, safeZone.ry, safeZone.rz);
 
-            bool robotDangerousPose = false;
+            // Get del punto di beor
+            var beor = ApplicationConfig.applicationsManager.GetPosition("pBeor", "RM");
+            DescPose pBeor = new DescPose(beor.x, beor.y, beor.z, beor.rx, beor.ry, beor.rz);
+
+            bool robotDangerousPoseCarrello = false;
+            bool robotDangerousPoseBeor = false;
+            int offsetBeor = 300;
 
             if (TCPCurrentPosition.tran.y >= pSafeZone.tran.y)
             {
-                robotDangerousPose = true;
+                robotDangerousPoseCarrello = true;
+            }
+
+            if (TCPCurrentPosition.tran.x >= (pBeor.tran.x - offsetBeor))
+            {
+                robotDangerousPoseBeor = true;
             }
 
             stopHomeRoutine = false; // Reset segnale di stop ciclo home
@@ -4187,7 +4214,7 @@ namespace RM.src.RM250714
                             #region Movimento a punto di approach home
                             try
                             {
-                                if (robotDangerousPose)
+                                if (robotDangerousPoseCarrello)
                                 {
                                     DescPose pApproach = new DescPose(
                                         TCPCurrentPosition.tran.x,
@@ -4195,6 +4222,21 @@ namespace RM.src.RM250714
                                         TCPCurrentPosition.tran.z,
                                         TCPCurrentPosition.rpy.rx, 
                                         TCPCurrentPosition.rpy.ry, 
+                                        TCPCurrentPosition.rpy.rz);
+
+                                    GoToApproachHomePosition(pApproach);
+                                    endingPoint = pApproach;
+                                    stepHomeRoutine = 6;
+                                }
+                                else
+                                if (robotDangerousPoseBeor)
+                                {
+                                    DescPose pApproach = new DescPose(
+                                        pBeor.tran.x - offsetBeor,
+                                        TCPCurrentPosition.tran.y,
+                                        TCPCurrentPosition.tran.z,
+                                        TCPCurrentPosition.rpy.rx,
+                                        TCPCurrentPosition.rpy.ry,
                                         TCPCurrentPosition.rpy.rz);
 
                                     GoToApproachHomePosition(pApproach);
@@ -4295,7 +4337,7 @@ namespace RM.src.RM250714
             }
         }
 
-        #endregion
+    
 
         #region Comandi interfaccia
 
@@ -5768,6 +5810,7 @@ namespace RM.src.RM250714
 
         #endregion
 
-
+        #endregion
+        #endregion
     }
 }

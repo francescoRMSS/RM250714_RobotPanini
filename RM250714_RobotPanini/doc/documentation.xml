@@ -3953,12 +3953,12 @@
             <param name="token"></param>
             <returns></returns>
         </member>
-        <member name="M:RM.src.RM250714.RobotManager.PickAndPlaceTegliaIperal(System.Threading.CancellationToken)">
+        <member name="M:RM.src.RM250714.RobotManager._PickAndPlaceTegliaIperal(System.Threading.CancellationToken)">
             <summary>
             Esegue ciclo teglie iperal
             </summary>
         </member>
-        <member name="M:RM.src.RM250714.RobotManager.MainCycleFast(System.Threading.CancellationToken)">
+        <member name="M:RM.src.RM250714.RobotManager.PickAndPlaceTegliaIperal(System.Threading.CancellationToken)">
             <summary>
             Gestisce routine di pick e di place, parte solo se si ha sia il pick che il place. In position non controllati
             </summary>
