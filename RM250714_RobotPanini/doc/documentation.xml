@@ -1042,6 +1042,11 @@
             A 1 quando il Robot si trova in zona di place
             </summary>
         </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.ACT_Zone_Beor_inPos">
+            <summary>
+            A 1 quando il Robot si trova in zona beor
+            </summary>
+        </member>
         <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.CycleRun_Main">
             <summary>
             A 1 quando è avviato il ciclo main
@@ -1792,9 +1797,9 @@
             Zona di ingombro place (copia da altro registro)
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.RET_Zone_Place_2_inPos">
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.RET_Zone_Beor_inPos">
             <summary>
-            Zona di ingombro place (copia da altro registro)
+            Zona di ingombro beor
             </summary>
         </member>
         <member name="T:RM.src.RM250714.RobotApplication">
@@ -2838,6 +2843,16 @@
             Tempo massimo in ms per controllare che il proxy stia comunicando
             </summary>
         </member>
+        <member name="F:RM.src.RM250714.RobotManager.currentConnectionErrorTries">
+            <summary>
+            Numero corrente di errori di connessione -2
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.connectionErrorMaxTries">
+            <summary>
+            Numero massimo accettato di errori di connessione -2
+            </summary>
+        </member>
         <member name="F:RM.src.RM250714.RobotManager.formAlarmPage">
             <summary>
             Riferimento alla pagina degli allarmi.
@@ -2968,16 +2983,6 @@
             Stato precedente isNotEnable.
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.prevRobotReadyToStart">
-            <summary>
-            Stato precedente di robotReadyToStart.
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.prevRobotHasProgramInMemory">
-            <summary>
-            Stato precedente di robotHasProgramInMemory.
-            </summary>
-        </member>
         <member name="F:RM.src.RM250714.RobotManager.prevIsAuto">
             <summary>
             Rappresenta il valore della modalità automatica nello step precedente.
@@ -3103,16 +3108,6 @@
             Oggetto usato per controllare che un punto sia nella safeZone.
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.checker_tracker">
-            <summary>
-            Oggetto usato per controllare che la pose del tracker calcolata sia conforme con quella del robot pura.
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.checker_monitoringPos">
-            <summary>
-            Checker utilizzato per la colorazione delle righe all'interna di lw_positions.
-            </summary>
-        </member>
         <member name="F:RM.src.RM250714.RobotManager.checker_ingombro_pick">
             <summary>
             Checker per zona di pick
@@ -3126,6 +3121,11 @@
         <member name="F:RM.src.RM250714.RobotManager.checker_ingombro_home">
             <summary>
             Checker per zona ingombro home
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.checker_ingombro_beor">
+            <summary>
+            Checker per zona ingombro beor
             </summary>
         </member>
         <member name="F:RM.src.RM250714.RobotManager.highPriorityRefreshPeriod">
@@ -3163,59 +3163,9 @@
             Periodo di refresh all'interno del metodo SafetyYaskManager
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.riga">
-            <summary>
-            Riga della matrice di carico del pallet
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.colonna">
-            <summary>
-            Colonna della matrice di carico del pallet
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.strato">
-            <summary>
-            Strato della matrice di carico del pallet
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.larghezzaScatola">
-            <summary>
-            Parametro larghezza della focaccia da HMI
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.lunghezzaScatola">
-            <summary>
-            Parametro profondità della focaccia da HMI
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.altezzaScatola">
-            <summary>
-            Altezza del pallet da HMI
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.larghezzaPallet">
-            <summary>
-            Larghezza del pallet da HMI
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.lunghezzaPallet">
-            <summary>
-             Lunghezza del pallet da HMI
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.altezzaPallet">
-            <summary>
-            Altezza del pallet da HMI
-            </summary>
-        </member>
         <member name="F:RM.src.RM250714.RobotManager.previousGripperStatus">
             <summary>
             Memorizza lo stato precedente della variabile open/close grippers dal PLC
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.previousBarrierStatus">
-            <summary>
-            Memorizza lo stato precedente della variabile on/off barrier status dal PLC
             </summary>
         </member>
         <member name="F:RM.src.RM250714.RobotManager.previousStartCommandStatus">
@@ -3231,31 +3181,6 @@
         <member name="F:RM.src.RM250714.RobotManager.previousHomeCommandStatus">
             <summary>
             Memorizza lo stato precedente della variabile go to home position dal PLC
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.previousPalletCommandNumber">
-            <summary>
-            Memorizza lo stato della variabile selected pallet dal PLC
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.previousFormatCommandNumber">
-            <summary>
-            Memorizza lo stato della variabile selected pallet dal PLC
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.previousBoxFormatCommandNumber">
-            <summary>
-            Memorizza lo stato della variabile selected box format dal PLC
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.previousSelectedFormat">
-            <summary>
-            Memorizza lo stato precedente del formato selezionato
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.previousJogNastroCommandStatus">
-            <summary>
-            Memorizza lo stato precedente della variabile on/off jog nastro dal PLC
             </summary>
         </member>
         <member name="F:RM.src.RM250714.RobotManager.RobotSdkVer">
@@ -3468,6 +3393,161 @@
             Evento invocato quanto dall'hmi viene rischiesto di registrare uno specifico punto
             </summary>
         </member>
+        <member name="F:RM.src.RM250714.RobotManager.previousBarrierPauseStatus">
+            <summary>
+            Memorizza lo stato precedente della variabile on/off barrier status dal PLC
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.previousBarrierResumeStatus">
+            <summary>
+            Memorizza lo stato precedente della variabile on/off barrier status dal PLC
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.previousRecordPointRequest">
+            <summary>
+            Memorizza lo stato precedente della richiesta di registrazione punto
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.previousAlarmResetRequested">
+            <summary>
+            Memorizza lo stato precedente della richiesta di reset degli allarmi
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.step">
+            <summary>
+            Riferimento allo step delle normal variables corrente
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.robotCycleStopRequested">
+            <summary>
+            A true quando viene richiesto lo stop del ciclo routine del robot
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.isInPositionPick">
+            <summary>
+            A true quando si trova in posizione di Pick
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.isInPositionPlace">
+            <summary>
+            A true quando si trova in posizione di Place
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.isInPositionBeor">
+            <summary>
+            A true quando si trova in posizione di beor
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.isInPositionHome">
+            <summary>
+            A true quando si trova in posizione di home
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.robotIsPaused">
+            <summary>
+            A true quando il robot viene messo in pausa
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.previousVel">
+            <summary>
+            Salva stato di override velocità precedente
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.stopHomeRoutine">
+            <summary>
+            Richiesta stop ciclo home
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.stepHomeRoutine">
+            <summary>
+            Step ciclo home
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.CycleRun_Main">
+            <summary>
+            Valore di avvio ciclo main
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.CycleRun_Pick">
+            <summary>
+            Valore di avvio ciclo pick
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.CycleRun_Place">
+            <summary>
+            Valore di avvio ciclo place
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.CycleRun_Home">
+            <summary>
+            Valore di avvio ciclo home
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.stopPickRoutine">
+            <summary>
+            Segnale di stop della pick routine
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.stepPick">
+            <summary>
+            Step ciclo di pick
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.stopPlaceRoutine">
+            <summary>
+            Segnale di stop della place routine
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.stepPlace">
+            <summary>
+            Step ciclo di place
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.TaskHighPriorityName">
+            <summary>
+            Nome del task high priority
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.TaskLowPriorityName">
+            <summary>
+            Nome del task low priority
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.TaskAuxiliaryWorkerName">
+            <summary>
+            Nome del task auxiliary worker
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.TaskPlcComHandlerName">
+            <summary>
+            Nome del task plc com handler
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.TaskCheckRobotConneciton">
+            <summary>
+            Nome del task check robot com
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.TaskApplicationManager">
+            <summary>
+            Nome del task application manager
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.TaskSafetyManager">
+            <summary>
+            Nome del task safety manager
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.TaskHomeRoutine">
+            <summary>
+            Nome del task home routine
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.TaskPickAndPlaceTegliaIperal">
+            <summary>
+            Nome del task che gestisce il ciclo teglie
+            </summary>
+        </member>
         <member name="M:RM.src.RM250714.RobotManager.PauseMotion">
             <summary>
             Metodo che mette in pausa il Robot
@@ -3522,6 +3602,15 @@
             Metodo per reset errori Robot
             </summary>
         </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetInverseKin(fairino.DescPose,fairino.JointPos@,System.Int32,System.Int32)">
+            <summary>
+            Invia comando al robot per calcolare la cinematica inversa e ottenere la posizione dei giunti a partire dalle coordinate
+            </summary>
+            <param name="pose"></param>
+            <param name="jPos"></param>
+            <param name="type"></param>
+            <param name="config"></param>
+        </member>
         <member name="M:RM.src.RM250714.RobotManager.GetInverseKin(fairino.DescPose,fairino.JointPos@,System.String,System.Int32,System.Int32)">
             <summary>
             Invia comando al robot per calcolare la cinematica inversa e ottenere la posizione dei giunti a partire dalle coordinate.
@@ -3547,346 +3636,249 @@
             <param name="robot_state_pkg"></param>
             <returns></returns>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.stopPositionCheckerThread">
-            <summary>
-            A true quando il thread/task che controlla la posizione per la UI deve essere concluso.
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.inPositionGun">
-            <summary>
-            A true quando il punto attuale del robot corrisponde con la posizione interrogata della lw_positions.
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.positionsToCheck">
-            <summary>
-            Lista di posizioni su cui eseguire l'inPosition per gestire colorazione di lw_positions.
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.numPositionsToCheck">
-            <summary>
-            Numero di posizioni su cui eseguire l'inPosition e la relativa colorazione su lw_positions.
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.aggiornamentoFinito">
-            <summary>
-            A true quando l'aggiornamento della lista di posizioni su cui eseguire inPosition 
-            per gestire colorazione su lw_positions viene terminato.
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.lastUpdatedKey">
-            <summary>
-            Variabile per tracciare l'ultima posizione aggiornata nella ListView.
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.startPlaceRoutine">
-            <summary>
-            True quando può partire la PlaceRoutine
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.startHomeRoutine">
-            <summary>
-            True quando può partire la HomeRoutine
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.startCycle">
-            <summary>
-            True quando il ciclo puo essere avviato
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.robotEnable">
-            <summary>
-            Specifica se il robot è abilitato
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.isRobotMoving">
-            <summary>
-            A true se robot in movimento
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.robotStarted">
-            <summary>
-            A true quando robot pronto
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.robotOn">
-            <summary>
-            A true quando robot pronto
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.robotReady">
-            <summary>
-            A true quando robot pronto
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.requestStopCycle">
-            <summary>
-            Indica la prenotazione di stop ciclo, prima di terminare il thread aspetta che sia stato fatto il place
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.gripperClosed">
-            <summary>
-            True quando le pinze del roboto sono state chiuse
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.closeGripper">
-            <summary>
-            True quando devo aprire le pinze
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.inPickPosition">
-            <summary>
-            Indica se il robot in è in pick position
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.gripperOpened">
-            <summary>
-            True quando le pinze del robot sono aperte
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.openGripper">
-            <summary>
-            True quando le devo aprire le pinze
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.prevRobotOutPick">
-            <summary>
-            Stato precedente ingombro nastro
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.prevRobotOutPlace">
-            <summary>
-            Stato precedente ingombro teglia 1
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.prevRobotOutWelding">
-            <summary>
-            Stato precedente ingombro teglia 2
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.prevInHomePos">
-            <summary>
-            Stato precedente ingombro home position
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.previousBarrierPauseStatus">
-            <summary>
-            Memorizza lo stato precedente della variabile on/off barrier status dal PLC
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.previousBarrierResumeStatus">
-            <summary>
-            Memorizza lo stato precedente della variabile on/off barrier status dal PLC
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.previousRecordPointRequest">
-            <summary>
-            Memorizza lo stato precedente della richiesta di registrazione punto
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.previousAlarmResetRequested">
-            <summary>
-            Memorizza lo stato precedente della richiesta di reset degli allarmi
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.prevFuoriIngombro">
-            <summary>
-            Stato precedente fuori ingombro
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.xOffset">
-            <summary>
-            Offset sull'asse x per spostamento su teglie
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.yOffset">
-            <summary>
-            Offset sull'asse y per spostamento su teglie
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.numAttempsRobotPing">
-            <summary>
-            Numero di tentativi di ping al robot
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.velocityOverride">
-            <summary>
-            Velocità di override del Robot
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.robotInPause">
-            <summary>
-            Indica se il robot è in pausa
-            </summary>
+        <member name="M:RM.src.RM250714.RobotManager.MoveL(fairino.JointPos,fairino.DescPose,System.Int32,System.Int32,System.Single,System.Single,System.Single,System.Single,fairino.ExaxisPos,System.Byte,System.Byte,fairino.DescPose,System.Int32,System.Int32)">
+            <summary>
+            Movimento lineare al punto target.
+            </summary>
+            <param name="jPos">Configurazione dei giunti</param>
+            <param name="pose">Coordinate del punto target</param>
+            <param name="tool">tool da utilizzare</param>
+            <param name="user">Workspace da utilizzare</param>
+            <param name="vel">Override della speed [0-100]</param>
+            <param name="acc">Accelerazione da usare [0-100]</param>
+            <param name="ovl">Scalatura della velocità [0-100]</param>
+            <param name="blendR">Raggio di curvatura per smoothness in mm. -1.0 = movimento completo, [0 - 1000.0]</param>
+            <param name="epos">Configurazione degli assi esterni in mm</param>
+            <param name="search">0 = no wire search, 1 = wire search</param>
+            <param name="offsetFlag">0-No offset, 1-Offset in base/workpiece coordinate system, 2-Offset in tool coordinate system</param>
+            <param name="offsetPos">Coordinate di offset</param>
+            <param name="overSpeedStrategy">Overspeed handling strategy, 1-Standard; 2-Stop with error on overspeed; 3-Adaptive deceleration, default is 0</param>
+            <param name="speedPercent">Allowed deceleration threshold percentage [0-100], default 10%</param>
+            <returns></returns>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.step">
+        <member name="M:RM.src.RM250714.RobotManager.MoveL(fairino.JointPos,fairino.DescPose,System.Int32,System.Int32,System.Single,System.Single,System.Single,System.Single,System.Int32,fairino.ExaxisPos,System.Byte,System.Byte,fairino.DescPose,System.Int32,System.Int32)">
             <summary>
-            Riferimento allo step delle normal variables corrente
+            Movimento lineare al punto target.
             </summary>
+            <param name="jPos">Configurazione dei giunti</param>
+            <param name="pose">Coordinate del punto target</param>
+            <param name="tool">tool da utilizzare</param>
+            <param name="user">Workspace da utilizzare</param>
+            <param name="vel">Override della speed [0-100]</param>
+            <param name="acc">Accelerazione da usare [0-100]</param>
+            <param name="ovl">Scalatura della velocità [0-100]</param>
+            <param name="blendR">Raggio di curvatura per smoothness in mm. -1.0 = movimento completo, [0 - 1000.0]</param>
+            <param name="blendMode">Transition mode; 0-Tangent transition; 1-Corner transition</param>
+            <param name="epos">Configurazione degli assi esterni in mm</param>
+            <param name="search"> 0 = no wire search, 1 = wire search</param>
+            <param name="offsetFlag">0-No offset, 1-Offset in base/workpiece coordinate system, 2-Offset in tool coordinate system</param>
+            <param name="offsetPos">Coordinate di offset</param>
+            <param name="overSpeedStrategy">Overspeed handling strategy, 1-Standard; 2-Stop with error on overspeed; 3-Adaptive deceleration, default is 0</param>
+            <param name="speedPercent">Allowed deceleration threshold percentage [0-100], default 10%</param>
+            <returns></returns>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.robotCycleStopRequested">
+        <member name="M:RM.src.RM250714.RobotManager.MoveJ(fairino.JointPos,fairino.DescPose,System.Int32,System.Int32,System.Single,System.Single,System.Single,fairino.ExaxisPos,System.Single,System.Byte,fairino.DescPose)">
             <summary>
-            A true quando viene richiesto lo stop del ciclo routine del robot
+            Movimento in joint al punto target.
             </summary>
+            <param name="jPos">Configurazione dei giunti</param>
+            <param name="pose">Coordinate del punto target</param>
+            <param name="tool">tool da utilizzare</param>
+            <param name="user">Workspace da utilizzare</param>
+            <param name="vel">Override della speed [0-100]</param>
+            <param name="acc">Accelerazione da usare [0-100]</param>
+            <param name="ovl">Scalatura della velocità [0-100]</param>
+            <param name="epos">Configurazione degli assi esterni in mm</param>
+            <param name="blendT">[-1.0]-move to position (blocking), [0~500.0]-smoothing time (non-blocking), unit ms</param>
+            <param name="offsetFlag">0-No offset, 1-Offset in base/workpiece coordinate system, 2-Offset in tool coordinate system</param>
+            <param name="offsetPos">Coordinate di offset</param>
+            <returns></returns>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.isInPositionPick">
+        <member name="M:RM.src.RM250714.RobotManager.StartJOG(System.Byte,System.Byte,System.Byte,System.Single,System.Single,System.Single)">
             <summary>
-            A true quando si trova in posizione di Pick
+            Movimento in JOG
             </summary>
+            <param name="refType">0-joint pointing, 2-pointing in base coordinate system, 4-pointing in tool coordinate system, 8-pointing in artifact coordinate system.</param>
+            <param name="nb">1-joint 1 (or x-axis), 2-joint 2 (or y-axis), 3-joint 3 (or z-axis), 4-joint 4 (or rotate around x-axis), 5-joint 5 (or rotate around y-axis), 6-joint 6 (or rotate around z-axis)</param>
+            <param name="dir">0-negative direction, 1-positive direction</param>
+            <param name="vel">Override della speed [0-100]</param>
+            <param name="acc">Accelerazione da usare [0-100]</param>
+            <param name="maxDis">Maximum angle of a single tap, in [°] or distance, in [mm]</param>
+            <returns></returns>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.isInPositionPlace">
+        <member name="M:RM.src.RM250714.RobotManager.StopJOG(System.Byte)">
             <summary>
-            A true quando si trova in posizione di Place
+            jog pointwise deceleration stops.
             </summary>
+            <param name="stopByte">1-joint-point deceleration stop, 3-point deceleration stop in base coordinate system, 5-point deceleration stop in tool coordinate system, 9-point deceleration stop in workpiece coordinate system</param>
+            <returns></returns>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.isInPositionWelding">
+        <member name="M:RM.src.RM250714.RobotManager.ImmStopJOG">
             <summary>
-            A true quando si trova in posizione di Welding
+            jog tapping stops immediately.
             </summary>
+            <returns></returns>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.isInHomeZone">
+        <member name="M:RM.src.RM250714.RobotManager.TryGetSingleDOState(System.Int32,System.Boolean@,System.Int32,System.Int32)">
             <summary>
-            A true quando il robot si trova in home zone
+            Legge lo stato di una singola Uscita Digitale (DO) del controllore.
             </summary>
+            <param name="doIndex">L'indice dell'uscita da leggere (da 0 a 15).</param>
+            <param name="isOn">True se l'uscita è ON, False se è OFF.</param>
+            <param name="do_state_h"></param>
+            <param name="do_state_l"></param>
+            <returns>True se la lettura ha avuto successo, False in caso di errore.</returns>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.isInPositionHome">
+        <member name="M:RM.src.RM250714.RobotManager.GenerateAlarm(System.Int32,System.Int32)">
             <summary>
-            A true quando si trova in posizione di home
+            Gnerazione di un allarme
             </summary>
+            <param name="maincode"></param>
+            <param name="subcode"></param>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.robotIsPaused">
+        <member name="M:RM.src.RM250714.RobotManager.GetRobotInfo">
             <summary>
-            A true quando il robot viene messo in pausa
+            Ottiene le informazioni del robot attraverso i metodi bloccanti della libreria
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.previousVel">
+        <member name="M:RM.src.RM250714.RobotManager.GetPLCErrorCode(System.Collections.Generic.Dictionary{System.String,System.Object},System.Collections.Generic.Dictionary{System.String,System.String},System.DateTime,System.Int64,System.DateTime,System.String)">
             <summary>
-            Salva stato di override velocità precedente
+            Check su errori comunicati da PLC
             </summary>
+            <param name="alarmValues"></param>
+            <param name="alarmDescriptions"></param>
+            <param name="now"></param>
+            <param name="unixTimestamp"></param>
+            <param name="dateTime"></param>
+            <param name="formattedDate"></param>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.stopHomeRoutine">
+        <member name="M:RM.src.RM250714.RobotManager.IsAlarmAlreadySignaled(System.String)">
             <summary>
-            Richiesta stop ciclo home
+            Avvisa se un allarme è già stato segnalato
             </summary>
+            <param name="alarmKey"></param>
+            <returns></returns>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.stepHomeRoutine">
+        <member name="M:RM.src.RM250714.RobotManager.MarkAlarmAsSignaled(System.String)">
             <summary>
-            Step ciclo home
+            Imposta l'allarme come segnalato
             </summary>
+            <param name="alarmKey"></param>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.isAuto">
+        <member name="M:RM.src.RM250714.RobotManager.GetRobotErrorCode">
             <summary>
-            A true quando robot in modalità automatica
+            Legge allarmi derivanti dal Robot
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.isManual">
+        <member name="M:RM.src.RM250714.RobotManager.ResetPLCVariables">
             <summary>
-            A true quando robot in modalità manuale
+            Reset iniziali delle variabili PLC
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.CycleRun_Main">
+        <member name="M:RM.src.RM250714.RobotManager.CheckRobotMode">
             <summary>
-            Valore di avvio ciclo main
+            Esegue check su modalità Robot
             </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.CycleRun_Pick">
-            <summary>
-            Valore di avvio ciclo pick
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.CycleRun_Place">
-            <summary>
-            Valore di avvio ciclo place
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.CycleRun_Home">
             <summary>
-            Valore di avvio ciclo home
+            Esegue check su modalità Robot
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.stopPickRoutine">
+        <member name="M:RM.src.RM250714.RobotManager.CheckStatusRobot">
             <summary>
-            Segnale di stop della pick routine
+            Legge lo stato del robot
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.stepPick">
+        <member name="M:RM.src.RM250714.RobotManager.ResetRobotSteps">
             <summary>
-            Step ciclo di pick
+            Esegue reset del contatore degli step delle routine
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.stopPlaceRoutine">
+        <member name="M:RM.src.RM250714.RobotManager.CheckCurrentToolAndUser">
             <summary>
-            Segnale di stop della place routine
+            Controlla il tool e user correnti
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.stepPlace">
+        <member name="M:RM.src.RM250714.RobotManager.CheckPLCConnection">
             <summary>
-            Step ciclo di place
+            Check su connessione PLC
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.isEnable">
+        <member name="M:RM.src.RM250714.RobotManager.CheckIsRobotInObstructionArea(fairino.DescPose[])">
             <summary>
-            Valore enable robot
+            Verifica se il punto corrente è all'interno dell'area di ingombro rispetto a uno qualsiasi dei punti di partenza
             </summary>
+            <param name="startPoints">Array con i punti di partenza per Pick, Place e Home</param>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.isNotEnable">
+        <member name="M:RM.src.RM250714.RobotManager.CheckIsRobotInSafeZone(fairino.DescPose)">
             <summary>
-            Valore not enable robot
+            Verifica se il punto corrente è all'interno dell'area di safe zone
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.TaskHighPriorityName">
+        <member name="M:RM.src.RM250714.RobotManager.CheckIsRobotInPos">
             <summary>
-            Nome del task high priority
+            Verifica se il punto corrente corrisponde ai punti di pick e/o place
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.TaskLowPriorityName">
+        <member name="M:RM.src.RM250714.RobotManager.RMLib_AlarmsCleared(System.Object,System.EventArgs)">
             <summary>
-            Nome del task low priority
+            Gestore dell'evento allarmi cancellati presente nella libreria RMLib.Alarms
             </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.TaskAuxiliaryWorkerName">
+        <member name="M:RM.src.RM250714.RobotManager.GetRobotMovementCode(System.Int32)">
             <summary>
-            Nome del task auxiliary worker
+            Esegue get del codice di movimento del robot
             </summary>
+            <param name="result">Codice risultato del movimento del robot</param>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.TaskPlcComHandlerName">
+        <member name="M:RM.src.RM250714.RobotManager.GetRobotProperties">
             <summary>
-            Nome del task plc com handler
+            Imposta le proprietà del robot prelevandole dal database.
             </summary>
+            <returns>True se l'operazione ha successo, altrimenti False.</returns>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.TaskCheckRobotConneciton">
+        <member name="M:RM.src.RM250714.RobotManager.OnAllarmeGenerato(System.EventArgs)">
             <summary>
-            Nome del task check robot com
+            Generazione evento da allarme ricevuto
             </summary>
+            <param name="e"></param>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.TaskApplicationManager">
+        <member name="M:RM.src.RM250714.RobotManager.OnAllarmeResettato(System.EventArgs)">
             <summary>
-            Nome del task application manager
+            Generazione evento da allarmi resettati
             </summary>
+            <param name="e"></param>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.TaskSafetyManager">
+        <member name="M:RM.src.RM250714.RobotManager.TriggerAllarmeGenerato">
             <summary>
-            Nome del task safety manager
+            Generazione eventi
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.TaskHomeRoutine">
+        <member name="M:RM.src.RM250714.RobotManager.TriggerAllarmeResettato">
             <summary>
-            Nome del task home routine
+            Trigger attivato quando vengono cancellati gli allarmi
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.TaskPickAndPlaceTegliaIperal">
+        <member name="M:RM.src.RM250714.RobotManager.NormalizeAngle(System.Single)">
             <summary>
-            Nome del task check robot com
+            Normalizza angolo robot
             </summary>
+            <param name="angle"></param>
+            <returns></returns>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.pickBox_cts">
+        <member name="M:RM.src.RM250714.RobotManager.CheckRobotPosition(fairino.JointPos)">
             <summary>
-            Token per fermare il ciclo di pick
+            Invia posizioni al PLC in formato cartesiano e joint
             </summary>
+            <param name="jPos">Posizione in joint ottenuta dal calcolo di cinematica inversa partendo dalla posizione TCP</param>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.placeBox_cts">
+        <member name="M:RM.src.RM250714.RobotManager.RoundPositionDecimals(fairino.DescPose@,System.Int32)">
             <summary>
-            Token per fermare il ciclo di place
+            Approssima i valori delle posizioni a n cifre decimali
             </summary>
+            <param name="dp">Contiene il riferimento allo struct che contiene i valori da approssimare</param>
+            <param name="digits">Numero di cifre decimali desiderate</param>
         </member>
         <member name="M:RM.src.RM250714.RobotManager.#cctor">
             <summary>
@@ -3946,12 +3938,42 @@
             <param name="token"></param>
             <returns></returns>
         </member>
+        <member name="M:RM.src.RM250714.RobotManager.CheckCommandResetAlarms">
+            <summary>
+            Check su comando di reset allarmi derivante da plc
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.CheckCommandStart">
+            <summary>
+            Check su comando di start derivante da plc
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.CheckCommandGoToHome">
+            <summary>
+            Check su comando di stop derivante da plc
+            </summary>
+        </member>
         <member name="M:RM.src.RM250714.RobotManager.SafetyTaskManager(System.Threading.CancellationToken)">
             <summary>
             Esegue controlli sui comandi safety: barriere->pause/resume e stop
             </summary>
             <param name="token"></param>
             <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.CheckResumeStatus">
+            <summary>
+            Check su uscita barriere
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.CheckPauseStatus">
+            <summary>
+            Check su accesso barriere
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.CheckCommandStop">
+            <summary>
+            Gestione comando di stop derivante da plc
+            </summary>
         </member>
         <member name="M:RM.src.RM250714.RobotManager.PickAndPlaceTegliaIperalDemo(System.Threading.CancellationToken)">
             <summary>
@@ -4061,173 +4083,6 @@
             </summary>
             <param name="target"></param>
             <exception cref="T:System.Exception"></exception>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.TryGetSingleDOState(System.Int32,System.Boolean@,System.Int32,System.Int32)">
-            <summary>
-            Legge lo stato di una singola Uscita Digitale (DO) del controllore.
-            </summary>
-            <param name="doIndex">L'indice dell'uscita da leggere (da 0 a 15).</param>
-            <param name="isOn">True se l'uscita è ON, False se è OFF.</param>
-            <param name="do_state_h"></param>
-            <param name="do_state_l"></param>
-            <returns>True se la lettura ha avuto successo, False in caso di errore.</returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.GenerateAlarm(System.Int32,System.Int32)">
-            <summary>
-            Gnerazione di un allarme
-            </summary>
-            <param name="maincode"></param>
-            <param name="subcode"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.GetRobotInfo">
-            <summary>
-            Ottiene le informazioni del robot attraverso i metodi bloccanti della libreria
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.GetPLCErrorCode(System.Collections.Generic.Dictionary{System.String,System.Object},System.Collections.Generic.Dictionary{System.String,System.String},System.DateTime,System.Int64,System.DateTime,System.String)">
-            <summary>
-            Check su errori comunicati da PLC
-            </summary>
-            <param name="alarmValues"></param>
-            <param name="alarmDescriptions"></param>
-            <param name="now"></param>
-            <param name="unixTimestamp"></param>
-            <param name="dateTime"></param>
-            <param name="formattedDate"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.IsAlarmAlreadySignaled(System.String)">
-            <summary>
-            Avvisa se un allarme è già stato segnalato
-            </summary>
-            <param name="alarmKey"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.MarkAlarmAsSignaled(System.String)">
-            <summary>
-            Imposta l'allarme come segnalato
-            </summary>
-            <param name="alarmKey"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.GetRobotErrorCode">
-            <summary>
-            Legge allarmi derivanti dal Robot
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.ResetPLCVariables">
-            <summary>
-            Reset iniziali delle variabili PLC
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckIsRobotInHomePosition(fairino.DescPose)">
-            <summary>
-            Verifica se il Robot si trova in posizione di Home
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckRobotMode">
-            <summary>
-            Esegue check su modalità Robot
-            </summary>
-            <summary>
-            Esegue check su modalità Robot
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckStatusRobot">
-            <summary>
-            Legge lo stato del robot
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.ResetRobotSteps">
-            <summary>
-            Esegue reset del contatore degli step delle routine
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckCurrentToolAndUser">
-            <summary>
-            Controlla il tool e user correnti
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckPLCConnection">
-            <summary>
-            Check su connessione PLC
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckIsRobotInObstructionArea(fairino.DescPose[],System.Collections.Generic.List{System.ValueTuple{System.String,System.Boolean,System.String}})">
-            <summary>
-            Verifica se il punto corrente è all'interno dell'area di ingombro rispetto a uno qualsiasi dei punti di partenza
-            </summary>
-            <param name="startPoints">Array con i punti di partenza per Pick, Place e Home</param>
-            <param name="updates">Lista di aggiornamenti</param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckIsRobotInSafeZone(fairino.DescPose)">
-            <summary>
-            Verifica se il punto corrente è all'interno dell'area di safe zone
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckIsRobotInPos">
-            <summary>
-            Verifica se il punto corrente corrisponde ai punti di pick e/o place
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.RMLib_AlarmsCleared(System.Object,System.EventArgs)">
-            <summary>
-            Gestore dell'evento allarmi cancellati presente nella libreria RMLib.Alarms
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.GetRobotMovementCode(System.Int32)">
-            <summary>
-            Esegue get del codice di movimento del robot
-            </summary>
-            <param name="result">Codice risultato del movimento del robot</param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.GetRobotProperties">
-            <summary>
-            Imposta le proprietà del robot prelevandole dal database.
-            </summary>
-            <returns>True se l'operazione ha successo, altrimenti False.</returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.OnAllarmeGenerato(System.EventArgs)">
-            <summary>
-            Generazione evento da allarme ricevuto
-            </summary>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.OnAllarmeResettato(System.EventArgs)">
-            <summary>
-            Generazione evento da allarmi resettati
-            </summary>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.TriggerAllarmeGenerato">
-            <summary>
-            Generazione eventi
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.TriggerAllarmeResettato">
-            <summary>
-            Trigger attivato quando vengono cancellati gli allarmi
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.NormalizeAngle(System.Single)">
-            <summary>
-            Normalizza angolo robot
-            </summary>
-            <param name="angle"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckRobotPosition(fairino.JointPos)">
-            <summary>
-            Invia posizioni al PLC in formato cartesiano e joint
-            </summary>
-            <param name="jPos">Posizione in joint ottenuta dal calcolo di cinematica inversa partendo dalla posizione TCP</param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.RoundPositionDecimals(fairino.DescPose@,System.Int32)">
-            <summary>
-            Approssima i valori delle posizioni a n cifre decimali
-            </summary>
-            <param name="dp">Contiene il riferimento allo struct che contiene i valori da approssimare</param>
-            <param name="digits">Numero di cifre decimali desiderate</param>
         </member>
         <member name="T:RM.src.RM250714.RobotProperties">
             <summary>

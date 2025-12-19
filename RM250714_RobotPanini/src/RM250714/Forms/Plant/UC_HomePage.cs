@@ -932,5 +932,10 @@ namespace RM.src.RM250714
 
             RobotManager.taskManager.AddAndStartTask(RobotManager.TaskHomeRoutine, RobotManager.HomeRoutine, TaskType.Default, false);
         }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            RobotManager.StopMotion();
+        }
     } 
 }

@@ -112,6 +112,11 @@ namespace RM.src.RM250714.Classes.PLC
         public const string ACT_Zone_Place_inPos = "PLC1_" + "ACT_Zone_Place_inPos";
 
         /// <summary>
+        /// A 1 quando il Robot si trova in zona beor
+        /// </summary>
+        public const string ACT_Zone_Beor_inPos = "PLC1_" + "ACT_Zone_Beor_inPos";
+
+        /// <summary>
         /// A 1 quando è avviato il ciclo main
         /// </summary>
         public const string CycleRun_Main = "PLC1_" + "CycleRun_Main";
@@ -879,9 +884,9 @@ namespace RM.src.RM250714.Classes.PLC
         public static string RET_Zone_Place_1_inPos = "PLC1_" + "com_robot_105";
 
         /// <summary>
-        /// Zona di ingombro place (copia da altro registro)
+        /// Zona di ingombro beor
         /// </summary>
-        public static string RET_Zone_Place_2_inPos = "PLC1_" + "com_robot_106";
+        public static string RET_Zone_Beor_inPos = "PLC1_" + "com_robot_106";
 
         #endregion
 

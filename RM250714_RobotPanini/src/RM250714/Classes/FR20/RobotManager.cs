@@ -189,6 +189,14 @@ namespace RM.src.RM250714
         /// Tempo massimo in ms per controllare che il proxy stia comunicando
         /// </summary>
         private const int connectionCheckMaxTimeout = 500;
+        /// <summary>
+        /// Numero corrente di errori di connessione -2
+        /// </summary>
+        private static int currentConnectionErrorTries = 0;
+        /// <summary>
+        /// Numero massimo accettato di errori di connessione -2
+        /// </summary>
+        private const int connectionErrorMaxTries = 10;
 
         #endregion
 
@@ -313,14 +321,6 @@ namespace RM.src.RM250714
         /// </summary>
         private static bool prevIsNotEnable = false;
         /// <summary>
-        /// Stato precedente di robotReadyToStart.
-        /// </summary>
-        private static bool prevRobotReadyToStart = false;
-        /// <summary>
-        /// Stato precedente di robotHasProgramInMemory.
-        /// </summary>
-        private static bool prevRobotHasProgramInMemory = false;
-        /// <summary>
         /// Rappresenta il valore della modalità automatica nello step precedente.
         /// </summary>
         private static bool prevIsAuto = false;
@@ -425,14 +425,6 @@ namespace RM.src.RM250714
         /// </summary>
         private static PositionChecker checker_safeZone;
         /// <summary>
-        /// Oggetto usato per controllare che la pose del tracker calcolata sia conforme con quella del robot pura.
-        /// </summary>
-        private readonly static PositionChecker checker_tracker = new PositionChecker(50.0);
-        /// <summary>
-        /// Checker utilizzato per la colorazione delle righe all'interna di lw_positions.
-        /// </summary>
-        private static readonly PositionChecker checker_monitoringPos = new PositionChecker(100.0);
-        /// <summary>
         /// Checker per zona di pick
         /// </summary>
         private static PositionChecker checker_ingombro_pick;
@@ -444,6 +436,10 @@ namespace RM.src.RM250714
         /// Checker per zona ingombro home
         /// </summary>
         private static PositionChecker checker_ingombro_home;
+        /// <summary>
+        /// Checker per zona ingombro beor
+        /// </summary>
+        private static PositionChecker checker_ingombro_beor;
 
         #endregion
 
@@ -452,19 +448,19 @@ namespace RM.src.RM250714
         /// <summary>
         /// Periodo di refresh per il task ad alta priorità.
         /// </summary>
-        private readonly static int highPriorityRefreshPeriod = 20;
+        private readonly static int highPriorityRefreshPeriod = 50;
         /// <summary>
         /// Periodo di refresh per il task degli ausiliari.
         /// </summary>
-        private readonly static int auxiliaryThreadRefreshPeriod = 200;
+        private readonly static int auxiliaryThreadRefreshPeriod = 150;
         /// <summary>
         /// Periodo di refresh per il task a bassa priorità.
         /// </summary>
-        private readonly static int lowPriorityRefreshPeriod = 200;
+        private readonly static int lowPriorityRefreshPeriod = 300;
         /// <summary>
         /// Periodo di refresh per il task che comunica al plc
         /// </summary>
-        private readonly static int plcComTaskRefreshPeriod = 600;
+        private readonly static int plcComTaskRefreshPeriod = 300;
         /// <summary>
         /// Periodo di refresh per il task che verifica la connessione al robot
         /// </summary>
@@ -472,54 +468,11 @@ namespace RM.src.RM250714
         /// <summary>
         /// Periodo di refresh all'interno del metodo ApplicationTaskManager
         /// </summary>
-        private readonly static int applicationTaskManagerRefreshPeriod = 100;
+        private readonly static int applicationTaskManagerRefreshPeriod = 200;
         /// <summary>
         /// Periodo di refresh all'interno del metodo SafetyYaskManager
         /// </summary>
         private readonly static int safetyTaskManagerRefreshPeriod = 100;
-
-        #endregion
-
-        #region Parametri ciclo
-
-        /// <summary>
-        /// Riga della matrice di carico del pallet
-        /// </summary>
-        public static int riga = 0;
-        /// <summary>
-        /// Colonna della matrice di carico del pallet
-        /// </summary>
-        public static int colonna = 0;
-        /// <summary>
-        /// Strato della matrice di carico del pallet
-        /// </summary>
-        public static int strato = 0;
-
-        /// <summary>
-        /// Parametro larghezza della focaccia da HMI
-        /// </summary>
-        public static int larghezzaScatola = 300;
-        /// <summary>
-        /// Parametro profondità della focaccia da HMI
-        /// </summary>
-        public static int lunghezzaScatola = 300;
-        /// <summary>
-        /// Altezza del pallet da HMI
-        /// </summary>
-        public static int altezzaScatola = 100;
-
-        /// <summary>
-        /// Larghezza del pallet da HMI
-        /// </summary>
-        public static int larghezzaPallet = 800;
-        /// <summary>
-        ///  Lunghezza del pallet da HMI
-        /// </summary>
-        public static int lunghezzaPallet = 1200;
-        /// <summary>
-        /// Altezza del pallet da HMI
-        /// </summary>
-        public static int altezzaPallet = 100;
 
         #endregion
 
@@ -529,10 +482,6 @@ namespace RM.src.RM250714
         /// Memorizza lo stato precedente della variabile open/close grippers dal PLC
         /// </summary>
         private static bool previousGripperStatus = false;
-        /// <summary>
-        /// Memorizza lo stato precedente della variabile on/off barrier status dal PLC
-        /// </summary>
-        private static bool previousBarrierStatus = false;
         /// <summary>
         /// Memorizza lo stato precedente della variabile start ciclo dal PLC
         /// </summary>
@@ -545,26 +494,6 @@ namespace RM.src.RM250714
         /// Memorizza lo stato precedente della variabile go to home position dal PLC
         /// </summary>
         private static bool previousHomeCommandStatus = false;
-        /// <summary>
-        /// Memorizza lo stato della variabile selected pallet dal PLC
-        /// </summary>
-        private static int previousPalletCommandNumber = 0;
-        /// <summary>
-        /// Memorizza lo stato della variabile selected pallet dal PLC
-        /// </summary>
-        private static int previousFormatCommandNumber = 0;
-        /// <summary>
-        /// Memorizza lo stato della variabile selected box format dal PLC
-        /// </summary>
-        private static int previousBoxFormatCommandNumber = 0;
-        /// <summary>
-        /// Memorizza lo stato precedente del formato selezionato
-        /// </summary>
-        private static int previousSelectedFormat = 0;
-        /// <summary>
-        /// Memorizza lo stato precedente della variabile on/off jog nastro dal PLC
-        /// </summary>
-        private static bool previousJogNastroCommandStatus = false;
 
         #endregion
 
@@ -743,6 +672,140 @@ namespace RM.src.RM250714
         /// Evento invocato quanto dall'hmi viene rischiesto di registrare uno specifico punto
         /// </summary>
         public static event EventHandler<RobotPointRecordingEventArgs> RecordPoint;
+
+        #endregion
+
+        #region Step cicli
+
+        /// <summary>
+        /// Memorizza lo stato precedente della variabile on/off barrier status dal PLC
+        /// </summary>
+        private static int previousBarrierPauseStatus = -1;
+        /// <summary>
+        /// Memorizza lo stato precedente della variabile on/off barrier status dal PLC
+        /// </summary>
+        private static int previousBarrierResumeStatus = -1;
+        /// <summary>
+        /// Memorizza lo stato precedente della richiesta di registrazione punto
+        /// </summary>
+        private static int previousRecordPointRequest = -1;
+        /// <summary>
+        /// Memorizza lo stato precedente della richiesta di reset degli allarmi
+        /// </summary>
+        private static int previousAlarmResetRequested = -1;
+        /// <summary>
+        /// Riferimento allo step delle normal variables corrente
+        /// </summary>
+        public static int step = 0;
+        /// <summary>
+        /// A true quando viene richiesto lo stop del ciclo routine del robot
+        /// </summary>
+        public static bool robotCycleStopRequested = false;
+        /// <summary>
+        /// A true quando si trova in posizione di Pick
+        /// </summary>
+        public static bool isInPositionPick = false;
+        /// <summary>
+        /// A true quando si trova in posizione di Place
+        /// </summary>
+        public static bool isInPositionPlace = false;
+        /// <summary>
+        /// A true quando si trova in posizione di beor
+        /// </summary>
+        public static bool isInPositionBeor = false;
+        /// <summary>
+        /// A true quando si trova in posizione di home
+        /// </summary>
+        public static bool isInPositionHome = false;
+        /// <summary>
+        /// A true quando il robot viene messo in pausa
+        /// </summary>
+        public static bool robotIsPaused = false;
+        /// <summary>
+        /// Salva stato di override velocità precedente
+        /// </summary>
+        private static int previousVel = 0;
+        /// <summary>
+        /// Richiesta stop ciclo home
+        /// </summary>
+        static bool stopHomeRoutine = false;
+        /// <summary>
+        /// Step ciclo home
+        /// </summary>
+        static int stepHomeRoutine = 0;
+        /// <summary>
+        /// Valore di avvio ciclo main
+        /// </summary>
+        public static int CycleRun_Main = 0;
+        /// <summary>
+        /// Valore di avvio ciclo pick
+        /// </summary>
+        public static int CycleRun_Pick = 0;
+        /// <summary>
+        /// Valore di avvio ciclo place
+        /// </summary>
+        public static int CycleRun_Place = 0;
+        /// <summary>
+        /// Valore di avvio ciclo home
+        /// </summary>
+        public static int CycleRun_Home = 0;
+        /// <summary>
+        /// Segnale di stop della pick routine
+        /// </summary>
+        static bool stopPickRoutine = false;
+        /// <summary>
+        /// Step ciclo di pick
+        /// </summary>
+        static int stepPick = 0;
+        /// <summary>
+        /// Segnale di stop della place routine
+        /// </summary>
+        static bool stopPlaceRoutine = false;
+        /// <summary>
+        /// Step ciclo di place
+        /// </summary>
+        static int stepPlace = 0;
+
+        #endregion
+
+        #region Nomi tasks
+
+        /// <summary>
+        /// Nome del task high priority
+        /// </summary>
+        public static string TaskHighPriorityName = nameof(CheckHighPriority);
+        /// <summary>
+        /// Nome del task low priority
+        /// </summary>
+        public static string TaskLowPriorityName = nameof(CheckLowPriority);
+        /// <summary>
+        /// Nome del task auxiliary worker
+        /// </summary>
+        public static string TaskAuxiliaryWorkerName = nameof(AuxiliaryWorker);
+        /// <summary>
+        /// Nome del task plc com handler
+        /// </summary>
+        public static string TaskPlcComHandlerName = nameof(PlcComHandler);
+        /// <summary>
+        /// Nome del task check robot com
+        /// </summary>
+        public static string TaskCheckRobotConneciton = nameof(CheckRobotConnection);
+        /// <summary>
+        /// Nome del task application manager
+        /// </summary>
+        public static string TaskApplicationManager = nameof(ApplicationTaskManager);
+        /// <summary>
+        /// Nome del task safety manager
+        /// </summary>
+        public static string TaskSafetyManager = nameof(SafetyTaskManager);
+        /// <summary>
+        /// Nome del task home routine
+        /// </summary>
+        public static string TaskHomeRoutine = nameof(HomeRoutine);
+        /// <summary>
+        /// Nome del task che gestisce il ciclo teglie
+        /// </summary>
+        public static string TaskPickAndPlaceTegliaIperal = nameof(PickAndPlaceTegliaIperal);
 
         #endregion
 
@@ -926,6 +989,25 @@ namespace RM.src.RM250714
         }
 
         /// <summary>
+        /// Invia comando al robot per calcolare la cinematica inversa e ottenere la posizione dei giunti a partire dalle coordinate
+        /// </summary>
+        /// <param name="pose"></param>
+        /// <param name="jPos"></param>
+        /// <param name="type"></param>
+        /// <param name="config"></param>
+        public static int GetInverseKin(DescPose pose, ref JointPos jPos, int type = 0, int config = -1)
+        {
+            int err = robot.GetInverseKin(type, pose, config, ref jPos);
+
+            if (err != 0)
+            {
+                log.Error("Errore durante calcolo cinematica inversa : " + err);
+            }
+
+            return err;
+        }
+
+        /// <summary>
         /// Invia comando al robot per calcolare la cinematica inversa e ottenere la posizione dei giunti a partire dalle coordinate.
         /// Lancia una eccezione se si verifica un errore.
         /// </summary>
@@ -953,6 +1035,7 @@ namespace RM.src.RM250714
 
             return err;
         }
+
         /// <summary>
         /// Invia comando al robot per calcolare la cinematica inversa 
         /// </summary>
@@ -987,8 +1070,26 @@ namespace RM.src.RM250714
             return err;
         }
 
+        /// <summary>
+        /// Movimento lineare al punto target.
+        /// </summary>
+        /// <param name="jPos">Configurazione dei giunti</param>
+        /// <param name="pose">Coordinate del punto target</param>
+        /// <param name="tool">tool da utilizzare</param>
+        /// <param name="user">Workspace da utilizzare</param>
+        /// <param name="vel">Override della speed [0-100]</param>
+        /// <param name="acc">Accelerazione da usare [0-100]</param>
+        /// <param name="ovl">Scalatura della velocità [0-100]</param>
+        /// <param name="blendR">Raggio di curvatura per smoothness in mm. -1.0 = movimento completo, [0 - 1000.0]</param>
+        /// <param name="epos">Configurazione degli assi esterni in mm</param>
+        /// <param name="search">0 = no wire search, 1 = wire search</param>
+        /// <param name="offsetFlag">0-No offset, 1-Offset in base/workpiece coordinate system, 2-Offset in tool coordinate system</param>
+        /// <param name="offsetPos">Coordinate di offset</param>
+        /// <param name="overSpeedStrategy">Overspeed handling strategy, 1-Standard; 2-Stop with error on overspeed; 3-Adaptive deceleration, default is 0</param>
+        /// <param name="speedPercent">Allowed deceleration threshold percentage [0-100], default 10%</param>
+        /// <returns></returns>
         public static int MoveL(JointPos jPos, DescPose pose, int tool, int user, float vel, float acc, float ovl,
-            float blendR, ExaxisPos epos, byte search, byte offsetFlag, DescPose offsetPos, int overSpeedStrategy = 0, int speedPercent = 10)
+            float blendR, ExaxisPos epos, byte search, byte offsetFlag, DescPose offsetPos, int overSpeedStrategy = 0, int speedPercent = 5)
         {
             int err = robot.MoveL(jPos, pose, tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offsetPos, overSpeedStrategy, speedPercent);
             if (err != 0)
@@ -998,8 +1099,27 @@ namespace RM.src.RM250714
             return err;
         }
 
+        /// <summary>
+        /// Movimento lineare al punto target.
+        /// </summary>
+        /// <param name="jPos">Configurazione dei giunti</param>
+        /// <param name="pose">Coordinate del punto target</param>
+        /// <param name="tool">tool da utilizzare</param>
+        /// <param name="user">Workspace da utilizzare</param>
+        /// <param name="vel">Override della speed [0-100]</param>
+        /// <param name="acc">Accelerazione da usare [0-100]</param>
+        /// <param name="ovl">Scalatura della velocità [0-100]</param>
+        /// <param name="blendR">Raggio di curvatura per smoothness in mm. -1.0 = movimento completo, [0 - 1000.0]</param>
+        /// <param name="blendMode">Transition mode; 0-Tangent transition; 1-Corner transition</param>
+        /// <param name="epos">Configurazione degli assi esterni in mm</param>
+        /// <param name="search"> 0 = no wire search, 1 = wire search</param>
+        /// <param name="offsetFlag">0-No offset, 1-Offset in base/workpiece coordinate system, 2-Offset in tool coordinate system</param>
+        /// <param name="offsetPos">Coordinate di offset</param>
+        /// <param name="overSpeedStrategy">Overspeed handling strategy, 1-Standard; 2-Stop with error on overspeed; 3-Adaptive deceleration, default is 0</param>
+        /// <param name="speedPercent">Allowed deceleration threshold percentage [0-100], default 10%</param>
+        /// <returns></returns>
         public static int MoveL(JointPos jPos, DescPose pose, int tool, int user, float vel, float acc, float ovl,
-            float blendR, int blendMode, ExaxisPos epos, byte search, byte offsetFlag, DescPose offsetPos, int overSpeedStrategy = 0, int speedPercent = 10)
+            float blendR, int blendMode, ExaxisPos epos, byte search, byte offsetFlag, DescPose offsetPos, int overSpeedStrategy = 0, int speedPercent = 5)
         {
             int err = robot.MoveL(jPos, pose, tool, user, vel, acc, ovl, blendR, blendMode, epos, search, offsetFlag, offsetPos, overSpeedStrategy, speedPercent);
             if (err != 0)
@@ -1009,6 +1129,21 @@ namespace RM.src.RM250714
             return err;
         }
 
+        /// <summary>
+        /// Movimento in joint al punto target.
+        /// </summary>
+        /// <param name="jPos">Configurazione dei giunti</param>
+        /// <param name="pose">Coordinate del punto target</param>
+        /// <param name="tool">tool da utilizzare</param>
+        /// <param name="user">Workspace da utilizzare</param>
+        /// <param name="vel">Override della speed [0-100]</param>
+        /// <param name="acc">Accelerazione da usare [0-100]</param>
+        /// <param name="ovl">Scalatura della velocità [0-100]</param>
+        /// <param name="epos">Configurazione degli assi esterni in mm</param>
+        /// <param name="blendT">[-1.0]-move to position (blocking), [0~500.0]-smoothing time (non-blocking), unit ms</param>
+        /// <param name="offsetFlag">0-No offset, 1-Offset in base/workpiece coordinate system, 2-Offset in tool coordinate system</param>
+        /// <param name="offsetPos">Coordinate di offset</param>
+        /// <returns></returns>
         public static int MoveJ(JointPos jPos, DescPose pose, int tool, int user, float vel, float acc, float ovl,
            ExaxisPos epos, float blendT, byte offsetFlag, DescPose offsetPos)
         {
@@ -1020,329 +1155,968 @@ namespace RM.src.RM250714
             return err;
         }
 
+        /// <summary>
+        /// Movimento in JOG
+        /// </summary>
+        /// <param name="refType">0-joint pointing, 2-pointing in base coordinate system, 4-pointing in tool coordinate system, 8-pointing in artifact coordinate system.</param>
+        /// <param name="nb">1-joint 1 (or x-axis), 2-joint 2 (or y-axis), 3-joint 3 (or z-axis), 4-joint 4 (or rotate around x-axis), 5-joint 5 (or rotate around y-axis), 6-joint 6 (or rotate around z-axis)</param>
+        /// <param name="dir">0-negative direction, 1-positive direction</param>
+        /// <param name="vel">Override della speed [0-100]</param>
+        /// <param name="acc">Accelerazione da usare [0-100]</param>
+        /// <param name="maxDis">Maximum angle of a single tap, in [°] or distance, in [mm]</param>
+        /// <returns></returns>
         public static int StartJOG(byte refType, byte nb, byte dir, float vel, float acc, float maxDis)
         {
             int err = robot.StartJOG(refType, nb, dir, vel, acc, maxDis);
             if (err != 0)
             {
-
+                GetRobotMovementCode(err);
             }
             return err;
         }
 
+        /// <summary>
+        /// jog pointwise deceleration stops.
+        /// </summary>
+        /// <param name="stopByte">1-joint-point deceleration stop, 3-point deceleration stop in base coordinate system, 5-point deceleration stop in tool coordinate system, 9-point deceleration stop in workpiece coordinate system</param>
+        /// <returns></returns>
         public static int StopJOG(byte stopByte)
         {
             int err = robot.StopJOG(stopByte);
             if (err != 0)
             {
-
+                GetRobotMovementCode(err);
             }
             return err;
         }
 
+        /// <summary>
+        /// jog tapping stops immediately.
+        /// </summary>
+        /// <returns></returns>
         public static int ImmStopJOG()
         {
             int err = robot.ImmStopJOG();
             if (err != 0)
             {
-
+                GetRobotMovementCode(err);
             }
             return err;
         }
 
         #endregion
 
-        #region Struttura checker position
+        #region Metodi helper
 
         /// <summary>
-        /// A true quando il thread/task che controlla la posizione per la UI deve essere concluso.
+        /// Legge lo stato di una singola Uscita Digitale (DO) del controllore.
         /// </summary>
-        private static bool stopPositionCheckerThread = false;
-        /// <summary>
-        /// A true quando il punto attuale del robot corrisponde con la posizione interrogata della lw_positions.
-        /// </summary>
-        private static bool inPositionGun = false;
-        /// <summary>
-        /// Lista di posizioni su cui eseguire l'inPosition per gestire colorazione di lw_positions.
-        /// </summary>
-        private static List<KeyValuePair<int, DescPose>> positionsToCheck = new List<KeyValuePair<int, DescPose>>();
-        /// <summary>
-        /// Numero di posizioni su cui eseguire l'inPosition e la relativa colorazione su lw_positions.
-        /// </summary>
-        private static int numPositionsToCheck = 5;
-        /// <summary>
-        /// A true quando l'aggiornamento della lista di posizioni su cui eseguire inPosition 
-        /// per gestire colorazione su lw_positions viene terminato.
-        /// </summary>
-        private static bool aggiornamentoFinito = false;
-        /// <summary>
-        /// Variabile per tracciare l'ultima posizione aggiornata nella ListView.
-        /// </summary>
-        private static int? lastUpdatedKey = null;
+        /// <param name="doIndex">L'indice dell'uscita da leggere (da 0 a 15).</param>
+        /// <param name="isOn">True se l'uscita è ON, False se è OFF.</param>
+        /// <param name="do_state_h"></param>
+        /// <param name="do_state_l"></param>
+        /// <returns>True se la lettura ha avuto successo, False in caso di errore.</returns>
+        public static bool TryGetSingleDOState(int doIndex, out bool isOn, int do_state_h, int do_state_l)
+        {
+            isOn = false;
+            if (doIndex < 0 || doIndex > 15)
+            {
+                log.Error($"Indice DO non valido: {doIndex}. Deve essere tra 0 e 15.");
+                return false;
+            }
 
-        #endregion
+            if (doIndex <= 7)
+            {
+                // L'uscita è nel registro "basso" (do_state_l)
+                // Usiamo l'operatore AND bitwise per isolare il bit che ci interessa.
+                // (1 << doIndex) crea una maschera con un solo '1' nella posizione giusta.
+                // Esempio per DO2: la maschera è 00000100 in binario.
+                isOn = (do_state_l & (1 << doIndex)) != 0;
+            }
+            else
+            {
+                // L'uscita è nel registro "alto" (do_state_h)
+                int bitIndexInHighRegister = doIndex - 8; // DO8 è il bit 0, DO9 è il bit 1, etc.
+                isOn = (do_state_h & (1 << bitIndexInHighRegister)) != 0;
+            }
 
-        #region Step cicli
-
-        /// <summary>
-        /// True quando può partire la PlaceRoutine
-        /// </summary>
-        public static bool startPlaceRoutine = false;
-        /// <summary>
-        /// True quando può partire la HomeRoutine
-        /// </summary>
-        public static bool startHomeRoutine = false;
-        /// <summary>
-        /// True quando il ciclo puo essere avviato
-        /// </summary>
-        public static bool startCycle = false;
-        /// <summary>
-        /// Specifica se il robot è abilitato
-        /// </summary>
-        public static bool robotEnable = true;
-        /// <summary>
-        /// A true se robot in movimento
-        /// </summary>
-        private static bool isRobotMoving = false;
-        /// <summary>
-        /// A true quando robot pronto
-        /// </summary>
-        private static bool robotStarted = false;
-        /// <summary>
-        /// A true quando robot pronto
-        /// </summary>
-        private static bool robotOn = false;
-        /// <summary>
-        /// A true quando robot pronto
-        /// </summary>
-        private static bool robotReady = false;
-        /// <summary>
-        /// Indica la prenotazione di stop ciclo, prima di terminare il thread aspetta che sia stato fatto il place
-        /// </summary>
-        private static bool requestStopCycle = false;
-        /// <summary>
-        /// True quando le pinze del roboto sono state chiuse
-        /// </summary>
-        public static bool gripperClosed = false;
-        /// <summary>
-        /// True quando devo aprire le pinze
-        /// </summary>
-        public static bool closeGripper = false;
-        /// <summary>
-        /// Indica se il robot in è in pick position
-        /// </summary>
-        public static bool inPickPosition = false;
-        /// <summary>
-        /// True quando le pinze del robot sono aperte
-        /// </summary>
-        public static bool gripperOpened = false;
-        /// <summary>
-        /// True quando le devo aprire le pinze
-        /// </summary>
-        public static bool openGripper = false;
-        /// <summary>
-        /// Stato precedente ingombro nastro
-        /// </summary>
-        private static bool prevRobotOutPick = true;
-        /// <summary>
-        /// Stato precedente ingombro teglia 1
-        /// </summary>
-        private static bool prevRobotOutPlace = true;
-        /// <summary>
-        /// Stato precedente ingombro teglia 2
-        /// </summary>
-        private static bool prevRobotOutWelding = true;
-        /// <summary>
-        /// Stato precedente ingombro home position
-        /// </summary>
-        private static bool? prevInHomePos = null;
-        /// <summary>
-        /// Memorizza lo stato precedente della variabile on/off barrier status dal PLC
-        /// </summary>
-        private static bool previousBarrierPauseStatus = false;
-        /// <summary>
-        /// Memorizza lo stato precedente della variabile on/off barrier status dal PLC
-        /// </summary>
-        private static bool previousBarrierResumeStatus = false;
-        /// <summary>
-        /// Memorizza lo stato precedente della richiesta di registrazione punto
-        /// </summary>
-        private static int previousRecordPointRequest = -1;
-        /// <summary>
-        /// Memorizza lo stato precedente della richiesta di reset degli allarmi
-        /// </summary>
-        private static int previousAlarmResetRequested = -1;
-        /// <summary>
-        /// Stato precedente fuori ingombro
-        /// </summary>
-        private static bool prevFuoriIngombro = false;
-        /// <summary>
-        /// Offset sull'asse x per spostamento su teglie
-        /// </summary>
-        public static double xOffset = -150;
-        /// <summary>
-        /// Offset sull'asse y per spostamento su teglie
-        /// </summary>
-        public static double yOffset = 200;
-        /// <summary>
-        /// Numero di tentativi di ping al robot
-        /// </summary>
-        public static int numAttempsRobotPing = 0;
-        /// <summary>
-        /// Velocità di override del Robot
-        /// </summary>
-        public static int velocityOverride = 0;
-        /// <summary>
-        /// Indica se il robot è in pausa
-        /// </summary>
-        public static bool robotInPause = false;
-        /// <summary>
-        /// Riferimento allo step delle normal variables corrente
-        /// </summary>
-        public static int step = 0;
-        /// <summary>
-        /// A true quando viene richiesto lo stop del ciclo routine del robot
-        /// </summary>
-        public static bool robotCycleStopRequested = false;
-        /// <summary>
-        /// A true quando si trova in posizione di Pick
-        /// </summary>
-        public static bool isInPositionPick = false;
-        /// <summary>
-        /// A true quando si trova in posizione di Place
-        /// </summary>
-        public static bool isInPositionPlace = false;
-        /// <summary>
-        /// A true quando si trova in posizione di Welding
-        /// </summary>
-        public static bool isInPositionWelding = false;
-        /// <summary>
-        /// A true quando il robot si trova in home zone
-        /// </summary>
-        public static bool isInHomeZone = false;
-        /// <summary>
-        /// A true quando si trova in posizione di home
-        /// </summary>
-        public static bool isInPositionHome = false;
-        /// <summary>
-        /// A true quando il robot viene messo in pausa
-        /// </summary>
-        public static bool robotIsPaused = false;
-        /// <summary>
-        /// Salva stato di override velocità precedente
-        /// </summary>
-        private static int previousVel = 0;
-        /// <summary>
-        /// Richiesta stop ciclo home
-        /// </summary>
-        static bool stopHomeRoutine = false;
-        /// <summary>
-        /// Step ciclo home
-        /// </summary>
-        static int stepHomeRoutine = 0;
-        /// <summary>
-        /// A true quando robot in modalità automatica
-        /// </summary>
-        private static bool isAuto = false;
-        /// <summary>
-        /// A true quando robot in modalità manuale
-        /// </summary>
-        private static bool isManual = false;
-        /// <summary>
-        /// Valore di avvio ciclo main
-        /// </summary>
-        public static int CycleRun_Main = 0;
-        /// <summary>
-        /// Valore di avvio ciclo pick
-        /// </summary>
-        public static int CycleRun_Pick = 0;
-        /// <summary>
-        /// Valore di avvio ciclo place
-        /// </summary>
-        public static int CycleRun_Place = 0;
-        /// <summary>
-        /// Valore di avvio ciclo home
-        /// </summary>
-        public static int CycleRun_Home = 0;
-        /// <summary>
-        /// Segnale di stop della pick routine
-        /// </summary>
-        static bool stopPickRoutine = false;
-        /// <summary>
-        /// Step ciclo di pick
-        /// </summary>
-        static int stepPick = 0;
-        /// <summary>
-        /// Segnale di stop della place routine
-        /// </summary>
-        static bool stopPlaceRoutine = false;
-        /// <summary>
-        /// Step ciclo di place
-        /// </summary>
-        static int stepPlace = 0;
-        /// <summary>
-        /// Valore enable robot
-        /// </summary>
-        private static bool isEnable = false;
-        /// <summary>
-        /// Valore not enable robot
-        /// </summary>
-        private static bool isNotEnable = false;
-
-        #endregion
-
-        #region Nomi tasks
+            return true;
+        }
 
         /// <summary>
-        /// Nome del task high priority
+        /// Gnerazione di un allarme
         /// </summary>
-        public static string TaskHighPriorityName = nameof(CheckHighPriority);
-        /// <summary>
-        /// Nome del task low priority
-        /// </summary>
-        public static string TaskLowPriorityName = nameof(CheckLowPriority);
-        /// <summary>
-        /// Nome del task auxiliary worker
-        /// </summary>
-        public static string TaskAuxiliaryWorkerName = nameof(AuxiliaryWorker);
-        /// <summary>
-        /// Nome del task plc com handler
-        /// </summary>
-        public static string TaskPlcComHandlerName = nameof(PlcComHandler);
-        /// <summary>
-        /// Nome del task check robot com
-        /// </summary>
-        public static string TaskCheckRobotConneciton = nameof(CheckRobotConnection);
-        /// <summary>
-        /// Nome del task application manager
-        /// </summary>
-        public static string TaskApplicationManager = nameof(ApplicationTaskManager);
-        /// <summary>
-        /// Nome del task safety manager
-        /// </summary>
-        public static string TaskSafetyManager = nameof(SafetyTaskManager);
-        /// <summary>
-        /// Nome del task home routine
-        /// </summary>
-        public static string TaskHomeRoutine = nameof(HomeRoutine);
-        /// <summary>
-        /// Nome del task check robot com
-        /// </summary>
-        public static string TaskPickAndPlaceTegliaIperal = nameof(TaskPickAndPlaceTegliaIperal);
+        /// <param name="maincode"></param>
+        /// <param name="subcode"></param>
+        public static void GenerateAlarm(int maincode, int subcode)
+        {
+            DataRow robotAlarm;
+            DateTime now;
+            long unixTimestamp;
+            DateTime dateTime;
+            string formattedDate;
+            string id, description, timestamp, device, state;
 
-        #endregion
+            if (!IsAlarmAlreadySignaled(maincode.ToString() + subcode.ToString()))
+            {
+                robotAlarm = RobotDAO.GetRobotAlarm(ConnectionString, maincode, subcode);
+                if (robotAlarm != null)
+                {
+                    // Ottieni la data e l'ora attuali
+                    now = DateTime.Now;
 
-        #region Token per task interni
+                    // Calcola il timestamp Unix in millisecondi
+                    unixTimestamp = ((DateTimeOffset)now).ToUnixTimeMilliseconds();
+
+                    dateTime = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(unixTimestamp.ToString())).DateTime.ToLocalTime();
+                    formattedDate = dateTime.ToString("dd-MM-yyyy HH:mm:ss");
+
+                    if (robotAlarm["id"].ToString() == "")
+                    {
+                        id = "9999";
+                        description = "Generic/Not found";
+                        timestamp = formattedDate;
+                        device = "Robot";
+                        state = "ON";
+                    }
+                    else
+                    {
+                        id = robotAlarm["id"].ToString();
+                        description = robotAlarm["descr_MainCode"].ToString() + ": " + robotAlarm["descr_SubCode"].ToString();
+                        timestamp = formattedDate;
+                        device = "Robot";
+                        state = "ON";
+                    }
+                    CreateRobotAlarm(id, description, timestamp, device, state);
+                    MarkAlarmAsSignaled(maincode.ToString() + subcode.ToString());
+                    log.Warn(robotAlarm["descr_MainCode"].ToString() + ": " + robotAlarm["descr_SubCode"].ToString());
+                }
+                else
+                {
+                    // Ottieni la data e l'ora attuali
+                    now = DateTime.Now;
+
+                    // Calcola il timestamp Unix in millisecondi
+                    unixTimestamp = ((DateTimeOffset)now).ToUnixTimeMilliseconds();
+
+                    dateTime = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(unixTimestamp.ToString())).DateTime.ToLocalTime();
+                    formattedDate = dateTime.ToString("dd-MM-yyyy HH:mm:ss");
+
+                    id = "9999";
+                    description = "Generic/Not found";
+                    timestamp = formattedDate;
+                    device = "Robot";
+                    state = "ON";
+
+                    CreateRobotAlarm(id, description, timestamp, device, state);
+                }
+
+                // Segnalo che è presente un allarme bloccante (allarme robot)
+                AlarmManager.blockingAlarm = true;
+                robotError = 1;
+            }
+        }
 
         /// <summary>
-        /// Token per fermare il ciclo di pick
+        /// Ottiene le informazioni del robot attraverso i metodi bloccanti della libreria
         /// </summary>
-        private static CancellationTokenSource pickBox_cts;
+        private static void GetRobotInfo()
+        {
+            if (AlarmManager.isRobotConnected)
+            {
+                log.Info("Recupero informazioni del robot");
+                robot.GetSDKVersion(ref RobotSdkVer);
+                robot.GetControllerIP(ref RobotCurrentIP);
+                robot.GetSoftwareVersion(ref RobotModelVer, ref RobotWebVer, ref RobotControllerVer);
+                robot.GetFirmwareVersion(ref RobotFwBoxBoardVer, ref RobotFwDriver1Ver, ref RobotFwDriver2Ver, ref RobotFwDriver3Ver,
+                    ref RobotFwDriver4Ver, ref RobotFwDriver5Ver, ref RobotFwDriver6Ver, ref RobotFwEndBoardVer);
+                robot.GetHardwareVersion(ref RobotHwBoxBoardVer, ref RobotHwDriver1Ver, ref RobotHwDriver2Ver, ref RobotHwDriver3Ver,
+                    ref RobotHwDriver4Ver, ref RobotHwDriver5Ver, ref RobotHwDriver6Ver, ref RobotHwEndBoardVer);
+            }
+        }
 
         /// <summary>
-        /// Token per fermare il ciclo di place
+        /// Check su errori comunicati da PLC
         /// </summary>
-        private static CancellationTokenSource placeBox_cts;
+        /// <param name="alarmValues"></param>
+        /// <param name="alarmDescriptions"></param>
+        /// <param name="now"></param>
+        /// <param name="unixTimestamp"></param>
+        /// <param name="dateTime"></param>
+        /// <param name="formattedDate"></param>
+        private static void GetPLCErrorCode(
+            Dictionary<string, object> alarmValues,
+            Dictionary<string, string> alarmDescriptions,
+            DateTime now,
+            long unixTimestamp,
+            DateTime dateTime,
+            string formattedDate
+            )
+        {
+            /*
+            object alarmsPresent;
+
+            lock (PLCConfig.appVariables)
+            {
+                alarmsPresent = PLCConfig.appVariables.getValue("PLC1_" + "Alarm present");
+
+                if (Convert.ToBoolean(alarmsPresent))
+                {
+                    foreach (var key in alarmDescriptions.Keys)
+                    {
+                        alarmValues[key] = PLCConfig.appVariables.getValue("PLC1_" + key);
+                    }
+                }
+            }
+            */
+            /*
+            try
+            {
+
+                foreach (var key in alarmDescriptions.Keys)
+                {
+                    alarmValues[key] = PLCConfig.appVariables.getValue("PLC1_" + key);
+                }
+
+                // if (Convert.ToBoolean(alarmsPresent))
+                // {
+                now = DateTime.Now;
+                unixTimestamp = ((DateTimeOffset)now).ToUnixTimeMilliseconds();
+                dateTime = DateTimeOffset.FromUnixTimeMilliseconds(unixTimestamp).DateTime.ToLocalTime();
+                formattedDate = dateTime.ToString("dd-MM-yyyy HH:mm:ss");
+
+                foreach (var alarm in alarmValues)
+                {
+                    if (Convert.ToBoolean(alarm.Value) && !IsAlarmAlreadySignaled(alarm.Key))
+                    {
+                        string id = GenerateAlarmId(alarm.Key);
+                        CreateRobotAlarm(id, alarmDescriptions[alarm.Key], formattedDate, "PLC", "ON");
+                        MarkAlarmAsSignaled(alarm.Key);
+                    }
+                }
+                // }
+            }
+            catch(Exception ex)
+            {
+
+            }
+            */
+        }
+
+        /// <summary>
+        /// Avvisa se un allarme è già stato segnalato
+        /// </summary>
+        /// <param name="alarmKey"></param>
+        /// <returns></returns>
+        private static bool IsAlarmAlreadySignaled(string alarmKey)
+        {
+            return allarmiSegnalati.ContainsKey(alarmKey) && allarmiSegnalati[alarmKey];
+        }
+
+        /// <summary>
+        /// Imposta l'allarme come segnalato
+        /// </summary>
+        /// <param name="alarmKey"></param>
+        private static void MarkAlarmAsSignaled(string alarmKey)
+        {
+            if (allarmiSegnalati.ContainsKey(alarmKey))
+            {
+                allarmiSegnalati[alarmKey] = true;
+            }
+            else
+            {
+                allarmiSegnalati.Add(alarmKey, true);
+            }
+        }
+
+        /// <summary>
+        /// Legge allarmi derivanti dal Robot
+        /// </summary>
+        private static void GetRobotErrorCode()
+        {
+            DataRow robotAlarm;
+            DateTime now;
+            string id;
+            string description;
+            string timestamp;
+            string device;
+            string state;
+            long unixTimestamp;
+            DateTime dateTime;
+            string formattedDate;
+
+            if (AlarmManager.isRobotConnected)
+            {
+                err = robot.GetRobotErrorCode(ref maincode, ref subcode);
+                if (maincode != 0 && !IsAlarmAlreadySignaled(maincode.ToString() + subcode.ToString()))
+                {
+                    robotAlarm = RobotDAO.GetRobotAlarm(ConnectionString, maincode, subcode);
+                    if (robotAlarm != null)
+                    {
+                        Console.WriteLine($"mainErrCode {maincode} subErrCode {subcode} ");
+
+                        // Ottieni la data e l'ora attuali
+                        now = DateTime.Now;
+
+                        // Calcola il timestamp Unix in millisecondi
+                        unixTimestamp = ((DateTimeOffset)now).ToUnixTimeMilliseconds();
+
+                        dateTime = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(unixTimestamp.ToString())).DateTime.ToLocalTime();
+                        formattedDate = dateTime.ToString("dd-MM-yyyy HH:mm:ss");
+
+                        if (robotAlarm["id"].ToString() == "")
+                        {
+                            id = "9999";
+                            description = "Generic/Not found";
+                            timestamp = formattedDate;
+                            device = "Robot";
+                            state = "ON";
+                        }
+                        else
+                        {
+                            id = robotAlarm["id"].ToString();
+                            description = robotAlarm["descr_MainCode"].ToString() + ": " + robotAlarm["descr_SubCode"].ToString();
+                            timestamp = formattedDate;
+                            device = "Robot";
+                            state = "ON";
+                        }
+                        CreateRobotAlarm(id, description, timestamp, device, state);
+                        MarkAlarmAsSignaled(maincode.ToString() + subcode.ToString());
+                        log.Warn(robotAlarm["descr_MainCode"].ToString() + ": " + robotAlarm["descr_SubCode"].ToString());
+                    }
+                    else
+                    {
+                        // Ottieni la data e l'ora attuali
+                        now = DateTime.Now;
+
+                        // Calcola il timestamp Unix in millisecondi
+                        unixTimestamp = ((DateTimeOffset)now).ToUnixTimeMilliseconds();
+
+                        dateTime = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(unixTimestamp.ToString())).DateTime.ToLocalTime();
+                        formattedDate = dateTime.ToString("dd-MM-yyyy HH:mm:ss");
+
+                        id = "9999";
+                        description = "Generic/Not found";
+                        timestamp = formattedDate;
+                        device = "Robot";
+                        state = "ON";
+
+                        CreateRobotAlarm(id, description, timestamp, device, state);
+                        MarkAlarmAsSignaled(maincode.ToString() + subcode.ToString());
+                        log.Warn($"Allarme generato: Generic/Not found MainCode: {maincode}, SubCode: {subcode}");
+                    }
+
+                    // Segnalo che è presente un allarme bloccante (allarme robot)
+                    AlarmManager.blockingAlarm = true;
+                    robotError = 1;
+                }
+                else if (maincode == 0)
+                {
+                    robotError = 0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reset iniziali delle variabili PLC
+        /// </summary>
+        private static void ResetPLCVariables()
+        {
+
+        }
+
+        /// <summary>
+        /// Esegue check su modalità Robot
+        /// </summary>
+        /// <summary>
+        /// Esegue check su modalità Robot
+        /// </summary>
+        private static void CheckRobotMode()
+        {
+            // Ottieni la modalità operativa dal PLC
+            mode = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Operating_Mode));
+
+            // Controlla se la modalità è cambiata rispetto all'ultima lettura
+            if (mode != lastMode)
+            {
+                // Aggiorna l'ultima modalità letta e il timestamp
+                lastMode = mode;
+                lastModeChangeTime = DateTime.Now;
+                return; // Aspettiamo che il valore si stabilizzi
+            }
+            /*
+            // Verifica se la modalità è rimasta invariata per almeno 1 secondo
+            if (DateTime.Now - lastModeChangeTime < TimeSpan.FromSeconds(1) && mode != stableMode)
+            {
+                // Modalità confermata stabile: aggiorniamo lo stato
+                stableMode = mode;
+
+                // Cambia la modalità del robot in base alla modalità stabile
+                if (stableMode == 1 && !prevIsAuto) // Passaggio alla modalità automatica
+                { 
+                    log.Warn("[Mode] Cambio modalità in AUTO");
+                    isAutomaticMode = true;
+                    SetRobotMode(0); // Imposta il robot in modalità automatica
+                    JogMovement.StopJogRobotTask(); // Ferma il thread di movimento manuale
+                    prevIsAuto = true;
+                    prevIsManual = false;
+                    prevIsOff = false;
+                    TriggerRobotModeChangedEvent(1);  // Evento: modalità automatica
+                }
+                else if (stableMode == 2 && !prevIsManual) // Passaggio alla modalità manuale
+                {
+                    log.Warn("[Mode] Cambio modalità in MANUAL");
+                    isAutomaticMode = false;
+                    SetRobotMode(1); // Imposta il robot in modalità manuale
+                    prevIsManual = true;
+                    prevIsAuto = false;
+                    prevIsOff = false;
+                    TriggerRobotModeChangedEvent(0);  // Evento: modalità manuale
+                }
+                else if (stableMode == 0 && !prevIsOff) // Passaggio alla modalità Off
+                {
+                    log.Warn("[Mode] Cambio modalità in OFF");
+                    prevIsOff = true;
+                    prevIsAuto = false;
+                    prevIsManual = false;
+                    TriggerRobotModeChangedEvent(3);  // Evento: modalità Off
+                }
+            }
+
+            // Esegui logiche aggiuntive come il movimento manuale (Jog)
+            if (isEnabledNow && stableMode == 2)
+            {
+                JogMovement.StartJogRobotTask(); // Avvia il thread di movimento manuale (Jog)
+            }*/
+            if (DateTime.Now - lastModeChangeTime < TimeSpan.FromSeconds(1))
+            {
+                return; // Aspetta che il valore del PLC sia stabile
+            }
+            // CASO A: Il PLC vuole la modalità AUTOMATICA
+            if (mode == 1) // 1 = AUTO secondo la tua logica PLC
+            {
+                // Se il robot NON è GIA' in automatico...
+                if (currentRobotMode != 0) // 0 = AUTOMATICO secondo la libreria robot
+                {
+                    log.Warn("[Mode] Cambio modalità in AUTO");
+                    isAutomaticMode = true;
+                    SetRobotMode(0); // Imposta il robot in modalità automatica
+                    JogMovement.StopJogRobotTask(); // Ferma il thread di movimento manuale
+                    prevIsAuto = true;
+                    prevIsManual = false;
+                    prevIsOff = false;
+                    TriggerRobotModeChangedEvent(1);  // Evento: modalità automatica
+                }
+            }
+            // CASO B: Il PLC vuole la modalità MANUALE
+            else if (mode == 2) // 2 = MANUALE secondo la tua logica PLC
+            {
+                // Se il robot NON è GIA' in manuale...
+                if (currentRobotMode != 1) // 1 = MANUALE secondo la libreria robot
+                {
+                    log.Warn("[Mode] Cambio modalità in MANUAL");
+                    isAutomaticMode = false;
+                    SetRobotMode(1); // Imposta il robot in modalità manuale
+                    prevIsManual = true;
+                    prevIsAuto = false;
+                    prevIsOff = false;
+                    TriggerRobotModeChangedEvent(0);  // Evento: modalità manuale
+                }
+
+                // La logica per avviare il JOG va qui.
+                // Se siamo in manuale (lo siamo, altrimenti saremmo entrati nell'if sopra)
+                // e il robot è abilitato, avvia il task di JOG.
+                if (isEnabledNow)
+                {
+                    JogMovement.StartJogRobotTask(); // Questo ha già il controllo per non partire più volte
+                }
+            }
+            // CASO C: Il PLC vuole la modalità OFF o un valore non valido
+            else
+            {
+                if (!prevIsOff)
+                {
+                    log.Warn("[Mode] Cambio modalità in OFF");
+                    isAutomaticMode = false;
+                    prevIsOff = true;
+                    prevIsAuto = false;
+                    prevIsManual = false;
+                    TriggerRobotModeChangedEvent(3);  // Evento: modalità Off
+                }
+            }
+        }
+
+        /// <summary>
+        /// Legge lo stato del robot
+        /// </summary>
+        private static void CheckStatusRobot()
+        {
+            ROBOT_STATE_PKG robot_state_pkg = new ROBOT_STATE_PKG();
+            byte mov_robot_state;
+
+            //robot.GetRobotRealTimeState(ref robot_state_pkg);
+            int err = GetRobotRealTimeState(ref robot_state_pkg);
+            if (err == 0)
+            {
+                mov_robot_state = robot_state_pkg.robot_state;
+                robotStatus = mov_robot_state;
+                currentRobotMode = robot_state_pkg.robot_mode;
+                currentRobotEnableStatus = robot_state_pkg.rbtEnableState;
+
+                currentConnectionErrorTries = 0;
+            }
+            else if (err == -2)
+            {
+                if (currentConnectionErrorTries < connectionErrorMaxTries * 2)
+                    currentConnectionErrorTries++;
+            }
+        }
+
+        /// <summary>
+        /// Esegue reset del contatore degli step delle routine
+        /// </summary>
+        public static void ResetRobotSteps()
+        {
+            step = 0;
+        }
+
+        /// <summary>
+        /// Controlla il tool e user correnti
+        /// </summary>
+        private static void CheckCurrentToolAndUser()
+        {
+            robot.GetActualTCPNum(1, ref currentTool);
+            robot.GetActualWObjNum(1, ref currentUser);
+        }
+
+        /// <summary>
+        /// Check su connessione PLC
+        /// </summary>
+        private static void CheckPLCConnection()
+        {
+            if (!AlarmManager.isPlcConnected) // Se il PLC è disconnesso
+            {
+                log.Error("[PLC COM] Rilevata disconnessione PLC");
+                string id = "0";
+                string description = "PLC disconnesso. Il ciclo è stato terminato.";
+
+                DateTime now = DateTime.Now;
+                long unixTimestamp = ((DateTimeOffset)now).ToUnixTimeMilliseconds();
+                DateTime dateTime = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(unixTimestamp.ToString())).DateTime.ToLocalTime();
+                string formattedDate = dateTime.ToString("dd-MM-yyyy HH:mm:ss");
+
+                string device = "PLC";
+                string state = "ON";
+
+                if (!IsAlarmAlreadySignaled(id))
+                {
+                    CreateRobotAlarm(id, description, formattedDate, device, state);
+                    MarkAlarmAsSignaled(id);
+                }
+
+                prevIsPlcConnected = false;
+            }
+            else
+            {
+                if (!prevIsPlcConnected)
+                {
+                    log.Warn("[PLC COM] Connessione PLC riavviata");
+
+                    //Reset stati precedenti
+                    lastMode = -1;
+                    stableMode = -1;
+
+                    robotCycleStopRequested = false;
+
+                    ClearRobotAlarm();
+                    ClearRobotQueue();
+                    ResetRobotSteps();
+
+                    prevIsPlcConnected = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Verifica se il punto corrente è all'interno dell'area di ingombro rispetto a uno qualsiasi dei punti di partenza
+        /// </summary>
+        /// <param name="startPoints">Array con i punti di partenza per Pick, Place e Home</param>
+        private static void CheckIsRobotInObstructionArea(DescPose[] startPoints)
+        {
+            isInPositionHome = checker_ingombro_home.IsInCubeObstruction(startPoints[0], TCPCurrentPosition);
+            isInPositionPick = checker_ingombro_pick.IsInCubeObstruction(startPoints[1], TCPCurrentPosition);
+            isInPositionPlace = checker_ingombro_place.IsInCubeObstruction(startPoints[2], TCPCurrentPosition);
+            isInPositionBeor = checker_ingombro_beor.IsInCubeObstruction(startPoints[3], TCPCurrentPosition);
+
+            bool plcIsInPositionHome = Convert.ToBoolean(PLCConfig.appVariables.getValue(PLCTagName.RET_Zone_Home_inPos));
+            bool plcIsInPositionPick = Convert.ToBoolean(PLCConfig.appVariables.getValue(PLCTagName.RET_Zone_Pick_inPos));
+            bool plcIsInPositionPlace = Convert.ToBoolean(PLCConfig.appVariables.getValue(PLCTagName.RET_Zone_Place_1_inPos));
+            bool plcIsInPositionBeor = Convert.ToBoolean(PLCConfig.appVariables.getValue(PLCTagName.RET_Zone_Beor_inPos));
+
+            if (isInPositionPick) // Ora in zona di pick
+            {
+                if (!plcIsInPositionPick) // Prima non ero in zona pick o sul plc c'è un valore diverso
+                {
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Pick_inPos, 1, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Home_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Beor_inPos, 0, "INT16");
+                }
+            }
+            else if (isInPositionPlace) // Ora in zona di place
+            {
+                if (!plcIsInPositionPlace) // Prima non ero in zona place o sul plc c'è un valore diverso
+                {
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Pick_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos, 1, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Home_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Beor_inPos, 0, "INT16");
+                }
+            }
+            else if (isInPositionHome) // Ora in zona di home
+            {
+                if (!plcIsInPositionHome) // Prima non ero in zona di home o sul plc c'è un valore diverso
+                {
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Pick_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Home_inPos, 1, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Beor_inPos, 0, "INT16");
+                }
+            }
+            else if (isInPositionBeor)
+            {
+                if (!plcIsInPositionBeor)
+                {
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Pick_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Home_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Beor_inPos, 1, "INT16");
+                }
+            }
+            else // Altrimenti
+            {
+                bool plcIsFuoriIngombro = !plcIsInPositionHome && !plcIsInPositionPick && !plcIsInPositionPlace && !plcIsInPositionBeor;
+                if (!plcIsFuoriIngombro) // Prima non ero fuori ingombro o sul plc c'è un valore sbagliato
+                {
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Pick_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Home_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Beor_inPos, 0, "INT16");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Verifica se il punto corrente è all'interno dell'area di safe zone
+        /// </summary>
+        private static void CheckIsRobotInSafeZone(DescPose pSafeZone)
+        {
+            isInSafeZone = checker_safeZone.IsYLessThan(pSafeZone, TCPCurrentPosition);
+
+            if (!AlarmManager.isFormReady)
+                return;
+
+            if (!isInSafeZone && prevIsInSafeZone != false) // Se il robot non è nella safe zone
+            {
+                prevIsInSafeZone = false;
+                FormHomePage.Instance.RobotSafeZone.BackgroundImage = Resources.safeZone_yellow32;
+
+            }
+            else if (isInSafeZone && prevIsInSafeZone != true) // Se il robot è nella safe zone
+            {
+                prevIsInSafeZone = true;
+                FormHomePage.Instance.RobotSafeZone.BackgroundImage = Resources.safeZone_green32;
+
+            }
+
+        }
+
+        /// <summary>
+        /// Verifica se il punto corrente corrisponde ai punti di pick e/o place
+        /// </summary>
+        private static void CheckIsRobotInPos()
+        {
+            bool isInPosition = checker_pos.IsInPosition(endingPoint, TCPCurrentPosition);
+
+            if (isInPosition)
+            {
+                inPosition = true;
+            }
+            else
+            {
+                inPosition = false;
+            }
+
+        }
+
+        /// <summary>
+        /// Gestore dell'evento allarmi cancellati presente nella libreria RMLib.Alarms
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void RMLib_AlarmsCleared(object sender, EventArgs e)
+        {
+            var criteria = new List<(string device, string description)>
+            {
+                ("Robot", ""),
+                ("", "PLC disconnesso. Il ciclo è stato terminato.")
+            };
+
+            bool isBlocking = formAlarmPage.IsBlockingAlarmPresent(criteria);
+
+            if (isBlocking)
+            {
+                ClearRobotAlarm();
+                //ClearRobotQueue();
+
+                // Segnalo che non ci sono più allarmi bloccanti
+                AlarmManager.blockingAlarm = false;
+
+                // Abilito il tasto Start per avviare nuovamente la routine
+                EnableButtonCycleEvent?.Invoke(1, EventArgs.Empty);
+
+                // Abilito i tasti relativi al monitoring
+                EnableDragModeButtons?.Invoke(null, EventArgs.Empty);
+            }
+
+            TriggerAllarmeResettato();
+
+            // Reset degli allarmi segnalati
+            foreach (var key in allarmiSegnalati.Keys.ToList())
+            {
+                allarmiSegnalati[key] = false;
+            }
+        }
+
+        /// <summary>
+        /// Esegue get del codice di movimento del robot
+        /// </summary>
+        /// <param name="result">Codice risultato del movimento del robot</param>
+        private static void GetRobotMovementCode(int result)
+        {
+            if (result != 0) // Se il codice passato come parametro è diverso da 0, significa che il movimento ha generato un errore
+            {
+                // Get del codice di errore dal database
+                DataRow code = RobotDAO.GetRobotMovementCode(ConnectionString, result);
+
+                if (code != null) // Se il codice è presente nel dizionario nel database eseguo la get dei dettagli
+                {
+                    // Stampo messaggio di errore
+                    //CustomMessageBox.Show(
+                    //    MessageBoxTypeEnum.ERROR,
+                    //    "Errcode: " + code["Errcode"].ToString() + "\nDescribe: " + code["Describe"].ToString() + "\nProcessing method: " + code["Processing method"].ToString()
+                    //    );
+
+                    // Scrivo messaggio nel log
+                    log.Error("Errcode: " + code["Errcode"].ToString() + "\nDescribe: " + code["Describe"].ToString() + "\nProcessing method: " + code["Processing method"].ToString());
+                }
+                else // Se il codice non è presente nel dizionario nel database stampo un errore generico
+                {
+                    //CustomMessageBox.Show(
+                    //   MessageBoxTypeEnum.ERROR,
+                    //   "Errore generico durante il movimento del robot"
+                    //   );
+
+                    log.Error("Errore generico durante il movimento del robot");
+
+                }
+            }
+        }
+
+        /// <summary>
+        /// Imposta le proprietà del robot prelevandole dal database.
+        /// </summary>
+        /// <returns>True se l'operazione ha successo, altrimenti False.</returns>
+        public static bool GetRobotProperties()
+        {
+            try
+            {
+                log.Info("Inizio impostazione delle proprietà del robot dal database.");
+
+                // Ottieni le proprietà del robot dal database
+                DataTable dt_robotProperties = RobotDAO.GetRobotProperties(ConnectionString);
+                if (dt_robotProperties == null)
+                {
+                    log.Error("La tabella delle proprietà del robot è nulla.");
+                    return false;
+                }
+
+                // Estrai e assegna le proprietà del robot
+                int speed = Convert.ToInt16(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_SPEED_ROW_INDEX]
+                    [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
+                float velocity = float.Parse(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_VELOCITY_ROW_INDEX]
+                    [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
+                float blendT = float.Parse(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_BLENDT_ROW_INDEX]
+                    [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
+                float acceleration = float.Parse(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_ACCELERATION_ROW_INDEX]
+                    [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
+                float ovl = float.Parse(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_OVL_ROW_INDEX]
+                    [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
+                int tool = Convert.ToInt16(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_TOOL_ROW_INDEX]
+                    [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
+                int user = Convert.ToInt16(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_USER_ROW_INDEX]
+                    [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
+                int weight = Convert.ToInt16(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_WEIGHT_ROW_INDEX]
+                    [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
+                int velRec = Convert.ToInt16(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_VELREC_ROW_INDEX]
+                    [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
+                int collLev = Convert.ToInt16(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_COLLISION_LEVELS_ROW_INDEX]
+                    [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
+                float blendR = float.Parse(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_BLENDR_ROW_INDEX]
+                    [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
+
+                // Creazione dell'oggetto robotProperties
+                robotProperties = new RobotProperties(speed, velocity, blendT, acceleration, ovl, tool, user, weight, velRec);
+
+                log.Info($"SetRobotProperties completata: " +
+                         $" Speed: {speed}" +
+                         $" Velocity: {velocity}" +
+                         $" Blend T: {blendT}" +
+                         $" Acceleration: {acceleration}" +
+                         $" Ovl: {ovl}" +
+                         $" Tool: {tool}" +
+                         $" User: {user}" +
+                         $" Weight: {weight}" +
+                         $" VelRec: {velRec}" +
+                         $" CollLev: {collLev}" +
+                         $" Blend R: {blendR}");
+
+                // Modifica delle variabili statiche e globali di RobotManager
+                RobotManager.speed = robotProperties.Speed;
+                RobotManager.vel = robotProperties.Velocity;
+                RobotManager.acc = robotProperties.Acceleration;
+                RobotManager.ovl = robotProperties.Ovl;
+                RobotManager.blendT = robotProperties.Blend;
+                RobotManager.tool = robotProperties.Tool;
+                RobotManager.user = robotProperties.User;
+                RobotManager.weight = robotProperties.Weight;
+                RobotManager.velRec = robotProperties.VelRec;
+                currentCollisionLevel = collLev;
+                RobotManager.blendR = blendR;
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Errore durante SetRobotProperties: " + ex.ToString());
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Generazione evento da allarme ricevuto
+        /// </summary>
+        /// <param name="e"></param>
+        protected static void OnAllarmeGenerato(EventArgs e)
+        {
+            AllarmeGenerato?.Invoke(null, e);
+        }
+
+        /// <summary>
+        /// Generazione evento da allarmi resettati
+        /// </summary>
+        /// <param name="e"></param>
+        protected static void OnAllarmeResettato(EventArgs e)
+        {
+            AllarmeResettato?.Invoke(null, e);
+        }
+
+        /// <summary>
+        /// Generazione eventi
+        /// </summary>
+        public static void TriggerAllarmeGenerato()
+        {
+            OnAllarmeGenerato(EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Trigger attivato quando vengono cancellati gli allarmi
+        /// </summary>
+        public static void TriggerAllarmeResettato()
+        {
+            OnAllarmeResettato(EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Normalizza angolo robot
+        /// </summary>
+        /// <param name="angle"></param>
+        /// <returns></returns>
+        static float NormalizeAngle(float angle)
+        {
+            while (angle > 180f) angle -= 360f;
+            while (angle <= -180f) angle += 360f;
+            return angle;
+        }
+
+        /// <summary>
+        /// Invia posizioni al PLC in formato cartesiano e joint
+        /// </summary>
+        /// <param name="jPos">Posizione in joint ottenuta dal calcolo di cinematica inversa partendo dalla posizione TCP</param>
+        public static async Task CheckRobotPosition(JointPos jPos)
+        {
+            // Calcolo della posizione in joint eseguendo il calcolo di cinematica inversa
+            await Task.Run(() => robot.GetInverseKin(0, TCPCurrentPosition, -1, ref jPos));
+
+            #region TCP
+
+            // Scrittura posizione su asse x
+            RefresherTask.AddUpdate(PLCTagName.x_actual_pos, TCPCurrentPosition.tran.x, "FLOAT");
+
+            // Scrittura posizione su asse y
+            RefresherTask.AddUpdate(PLCTagName.y_actual_pos, TCPCurrentPosition.tran.y, "FLOAT");
+
+            // Scrittura posizione su asse z
+            RefresherTask.AddUpdate(PLCTagName.z_actual_pos, TCPCurrentPosition.tran.z, "FLOAT");
+
+            // Scrittura posizione su asse rx
+            RefresherTask.AddUpdate(PLCTagName.rx_actual_pos, TCPCurrentPosition.rpy.rx, "FLOAT");
+
+            // Scrittura posizione su asse ry
+            RefresherTask.AddUpdate(PLCTagName.ry_actual_pos, TCPCurrentPosition.rpy.ry, "FLOAT");
+
+            // Scrittura posizione su asse rz
+            RefresherTask.AddUpdate(PLCTagName.rz_actual_pos, TCPCurrentPosition.rpy.rz, "FLOAT");
+
+            #endregion
+
+            #region Joint
+
+            // Scrittura posizione giunto 1
+            RefresherTask.AddUpdate(PLCTagName.j1_actual_pos, jPos.jPos[0], "FLOAT");
+
+            // Scrittura posizione giunto 2
+            RefresherTask.AddUpdate(PLCTagName.j2_actual_pos, jPos.jPos[1], "FLOAT");
+
+            // Scrittura posizione giunto 3
+            RefresherTask.AddUpdate(PLCTagName.j3_actual_pos, jPos.jPos[2], "FLOAT");
+
+            // Scrittura posizione giunto 4
+            RefresherTask.AddUpdate(PLCTagName.j4_actual_pos, jPos.jPos[3], "FLOAT");
+
+            // Scrittura posizione giunto 5
+            RefresherTask.AddUpdate(PLCTagName.j5_actual_pos, jPos.jPos[4], "FLOAT");
+
+            // Scrittura posizione giunto 6
+            RefresherTask.AddUpdate(PLCTagName.j6_actual_pos, jPos.jPos[5], "FLOAT");
+
+            #endregion
+        }
+
+        /// <summary>
+        /// Approssima i valori delle posizioni a n cifre decimali
+        /// </summary>
+        /// <param name="dp">Contiene il riferimento allo struct che contiene i valori da approssimare</param>
+        /// <param name="digits">Numero di cifre decimali desiderate</param>
+        private static void RoundPositionDecimals(ref DescPose dp, int digits)
+        {
+            dp.tran.x = Math.Round(dp.tran.x, digits);
+            dp.tran.y = Math.Round(dp.tran.y, digits);
+            dp.tran.z = Math.Round(dp.tran.z, digits);
+            dp.rpy.rx = Math.Round(dp.rpy.rx, digits);
+            dp.rpy.ry = Math.Round(dp.rpy.ry, digits);
+            dp.rpy.rz = Math.Round(dp.rpy.rz, digits);
+        }
 
         #endregion
 
@@ -1375,9 +2149,14 @@ namespace RM.src.RM250714
             RobotIpAddress = robotIpAddress;
             robot = new Robot();
             string logDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
-            robot.LoggerInit(FrLogType.ASYNC, FrLogLevel.ERROR, logDirectory, 2, 2);
-            robot.RPC(RobotIpAddress);
+            int errLogInit = robot.LoggerInit(FrLogType.DIRECT, FrLogLevel.ERROR, logDirectory, 2, 2);
+            int errRPC = robot.RPC(RobotIpAddress);
             AlarmManager.isRobotConnected = true;
+
+            RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
+            RefresherTask.AddUpdate(PLCTagName.VersionYear, 2025, "INT16");
+            RefresherTask.AddUpdate(PLCTagName.VersionMonth, 12, "INT16");
+            RefresherTask.AddUpdate(PLCTagName.VersionDay, 19, "INT16");
 
             // Faccio partire i manager
             frameManager = new Frames(robot);
@@ -1410,19 +2189,20 @@ namespace RM.src.RM250714
 
             log.Info("Task di background del robot avviati tramite TaskManager.");
 
-            if (err == -4)
+            if (errRPC != 0)
             {
                 log.Error("RPC exception durante Init del Robot");
-                return false;
+                //return false;
             }
 
             // Se fallisce setting della proprietà del Robot
             if (!GetRobotProperties())
                 return false;
 
-            // Se fallisce setting della proprietà del Robot
             if (!SetRobotProperties())
-                return false;
+            {
+                log.Error("Errore durante set parametri del robot");
+            }
 
             log.Info("Parametri del robot assegnati");
 
@@ -1440,56 +2220,39 @@ namespace RM.src.RM250714
         /// </summary>
         private static async Task AuxiliaryWorker(CancellationToken token)
         {
-            // Lista di aggiornamenti da inviare al PLC
-            List<(string key, bool value, string type)> updates = new List<(string, bool, string)>();
-
-            #region ingombro
-            /*
+            #region ingombri
+            
             // Zone di ingombro
-            var pickPose = ApplicationConfig.applicationsManager.GetPosition("101", "RM");
-            var placePose = ApplicationConfig.applicationsManager.GetPosition("1101", "RM");
-            var homePose = ApplicationConfig.applicationsManager.GetPosition("1", "RM");
+            var pickPose = ApplicationConfig.applicationsManager.GetPosition("1001", "RM");
+            var placePose = ApplicationConfig.applicationsManager.GetPosition("1001", "RM");
+            var homePose = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
+            var beorPose = ApplicationConfig.applicationsManager.GetPosition("pBeor", "RM");
 
             DescPose[] startPoints = new DescPose[]
             {
                 new DescPose(pickPose.x, pickPose.y, pickPose.z, pickPose.rx, pickPose.ry, pickPose.rz),
                 new DescPose(placePose.x, placePose.y, placePose.z, placePose.rx, placePose.ry, placePose.rz),
                 new DescPose(homePose.x, homePose.y, homePose.z, homePose.rx, homePose.ry, homePose.rz),
+                new DescPose(beorPose.x, beorPose.y, beorPose.z, beorPose.rx, beorPose.ry, beorPose.rz),
             };
 
             // Oggetto che rileva ingombro pick
-            double delta_ingombro_pick = 500.0;
+            double delta_ingombro_pick = 300.0;
             checker_ingombro_pick = new PositionChecker(delta_ingombro_pick);
 
             // Oggetto che rileva ingombro place
-            double delta_ingombro_place = 500.0;
+            double delta_ingombro_place = 300.0;
             checker_ingombro_place = new PositionChecker(delta_ingombro_place);
 
             // Oggetto che rileva ingombro home
-            double delta_ingombro_home = 500.0;
+            double delta_ingombro_home = 300.0;
             checker_ingombro_home = new PositionChecker(delta_ingombro_home);
-            */
-            #endregion
 
-            #region Safe zone
-
-            // Dichiarazione del punto di safe
-            var pSafeZone = ApplicationConfig.applicationsManager.GetPosition("pSafeZone", "RM");
-
-            DescPose pointSafeZone = new DescPose(pSafeZone.x, pSafeZone.y, pSafeZone.z, pSafeZone.rx, pSafeZone.ry, pSafeZone.rz);
-
-            // Dichiarazione del punto di home
-            var pHome = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
-
-            DescPose pointHome = new DescPose(pHome.x, pHome.y, pHome.z, pHome.rx, pHome.ry, pHome.rz);
-
-            // Oggetto che rileva safe zone
-            double delta_safeZone = 300.0; // soglia
-            checker_safeZone = new PositionChecker(delta_safeZone);
+            // Oggetto che rileva ingombro beor
+            double delta_ingombro_beor = 300.0;
+            checker_ingombro_beor = new PositionChecker(delta_ingombro_beor);
 
             #endregion
-
-            checker_pos = new PositionChecker(5.0);
 
             try
             {
@@ -1501,7 +2264,7 @@ namespace RM.src.RM250714
                         CheckRobotMode();
                         CheckCurrentToolAndUser();
                         CheckGripperStatus();
-                        //CheckIsRobotInObstructionArea(startPoints, updates);
+                        CheckIsRobotInObstructionArea(startPoints);
                     }
 
                     await Task.Delay(auxiliaryThreadRefreshPeriod, token);
@@ -1530,9 +2293,6 @@ namespace RM.src.RM250714
         /// </summary>
         private async static Task CheckHighPriority(CancellationToken token)
         {
-            // Lista di aggiornamenti da inviare al PLC
-            List<(string key, bool value, string type)> updates = new List<(string, bool, string)>();
-
             #region Safe zone
 
             // Dichiarazione del punto di safe
@@ -1546,7 +2306,7 @@ namespace RM.src.RM250714
 
             #endregion
 
-            checker_pos = new PositionChecker(5.0);
+            checker_pos = new PositionChecker(10.0);
 
             try
             {
@@ -1557,7 +2317,7 @@ namespace RM.src.RM250714
                         try
                         {
                             robot.GetActualTCPPose(flag, ref TCPCurrentPosition); // Leggo posizione robot TCP corrente
-                            CheckIsRobotMoving(updates);
+                            CheckIsRobotMoving();
                             CheckIsRobotInSafeZone(pointSafeZone);
                             CheckIsRobotInPos();
                             CheckStatusRobot();
@@ -1567,8 +2327,6 @@ namespace RM.src.RM250714
                             log.Error("RobotManager: errore durante la valutazione delle variabili HIGH: " + e.Message);
                         }
                     }
-
-                    updates.Clear(); //Svuoto la lista di aggiornamento
 
                     await Task.Delay(highPriorityRefreshPeriod, token);
                 }
@@ -1585,7 +2343,7 @@ namespace RM.src.RM250714
             }
             finally
             {
-                updates.Clear(); // Svuoto la lista di aggiornamento
+
             }
         }
 
@@ -1793,7 +2551,7 @@ namespace RM.src.RM250714
         /// Esegue check apertura/chiusura pinza
         /// </summary>
         /// <returns></returns>
-        private static async Task CheckGripperStatus()
+        private static void CheckGripperStatus()
         {
 
             // Get input digitale (pinza)
@@ -1831,13 +2589,12 @@ namespace RM.src.RM250714
 
                 while (!token.IsCancellationRequested)
                 {
-                   // await CheckCommandStart();
-                   // await CheckCommandGoToHome();
+                    //CheckCommandStart();
+                    CheckCommandGoToHome();
 
                   //  await CheckCommandRecordPoint();
-                   // await CheckVelCommand();
-                    //await CheckCloseGripper();
-                   // CheckCommandResetAlarms();
+                    CheckVelCommand();
+                    CheckCommandResetAlarms();
 
                     //SetRobotMode();
                     //ManageTasks();
@@ -1862,6 +2619,116 @@ namespace RM.src.RM250714
         }
 
         /// <summary>
+        /// Check su comando di reset allarmi derivante da plc
+        /// </summary>
+        private static void CheckCommandResetAlarms()
+        {
+            int resetAlarmsCommand = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_ResetAlarms));
+
+            if (resetAlarmsCommand > 0 && resetAlarmsCommand != previousAlarmResetRequested)
+            {
+                log.Warn("Richiesto comando RESET allarmi");
+                try
+                {
+                    // Reset allarme
+                    //RMLib_AlarmsCleared(null, EventArgs.Empty);
+                    formAlarmPage.ClearActiveAlarms();
+                    // Reset valore
+                    RefresherTask.AddUpdate(PLCTagName.CMD_ResetAlarms, 0, "INT16");
+                    log.Warn("Comando RESET completato");
+                }
+                catch (Exception)
+                {
+                    log.Error("Eccezione generata durante reset allarmi");
+                }
+                previousAlarmResetRequested = resetAlarmsCommand;
+            }
+            else if (resetAlarmsCommand == 0)
+            {
+                previousAlarmResetRequested = 0;
+            }
+        }
+
+
+
+        /// <summary>
+        /// Check su comando di start derivante da plc
+        /// </summary>
+        private static void CheckCommandStart()
+        {
+            // Get valore variabile di avvio ciclo robot
+            int startStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_StartCicloAuto));
+
+            // Get valore variabile di stop ciclo robot
+            int stopStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_StopCicloAuto));
+
+            // Check su cambio di stato
+            if (Convert.ToBoolean(startStatus) != previousStartCommandStatus)
+            {
+                log.Warn("Richiesto comando START");
+
+                if (startStatus == 1 && stopStatus != 1) // Start
+                {
+                    // Controllo che il robot sia in automatico
+                    if (!isAutomaticMode)
+                    {
+                        log.Warn("Tenativo di avvio ciclo con robot non in modalità automatica");
+                        return;
+                    }
+                    // Setto della velocità del Robot dalle sue proprietà memorizzate sul database
+                    if (robotProperties.Speed > 1)
+                    {
+                        int speed = robotProperties.Speed;
+                        //robot.SetSpeed(speed);
+                        SetRobotSpeed(speed);
+                        log.Info($"Velocità Robot: {speed}");
+                    }
+                    // Se il Robot non è in movimento 
+                    if (!AlarmManager.isRobotMoving)
+                    {
+                        taskManager.AddAndStartTask(TaskPickAndPlaceTegliaIperal, PickAndPlaceTegliaIperal, TaskType.LongRunning, false);
+                        EnableButtonCycleEvent?.Invoke(0, EventArgs.Empty);
+                    }
+                    else // Se il Robot è in movimento
+                    {
+                        log.Error("Impossibile inviare nuovi punti al Robot. Robot in movimento");
+                    }
+                }
+                else // Stop
+                {
+                    stopCycleRequested = true;  // Valutare se alzare un bit o fermare subito il robot
+                    EnableButtonCycleEvent?.Invoke(1, EventArgs.Empty);
+                }
+
+                previousStartCommandStatus = startStatus > 0;
+            }
+            else if (!Convert.ToBoolean(startStatus))
+            {
+                previousStartCommandStatus = false;
+            }
+        }
+
+        /// <summary>
+        /// Check su comando di stop derivante da plc
+        /// </summary>
+        private static void CheckCommandGoToHome()
+        {
+            int homeStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_GoHome));
+
+            if (homeStatus == 1 && !previousHomeCommandStatus) // Go to home
+            {
+                log.Warn("[HOME] Richiesto comando GO TO HOME");
+                previousHomeCommandStatus = true;
+                taskManager.AddAndStartTask(TaskHomeRoutine, HomeRoutine, TaskType.Default, false);
+            }
+            else if (homeStatus == 0)
+            {
+                previousHomeCommandStatus = false; // reset status
+            }
+        }
+
+
+        /// <summary>
         /// Esegue controlli sui comandi safety: barriere->pause/resume e stop
         /// </summary>
         /// <param name="token"></param>
@@ -1872,9 +2739,9 @@ namespace RM.src.RM250714
             {
                 while (!token.IsCancellationRequested)
                 {
-                   // await CheckCommandStop();
-                   // await CheckPauseStatus();
-                    // CheckResumeStatus();
+                   CheckCommandStop();
+                   CheckPauseStatus();
+                   CheckResumeStatus();
 
                     await Task.Delay(safetyTaskManagerRefreshPeriod);
                 }
@@ -1892,6 +2759,127 @@ namespace RM.src.RM250714
             finally
             {
 
+            }
+        }
+
+        /// <summary>
+        /// Check su uscita barriere
+        /// </summary>
+        private static void CheckResumeStatus()
+        {
+            // Get valore richiesta di pausa
+            int barrierStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.MovePause));
+
+            // Get valore richiesta di resume
+            int resumeMov = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Resume));
+
+            // Controllo se c'è stato un cambio di valore della richiesta di resume
+            if (resumeMov == 1 && previousBarrierResumeStatus == 0 && barrierStatus == 0)
+            {
+                log.Warn("Richiesto comando RESUME");
+
+                // Ripresa
+                ResumeMotion();
+                robotIsPaused = false;
+
+                log.Warn("Comando RESUME completato");
+
+                previousBarrierResumeStatus = 1;
+            }
+            else if (resumeMov == 0)
+            {
+                previousBarrierResumeStatus = 0;
+            }
+        }
+
+        /// <summary>
+        /// Check su accesso barriere
+        /// </summary>
+        private static async Task CheckPauseStatus()
+        {
+            int barrierStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.MovePause));
+
+            if (barrierStatus == 1 && previousBarrierPauseStatus == 0)
+            {
+                log.Warn("Richiesto comando PAUSA");
+
+                // Richiesta di pausa
+                PauseMotion();
+                robotIsPaused = true;
+
+                // 🔁 Aspetta che lo stato robot diventi 3 (pausa)
+                const int maxAttempts = 3;
+                int attempt = 0;
+
+                do
+                {
+                    if (robotStatus == 3 || robotStatus == 1)
+                    {
+                        // robotMove_inPause = 1;
+                        break;
+                    }
+                    await Task.Delay(100); // Attendi un po' prima di riprovare
+                    attempt++;
+
+                } while (attempt < maxAttempts);
+
+                if (robotStatus != 3 && robotStatus != 1)
+                {
+                    log.Error("ERRORE: Il robot non si è messo in pausa correttamente.");
+                }
+                log.Warn("Comando PAUSA completato");
+
+                previousBarrierPauseStatus = 1;
+            }
+            else if (barrierStatus == 0)
+            {
+                previousBarrierPauseStatus = 0;
+            }
+        }
+
+
+
+        /// <summary>
+        /// Gestione comando di stop derivante da plc
+        /// </summary>
+        private static void CheckCommandStop()
+        {
+            // Get valore variabile di stop ciclo robot
+            int stopStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_StopCicloAuto));
+
+            if (stopStatus == 1 && previousStopCommandStatus != 1)
+            {
+                log.Warn("Richiesto comando STOP");
+
+                stopCycleRoutine = true; // Alzo segnale di stop ciclo main
+                CycleRun_Main = 0; // Segnalo interruzione ciclo main
+                step = 0; // reset step ciclo main
+
+                stopHomeRoutine = true; // Alzo segnale di stop ciclo home
+                CycleRun_Home = 0; // Segnalo interruzione ciclo home
+                stepHomeRoutine = 0; // reset step ciclo home
+
+                stopPickRoutine = true; // Alzo segnale di stop ciclo pick
+                CycleRun_Pick = 0; // Segnalo interruzione ciclo pick
+                stepPick = 0; // reset step ciclo pick
+
+                stopPlaceRoutine = true; // Alzo segnale di stop ciclo place
+                CycleRun_Place = 0; // Segnalo interruzione ciclo place
+                stepPlace = 0; // reset step ciclo place
+
+                //robot.PauseMotion(); 
+                //PauseMotion(); // Invio comando di pausa al robot
+                //await Task.Delay(200); // Leggero ritardo per stabilizzare il robot
+                //robot.StopMotion(); 
+                StopMotion(); // Stop Robot con conseguente cancellazione di coda di punti
+
+                previousStopCommandStatus = 1;
+
+                log.Warn("Comando STOP eseguito");
+            }
+            else if (stopStatus == 0)
+            {
+                previousStopCommandStatus = 0;
             }
         }
 
@@ -3530,12 +4518,17 @@ namespace RM.src.RM250714
 
                             #endregion
 
-                            if (execPick == 1) // Check richiesta di pick
+                            if (execPick == 1 && !stopCycleRequested) // Check richiesta di pick
                             {
                                 if (enableToPick == 1 && enableToPlace == 1) // Check consensi
                                 {
                                     step = 40; // Passaggio allo step dedicato alla preparazione dei punti
                                 }
+                            }
+                            else
+                            {
+                                stopCycleRoutine = true;
+                                step = 0;
                             }
 
                             break;
@@ -4454,14 +5447,14 @@ namespace RM.src.RM250714
             }
         }
 
-    
+
 
         #region Comandi interfaccia
 
         /// <summary>
         /// Esegue check su cambio velocità derivante dal plc
         /// </summary>
-        private static async Task CheckVelCommand()
+        private static void CheckVelCommand()
         {
             // Get valore variabile di stop ciclo robot
             int velocity = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_OverrideAuto));
@@ -4471,8 +5464,8 @@ namespace RM.src.RM250714
             {
                 log.Info("[Override speed] Richiesto comando cambio override speed da: " + previousVel + " a : " + velocity);
 
-                await Task.Run(() => RobotDAO.SetRobotVelocity(ConnectionString, Convert.ToInt16(velocity)));
-                await Task.Run(() => RobotDAO.SetRobotAcceleration(ConnectionString, Convert.ToInt16(velocity)));
+                RobotDAO.SetRobotVelocity(ConnectionString, Convert.ToInt16(velocity));
+                RobotDAO.SetRobotAcceleration(ConnectionString, Convert.ToInt16(velocity));
 
                 //Invoco metodo per cambiare etichetta velocità in homePage
                 RobotVelocityChanged?.Invoke(velocity, EventArgs.Empty);
@@ -4763,7 +5756,10 @@ namespace RM.src.RM250714
         /// Check su movimento del Robot
         /// </summary>
         /// <param name="updates"></param>
-        public static void CheckIsRobotMoving(List<(string key, bool value, string type)> updates)
+        /// <summary>
+        /// Check su movimento del Robot
+        /// </summary>
+        public static void CheckIsRobotMoving()
         {
 
             if (AlarmManager.isRobotConnected)
@@ -4883,1049 +5879,7 @@ namespace RM.src.RM250714
 
         #endregion
 
-        #region Metodi helper
-
-        /// <summary>
-        /// Legge lo stato di una singola Uscita Digitale (DO) del controllore.
-        /// </summary>
-        /// <param name="doIndex">L'indice dell'uscita da leggere (da 0 a 15).</param>
-        /// <param name="isOn">True se l'uscita è ON, False se è OFF.</param>
-        /// <param name="do_state_h"></param>
-        /// <param name="do_state_l"></param>
-        /// <returns>True se la lettura ha avuto successo, False in caso di errore.</returns>
-        public static bool TryGetSingleDOState(int doIndex, out bool isOn, int do_state_h, int do_state_l)
-        {
-            isOn = false;
-            if (doIndex < 0 || doIndex > 15)
-            {
-                log.Error($"Indice DO non valido: {doIndex}. Deve essere tra 0 e 15.");
-                return false;
-            }
-
-            if (doIndex <= 7)
-            {
-                // L'uscita è nel registro "basso" (do_state_l)
-                // Usiamo l'operatore AND bitwise per isolare il bit che ci interessa.
-                // (1 << doIndex) crea una maschera con un solo '1' nella posizione giusta.
-                // Esempio per DO2: la maschera è 00000100 in binario.
-                isOn = (do_state_l & (1 << doIndex)) != 0;
-            }
-            else
-            {
-                // L'uscita è nel registro "alto" (do_state_h)
-                int bitIndexInHighRegister = doIndex - 8; // DO8 è il bit 0, DO9 è il bit 1, etc.
-                isOn = (do_state_h & (1 << bitIndexInHighRegister)) != 0;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Gnerazione di un allarme
-        /// </summary>
-        /// <param name="maincode"></param>
-        /// <param name="subcode"></param>
-        public static void GenerateAlarm(int maincode, int subcode)
-        {
-            DataRow robotAlarm;
-            DateTime now;
-            long unixTimestamp;
-            DateTime dateTime;
-            string formattedDate;
-            string id, description, timestamp, device, state;
-
-            if (!IsAlarmAlreadySignaled(maincode.ToString() + subcode.ToString()))
-            {
-                robotAlarm = RobotDAO.GetRobotAlarm(ConnectionString, maincode, subcode);
-                if (robotAlarm != null)
-                {
-                    // Ottieni la data e l'ora attuali
-                    now = DateTime.Now;
-
-                    // Calcola il timestamp Unix in millisecondi
-                    unixTimestamp = ((DateTimeOffset)now).ToUnixTimeMilliseconds();
-
-                    dateTime = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(unixTimestamp.ToString())).DateTime.ToLocalTime();
-                    formattedDate = dateTime.ToString("dd-MM-yyyy HH:mm:ss");
-
-                    if (robotAlarm["id"].ToString() == "")
-                    {
-                        id = "9999";
-                        description = "Generic/Not found";
-                        timestamp = formattedDate;
-                        device = "Robot";
-                        state = "ON";
-                    }
-                    else
-                    {
-                        id = robotAlarm["id"].ToString();
-                        description = robotAlarm["descr_MainCode"].ToString() + ": " + robotAlarm["descr_SubCode"].ToString();
-                        timestamp = formattedDate;
-                        device = "Robot";
-                        state = "ON";
-                    }
-                    CreateRobotAlarm(id, description, timestamp, device, state);
-                    MarkAlarmAsSignaled(maincode.ToString() + subcode.ToString());
-                    log.Warn(robotAlarm["descr_MainCode"].ToString() + ": " + robotAlarm["descr_SubCode"].ToString());
-                }
-                else
-                {
-                    // Ottieni la data e l'ora attuali
-                    now = DateTime.Now;
-
-                    // Calcola il timestamp Unix in millisecondi
-                    unixTimestamp = ((DateTimeOffset)now).ToUnixTimeMilliseconds();
-
-                    dateTime = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(unixTimestamp.ToString())).DateTime.ToLocalTime();
-                    formattedDate = dateTime.ToString("dd-MM-yyyy HH:mm:ss");
-
-                    id = "9999";
-                    description = "Generic/Not found";
-                    timestamp = formattedDate;
-                    device = "Robot";
-                    state = "ON";
-
-                    CreateRobotAlarm(id, description, timestamp, device, state);
-                }
-
-                // Segnalo che è presente un allarme bloccante (allarme robot)
-                AlarmManager.blockingAlarm = true;
-                robotError = 1;
-            }
-        }
-
-        /// <summary>
-        /// Ottiene le informazioni del robot attraverso i metodi bloccanti della libreria
-        /// </summary>
-        private static void GetRobotInfo()
-        {
-            if (AlarmManager.isRobotConnected)
-            {
-                log.Info("Recupero informazioni del robot");
-                robot.GetSDKVersion(ref RobotSdkVer);
-                robot.GetControllerIP(ref RobotCurrentIP);
-                robot.GetSoftwareVersion(ref RobotModelVer, ref RobotWebVer, ref RobotControllerVer);
-                robot.GetFirmwareVersion(ref RobotFwBoxBoardVer, ref RobotFwDriver1Ver, ref RobotFwDriver2Ver, ref RobotFwDriver3Ver,
-                    ref RobotFwDriver4Ver, ref RobotFwDriver5Ver, ref RobotFwDriver6Ver, ref RobotFwEndBoardVer);
-                robot.GetHardwareVersion(ref RobotHwBoxBoardVer, ref RobotHwDriver1Ver, ref RobotHwDriver2Ver, ref RobotHwDriver3Ver,
-                    ref RobotHwDriver4Ver, ref RobotHwDriver5Ver, ref RobotHwDriver6Ver, ref RobotHwEndBoardVer);
-            }
-        }
-
-        /// <summary>
-        /// Check su errori comunicati da PLC
-        /// </summary>
-        /// <param name="alarmValues"></param>
-        /// <param name="alarmDescriptions"></param>
-        /// <param name="now"></param>
-        /// <param name="unixTimestamp"></param>
-        /// <param name="dateTime"></param>
-        /// <param name="formattedDate"></param>
-        private static void GetPLCErrorCode(
-            Dictionary<string, object> alarmValues,
-            Dictionary<string, string> alarmDescriptions,
-            DateTime now,
-            long unixTimestamp,
-            DateTime dateTime,
-            string formattedDate
-            )
-        {
-            /*
-            object alarmsPresent;
-
-            lock (PLCConfig.appVariables)
-            {
-                alarmsPresent = PLCConfig.appVariables.getValue("PLC1_" + "Alarm present");
-
-                if (Convert.ToBoolean(alarmsPresent))
-                {
-                    foreach (var key in alarmDescriptions.Keys)
-                    {
-                        alarmValues[key] = PLCConfig.appVariables.getValue("PLC1_" + key);
-                    }
-                }
-            }
-            */
-            /*
-            try
-            {
-
-                foreach (var key in alarmDescriptions.Keys)
-                {
-                    alarmValues[key] = PLCConfig.appVariables.getValue("PLC1_" + key);
-                }
-
-                // if (Convert.ToBoolean(alarmsPresent))
-                // {
-                now = DateTime.Now;
-                unixTimestamp = ((DateTimeOffset)now).ToUnixTimeMilliseconds();
-                dateTime = DateTimeOffset.FromUnixTimeMilliseconds(unixTimestamp).DateTime.ToLocalTime();
-                formattedDate = dateTime.ToString("dd-MM-yyyy HH:mm:ss");
-
-                foreach (var alarm in alarmValues)
-                {
-                    if (Convert.ToBoolean(alarm.Value) && !IsAlarmAlreadySignaled(alarm.Key))
-                    {
-                        string id = GenerateAlarmId(alarm.Key);
-                        CreateRobotAlarm(id, alarmDescriptions[alarm.Key], formattedDate, "PLC", "ON");
-                        MarkAlarmAsSignaled(alarm.Key);
-                    }
-                }
-                // }
-            }
-            catch(Exception ex)
-            {
-
-            }
-            */
-        }
-
-        /// <summary>
-        /// Avvisa se un allarme è già stato segnalato
-        /// </summary>
-        /// <param name="alarmKey"></param>
-        /// <returns></returns>
-        private static bool IsAlarmAlreadySignaled(string alarmKey)
-        {
-            return allarmiSegnalati.ContainsKey(alarmKey) && allarmiSegnalati[alarmKey];
-        }
-
-        /// <summary>
-        /// Imposta l'allarme come segnalato
-        /// </summary>
-        /// <param name="alarmKey"></param>
-        private static void MarkAlarmAsSignaled(string alarmKey)
-        {
-            if (allarmiSegnalati.ContainsKey(alarmKey))
-            {
-                allarmiSegnalati[alarmKey] = true;
-            }
-            else
-            {
-                allarmiSegnalati.Add(alarmKey, true);
-            }
-        }
-
-        /// <summary>
-        /// Legge allarmi derivanti dal Robot
-        /// </summary>
-        private static void GetRobotErrorCode()
-        {
-            DataRow robotAlarm;
-            DateTime now;
-            string id;
-            string description;
-            string timestamp;
-            string device;
-            string state;
-            long unixTimestamp;
-            DateTime dateTime;
-            string formattedDate;
-
-            if (AlarmManager.isRobotConnected)
-            {
-                err = robot.GetRobotErrorCode(ref maincode, ref subcode);
-                if (maincode != 0 && !IsAlarmAlreadySignaled(maincode.ToString() + subcode.ToString()))
-                {
-                    robotAlarm = RobotDAO.GetRobotAlarm(ConnectionString, maincode, subcode);
-                    if (robotAlarm != null)
-                    {
-                        Console.WriteLine($"mainErrCode {maincode} subErrCode {subcode} ");
-
-                        // Ottieni la data e l'ora attuali
-                        now = DateTime.Now;
-
-                        // Calcola il timestamp Unix in millisecondi
-                        unixTimestamp = ((DateTimeOffset)now).ToUnixTimeMilliseconds();
-
-                        dateTime = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(unixTimestamp.ToString())).DateTime.ToLocalTime();
-                        formattedDate = dateTime.ToString("dd-MM-yyyy HH:mm:ss");
-
-                        if (robotAlarm["id"].ToString() == "")
-                        {
-                            id = "9999";
-                            description = "Generic/Not found";
-                            timestamp = formattedDate;
-                            device = "Robot";
-                            state = "ON";
-                        }
-                        else
-                        {
-                            id = robotAlarm["id"].ToString();
-                            description = robotAlarm["descr_MainCode"].ToString() + ": " + robotAlarm["descr_SubCode"].ToString();
-                            timestamp = formattedDate;
-                            device = "Robot";
-                            state = "ON";
-                        }
-                        CreateRobotAlarm(id, description, timestamp, device, state);
-                        MarkAlarmAsSignaled(maincode.ToString() + subcode.ToString());
-                        log.Warn(robotAlarm["descr_MainCode"].ToString() + ": " + robotAlarm["descr_SubCode"].ToString());
-                    }
-                    else
-                    {
-                        // Ottieni la data e l'ora attuali
-                        now = DateTime.Now;
-
-                        // Calcola il timestamp Unix in millisecondi
-                        unixTimestamp = ((DateTimeOffset)now).ToUnixTimeMilliseconds();
-
-                        dateTime = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(unixTimestamp.ToString())).DateTime.ToLocalTime();
-                        formattedDate = dateTime.ToString("dd-MM-yyyy HH:mm:ss");
-
-                        id = "9999";
-                        description = "Generic/Not found";
-                        timestamp = formattedDate;
-                        device = "Robot";
-                        state = "ON";
-
-                        CreateRobotAlarm(id, description, timestamp, device, state);
-                        MarkAlarmAsSignaled(maincode.ToString() + subcode.ToString());
-                        log.Warn($"Allarme generato: Generic/Not found MainCode: {maincode}, SubCode: {subcode}");
-                    }
-
-                    // Segnalo che è presente un allarme bloccante (allarme robot)
-                    AlarmManager.blockingAlarm = true;
-                    robotError = 1;
-                }
-                else if (maincode == 0)
-                {
-                    robotError = 0;
-                }
-            }
-        }
-        /// <summary>
-        /// Reset iniziali delle variabili PLC
-        /// </summary>
-        private static void ResetPLCVariables()
-        {
-            /*
-            var HomePoint = ApplicationConfig.applicationsManager.GetPosition("1", "RM"); // Get punto di home point
-            RefresherTask.AddUpdate(PLCTagName.HomePoint_X, HomePoint.x, "FLOAT"); // Scrittura xCoord punto di home point
-            RefresherTask.AddUpdate(PLCTagName.HomePoint_Y, HomePoint.y, "FLOAT"); // Scrittura yCoord punto di home point
-            RefresherTask.AddUpdate(PLCTagName.HomePoint_Z, HomePoint.z, "FLOAT"); // Scrittura zCoord punto di home point
-            // RefresherTask.AddUpdate(PLCTagName.HomePoint_RX, HomePoint.rx, "FLOAT"); // Scrittura rxCoord punto di home point
-            // RefresherTask.AddUpdate(PLCTagName.HomePoint_RY, HomePoint.ry, "FLOAT"); // Scrittura ryCoord punto di home point
-            // RefresherTask.AddUpdate(PLCTagName.HomePoint_RZ, HomePoint.rz, "FLOAT"); // Scrittura rzCoord punto di home point
-
-            var pickPoint_Box1 = ApplicationConfig.applicationsManager.GetPosition("101", "RM"); // Get punto di pick box 1
-            RefresherTask.AddUpdate(PLCTagName.PickPoint_Box1_X, pickPoint_Box1.x, "FLOAT"); // Scrittura xCoord punto di pick box 1
-            RefresherTask.AddUpdate(PLCTagName.PickPoint_Box1_Y, pickPoint_Box1.y, "FLOAT"); // Scrittura yCoord punto di pick box 1
-            RefresherTask.AddUpdate(PLCTagName.PickPoint_Box1_Z, pickPoint_Box1.z, "FLOAT"); // Scrittura zCoord punto di pick box 1
-            // RefresherTask.AddUpdate(PLCTagName.PickPoint_Box1_RX, pickPoint_Box1.rx, "FLOAT"); // Scrittura rxCoord punto di pick box 1
-            // RefresherTask.AddUpdate(PLCTagName.PickPoint_Box1_RY, pickPoint_Box1.ry, "FLOAT"); // Scrittura ryCoord punto di pick box 1
-            // RefresherTask.AddUpdate(PLCTagName.PickPoint_Box1_RZ, pickPoint_Box1.rz, "FLOAT"); // Scrittura rzCoord punto di pick box 1
-
-            var pickPoint_Box2 = ApplicationConfig.applicationsManager.GetPosition("201", "RM"); // Get punto di pick box 2
-            RefresherTask.AddUpdate(PLCTagName.PickPoint_Box2_X, pickPoint_Box2.x, "FLOAT"); // Scrittura xCoord punto di pick box 2
-            RefresherTask.AddUpdate(PLCTagName.PickPoint_Box2_Y, pickPoint_Box2.y, "FLOAT"); // Scrittura yCoord punto di pick box 2
-            RefresherTask.AddUpdate(PLCTagName.PickPoint_Box2_Z, pickPoint_Box2.z, "FLOAT"); // Scrittura zCoord punto di pick box 2
-            // RefresherTask.AddUpdate(PLCTagName.PickPoint_Box2_RX, pickPoint_Box2.rx, "FLOAT"); // Scrittura rxCoord punto di pick box 2
-            // RefresherTask.AddUpdate(PLCTagName.PickPoint_Box2_RY, pickPoint_Box2.ry, "FLOAT"); // Scrittura ryCoord punto di pick box 2
-            // RefresherTask.AddUpdate(PLCTagName.PickPoint_Box2_RZ, pickPoint_Box2.rz, "FLOAT"); // Scrittura rzCoord punto di pick box 2
-
-            var pickPoint_Box3 = ApplicationConfig.applicationsManager.GetPosition("301", "RM"); // Get punto di pick box 3
-            RefresherTask.AddUpdate(PLCTagName.PickPoint_Box3_X, pickPoint_Box3.x, "FLOAT"); // Scrittura xCoord punto di pick box 3
-            RefresherTask.AddUpdate(PLCTagName.PickPoint_Box3_Y, pickPoint_Box3.y, "FLOAT"); // Scrittura yCoord punto di pick box 3
-            RefresherTask.AddUpdate(PLCTagName.PickPoint_Box3_Z, pickPoint_Box3.z, "FLOAT"); // Scrittura zCoord punto di pick box 3
-            // RefresherTask.AddUpdate(PLCTagName.PickPoint_Box3_RX, pickPoint_Box3.rx, "FLOAT"); // Scrittura rxCoord punto di pick box 3
-            // RefresherTask.AddUpdate(PLCTagName.PickPoint_Box3_RY, pickPoint_Box3.ry, "FLOAT"); // Scrittura ryCoord punto di pick box 3
-            // RefresherTask.AddUpdate(PLCTagName.PickPoint_Box3_RZ, pickPoint_Box3.rz, "FLOAT"); // Scrittura rzCoord punto di pick box 3
-
-            var PlacePoint_Pallet1_Box1 = ApplicationConfig.applicationsManager.GetPosition("1101", "RM"); // Get punto di place pallet 1 box 1
-            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box1_X, PlacePoint_Pallet1_Box1.x, "FLOAT"); // Scrittura xCoord punto di place pallet 1 box 1
-            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box1_Y, PlacePoint_Pallet1_Box1.y, "FLOAT"); // Scrittura yCoord punto di place pallet 1 box 1
-            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box1_Z, PlacePoint_Pallet1_Box1.z, "FLOAT"); // Scrittura zCoord punto di place pallet 1 box 1
-            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box1_RX, PlacePoint_Pallet1_Box1.rx, "FLOAT"); // Scrittura rxCoord punto di place pallet 1 box 1
-            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box1_RY, PlacePoint_Pallet1_Box1.ry, "FLOAT"); // Scrittura ryCoord punto di place pallet 1 box 1
-            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box1_RZ, PlacePoint_Pallet1_Box1.rz, "FLOAT"); // Scrittura rzCoord punto di place pallet 1 box 1
-
-            var PlacePoint_Pallet1_Box2 = ApplicationConfig.applicationsManager.GetPosition("1201", "RM"); // Get punto di place pallet 1 box 2
-            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box2_X, PlacePoint_Pallet1_Box2.x, "FLOAT"); // Scrittura xCoord punto di place pallet 1 box 2
-            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box2_Y, PlacePoint_Pallet1_Box2.y, "FLOAT"); // Scrittura yCoord punto di place pallet 1 box 2
-            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box2_Z, PlacePoint_Pallet1_Box2.z, "FLOAT"); // Scrittura zCoord punto di place pallet 1 box 2
-            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box2_RX, PlacePoint_Pallet1_Box2.rx, "FLOAT"); // Scrittura rxCoord punto di place pallet 1 box 2
-            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box2_RY, PlacePoint_Pallet1_Box2.ry, "FLOAT"); // Scrittura ryCoord punto di place pallet 1 box 2
-            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box2_RZ, PlacePoint_Pallet1_Box2.rz, "FLOAT"); // Scrittura rzCoord punto di place pallet 1 box 2
-
-            var PlacePoint_Pallet1_Box3 = ApplicationConfig.applicationsManager.GetPosition("1301", "RM"); // Get punto di place pallet 1 box 3
-            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box3_X, PlacePoint_Pallet1_Box3.x, "FLOAT"); // Scrittura xCoord punto di place pallet 1 box 3
-            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box3_Y, PlacePoint_Pallet1_Box3.y, "FLOAT"); // Scrittura yCoord punto di place pallet 1 box 3
-            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box3_Z, PlacePoint_Pallet1_Box3.z, "FLOAT"); // Scrittura zCoord punto di place pallet 1 box 3
-            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box3_RX, PlacePoint_Pallet1_Box3.rx, "FLOAT"); // Scrittura rxCoord punto di place pallet 1 box 3
-            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box3_RY, PlacePoint_Pallet1_Box3.ry, "FLOAT"); // Scrittura ryCoord punto di place pallet 1 box 3
-            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet1_Box3_RZ, PlacePoint_Pallet1_Box3.rz, "FLOAT"); // Scrittura rzCoord punto di place pallet 1 box 3
-
-            var PlacePoint_Pallet2_Box1 = ApplicationConfig.applicationsManager.GetPosition("2101", "RM"); // Get punto di place pallet 2 box 1
-            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet2_Box1_X, PlacePoint_Pallet2_Box1.x, "FLOAT"); // Scrittura xCoord punto di place pallet 2 box 1
-            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet2_Box1_Y, PlacePoint_Pallet2_Box1.y, "FLOAT"); // Scrittura yCoord punto di place pallet 2 box 1
-            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet2_Box1_Z, PlacePoint_Pallet2_Box1.z, "FLOAT"); // Scrittura zCoord punto di place pallet 2 box 1
-            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet2_Box1_RX, PlacePoint_Pallet2_Box1.rx, "FLOAT"); // Scrittura rxCoord punto di place pallet 2 box 1
-            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet2_Box1_RY, PlacePoint_Pallet2_Box1.ry, "FLOAT"); // Scrittura ryCoord punto di place pallet 2 box 1
-            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet2_Box1_RZ, PlacePoint_Pallet2_Box1.rz, "FLOAT"); // Scrittura rzCoord punto di place pallet 2 box 1
-
-            var PlacePoint_Pallet2_Box2 = ApplicationConfig.applicationsManager.GetPosition("2201", "RM"); // Get punto di place pallet 2 box 2
-            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet2_Box2_X, PlacePoint_Pallet2_Box2.x, "FLOAT"); // Scrittura xCoord punto di place pallet 2 box 2
-            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet2_Box2_Y, PlacePoint_Pallet2_Box2.y, "FLOAT"); // Scrittura yCoord punto di place pallet 2 box 2
-            RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet2_Box2_Z, PlacePoint_Pallet2_Box2.z, "FLOAT"); // Scrittura zCoord punto di place pallet 2 box 2
-            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet2_Box2_RX, PlacePoint_Pallet2_Box2.rx, "FLOAT"); // Scrittura rxCoord punto di place pallet 2 box 2
-            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet2_Box2_RY, PlacePoint_Pallet2_Box2.ry, "FLOAT"); // Scrittura ryCoord punto di place pallet 2 box 2
-            // RefresherTask.AddUpdate(PLCTagName.PlacePoint_Pallet2_Box2_RZ, PlacePoint_Pallet2_Box2.rz, "FLOAT"); // Scrittura rzCoord punto di place pallet 2 box 2
-
-            RefresherTask.AddUpdate(PLCTagName.ACT_Step_MainCycle, 0, "INT16"); // Reset fase ciclo a PLC
-            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Home, 0, "INT16"); // Reset fase ciclo a PLC
-            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Pick, 0, "INT16"); // Reset fase ciclo a PLC
-            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Place, 0, "INT16"); // Reset fase ciclo a PLC
-            RefresherTask.AddUpdate(PLCTagName.CycleRun_Main, 0, "INT16"); // Reset valore di avvio ciclo main 
-            RefresherTask.AddUpdate(PLCTagName.CycleRun_Home, 0, "INT16"); // Reset valore di avvio ciclo home 
-            RefresherTask.AddUpdate(PLCTagName.CycleRun_Pick, 0, "INT16"); // Reset valore di avvio ciclo pick 
-            RefresherTask.AddUpdate(PLCTagName.CycleRun_Place, 0, "INT16"); // Reset valore di avvio ciclo place 
-            */
-        }
-
-        /// <summary>
-        /// Verifica se il Robot si trova in posizione di Home
-        /// </summary>
-        private static void CheckIsRobotInHomePosition(DescPose homePose)
-        {
-            // Calcola lo stato corrente
-            isInHomePosition = checker_pos.IsInPosition(homePose, TCPCurrentPosition);
-
-            // Controlla se lo stato è cambiato rispetto al precedente
-            if (previousIsInHomePosition == null || isInHomePosition != previousIsInHomePosition)
-            {
-                //if (stableMode == 2)
-                {
-                    if (isInHomePosition)
-                    {
-                        // Aggiorna l'icona della goto home pos in home page
-                        RobotInHomePosition?.Invoke(null, EventArgs.Empty);
-                    }
-                    else
-                    {
-                        // Aggiorna l'icona della goto home pos in home page
-                        RobotNotInHomePosition?.Invoke(null, EventArgs.Empty);
-                    }
-                }
-
-                // Aggiorna lo stato precedente
-                previousIsInHomePosition = isInHomePosition;
-            }
-        }
-
-        /// <summary>
-        /// Esegue check su modalità Robot
-        /// </summary>
-        /// <summary>
-        /// Esegue check su modalità Robot
-        /// </summary>
-        private static void CheckRobotMode()
-        {
-            // Ottieni la modalità operativa dal PLC
-            mode = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Operating_Mode));
-
-            // Controlla se la modalità è cambiata rispetto all'ultima lettura
-            if (mode != lastMode)
-            {
-                // Aggiorna l'ultima modalità letta e il timestamp
-                lastMode = mode;
-                lastModeChangeTime = DateTime.Now;
-                return; // Aspettiamo che il valore si stabilizzi
-            }
-            /*
-            // Verifica se la modalità è rimasta invariata per almeno 1 secondo
-            if (DateTime.Now - lastModeChangeTime < TimeSpan.FromSeconds(1) && mode != stableMode)
-            {
-                // Modalità confermata stabile: aggiorniamo lo stato
-                stableMode = mode;
-
-                // Cambia la modalità del robot in base alla modalità stabile
-                if (stableMode == 1 && !prevIsAuto) // Passaggio alla modalità automatica
-                { 
-                    log.Warn("[Mode] Cambio modalità in AUTO");
-                    isAutomaticMode = true;
-                    SetRobotMode(0); // Imposta il robot in modalità automatica
-                    JogMovement.StopJogRobotTask(); // Ferma il thread di movimento manuale
-                    prevIsAuto = true;
-                    prevIsManual = false;
-                    prevIsOff = false;
-                    TriggerRobotModeChangedEvent(1);  // Evento: modalità automatica
-                }
-                else if (stableMode == 2 && !prevIsManual) // Passaggio alla modalità manuale
-                {
-                    log.Warn("[Mode] Cambio modalità in MANUAL");
-                    isAutomaticMode = false;
-                    SetRobotMode(1); // Imposta il robot in modalità manuale
-                    prevIsManual = true;
-                    prevIsAuto = false;
-                    prevIsOff = false;
-                    TriggerRobotModeChangedEvent(0);  // Evento: modalità manuale
-                }
-                else if (stableMode == 0 && !prevIsOff) // Passaggio alla modalità Off
-                {
-                    log.Warn("[Mode] Cambio modalità in OFF");
-                    prevIsOff = true;
-                    prevIsAuto = false;
-                    prevIsManual = false;
-                    TriggerRobotModeChangedEvent(3);  // Evento: modalità Off
-                }
-            }
-
-            // Esegui logiche aggiuntive come il movimento manuale (Jog)
-            if (isEnabledNow && stableMode == 2)
-            {
-                JogMovement.StartJogRobotTask(); // Avvia il thread di movimento manuale (Jog)
-            }*/
-            if (DateTime.Now - lastModeChangeTime < TimeSpan.FromSeconds(1))
-            {
-                return; // Aspetta che il valore del PLC sia stabile
-            }
-            // CASO A: Il PLC vuole la modalità AUTOMATICA
-            if (mode == 1) // 1 = AUTO secondo la tua logica PLC
-            {
-                // Se il robot NON è GIA' in automatico...
-                if (currentRobotMode != 0) // 0 = AUTOMATICO secondo la libreria robot
-                {
-                    log.Warn("[Mode] Cambio modalità in AUTO");
-                    isAutomaticMode = true;
-                    SetRobotMode(0); // Imposta il robot in modalità automatica
-                    JogMovement.StopJogRobotTask(); // Ferma il thread di movimento manuale
-                    prevIsAuto = true;
-                    prevIsManual = false;
-                    prevIsOff = false;
-                    TriggerRobotModeChangedEvent(1);  // Evento: modalità automatica
-                }
-            }
-            // CASO B: Il PLC vuole la modalità MANUALE
-            else if (mode == 2) // 2 = MANUALE secondo la tua logica PLC
-            {
-                // Se il robot NON è GIA' in manuale...
-                if (currentRobotMode != 1) // 1 = MANUALE secondo la libreria robot
-                {
-                    log.Warn("[Mode] Cambio modalità in MANUAL");
-                    isAutomaticMode = false;
-                    SetRobotMode(1); // Imposta il robot in modalità manuale
-                    prevIsManual = true;
-                    prevIsAuto = false;
-                    prevIsOff = false;
-                    TriggerRobotModeChangedEvent(0);  // Evento: modalità manuale
-                }
-
-                // La logica per avviare il JOG va qui.
-                // Se siamo in manuale (lo siamo, altrimenti saremmo entrati nell'if sopra)
-                // e il robot è abilitato, avvia il task di JOG.
-                if (isEnabledNow)
-                {
-                    JogMovement.StartJogRobotTask(); // Questo ha già il controllo per non partire più volte
-                }
-            }
-            // CASO C: Il PLC vuole la modalità OFF o un valore non valido
-            else
-            {
-                if (!prevIsOff)
-                {
-                    log.Warn("[Mode] Cambio modalità in OFF");
-                    isAutomaticMode = false;
-                    prevIsOff = true;
-                    prevIsAuto = false;
-                    prevIsManual = false;
-                    TriggerRobotModeChangedEvent(3);  // Evento: modalità Off
-                }
-            }
-        }
-
-        /// <summary>
-        /// Legge lo stato del robot
-        /// </summary>
-        private static void CheckStatusRobot()
-        {
-            ROBOT_STATE_PKG robot_state_pkg = new ROBOT_STATE_PKG();
-            byte mov_robot_state;
-
-            //robot.GetRobotRealTimeState(ref robot_state_pkg);
-            GetRobotRealTimeState(ref robot_state_pkg);
-            mov_robot_state = robot_state_pkg.robot_state;
-            robotStatus = mov_robot_state;
-            currentRobotMode = robot_state_pkg.robot_mode;
-            currentRobotEnableStatus = robot_state_pkg.rbtEnableState;
-        }
-
-        /// <summary>
-        /// Esegue reset del contatore degli step delle routine
-        /// </summary>
-        public static void ResetRobotSteps()
-        {
-            step = 0;
-        }
-
-        /// <summary>
-        /// Controlla il tool e user correnti
-        /// </summary>
-        private static void CheckCurrentToolAndUser()
-        {
-            robot.GetActualTCPNum(1, ref currentTool);
-            robot.GetActualWObjNum(1, ref currentUser);
-        }
-
-        /// <summary>
-        /// Check su connessione PLC
-        /// </summary>
-        private static void CheckPLCConnection()
-        {
-            if (!AlarmManager.isPlcConnected) // Se il PLC è disconnesso
-            {
-                log.Error("[PLC COM] Rilevata disconnessione PLC");
-                string id = "0";
-                string description = "PLC disconnesso. Il ciclo è stato terminato.";
-
-                DateTime now = DateTime.Now;
-                long unixTimestamp = ((DateTimeOffset)now).ToUnixTimeMilliseconds();
-                DateTime dateTime = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(unixTimestamp.ToString())).DateTime.ToLocalTime();
-                string formattedDate = dateTime.ToString("dd-MM-yyyy HH:mm:ss");
-
-                string device = "PLC";
-                string state = "ON";
-
-                if (!IsAlarmAlreadySignaled(id))
-                {
-                    CreateRobotAlarm(id, description, formattedDate, device, state);
-                    MarkAlarmAsSignaled(id);
-                }
-
-                prevIsPlcConnected = false;
-            }
-            else
-            {
-                if (!prevIsPlcConnected)
-                {
-                    log.Warn("[PLC COM] Connessione PLC riavviata");
-
-                    //Reset stati precedenti
-                    lastMode = -1;
-                    stableMode = -1;
-
-                    robotCycleStopRequested = false;
-
-                    ClearRobotAlarm();
-                    ClearRobotQueue();
-                    ResetRobotSteps();
-
-                    prevIsPlcConnected = true;
-                }
-            }
-        }
-        
-        /// <summary>
-        /// Verifica se il punto corrente è all'interno dell'area di ingombro rispetto a uno qualsiasi dei punti di partenza
-        /// </summary>
-        /// <param name="startPoints">Array con i punti di partenza per Pick, Place e Home</param>
-        /// <param name="updates">Lista di aggiornamenti</param>
-        private static void CheckIsRobotInObstructionArea(DescPose[] startPoints, List<(string key, bool value, string type)> updates)
-        {/*
-            isInPositionHome = checker_ingombro_home.IsInCubeObstruction(startPoints[0], TCPCurrentPosition);
-            isInPositionPick = checker_ingombro_pick.IsInCubeObstruction(startPoints[1], TCPCurrentPosition);
-            //isInPositionPlace1 = checker_ingombro_place_pallet_1.IsInCubeObstruction(startPoints[2], TCPCurrentPosition);
-            //isInPositionPlace2 = checker_ingombro_place_pallet_2.IsInCubeObstruction(startPoints[3], TCPCurrentPosition);
-            isInPositionPlace1 = checker_ingombro_place_pallet_1.IsInParallelepipedObstruction(startPoints[2], TCPCurrentPosition);
-            isInPositionPlace2 = checker_ingombro_place_pallet_2.IsInParallelepipedObstruction(startPoints[3], TCPCurrentPosition);
-
-            bool plcIsInPositionHome = Convert.ToBoolean(PLCConfig.appVariables.getValue(PLCTagName.RET_Zone_Home_inPos));
-            bool plcIsInPositionPick = Convert.ToBoolean(PLCConfig.appVariables.getValue(PLCTagName.RET_Zone_Pick_inPos));
-            bool plcIsInPositionPlacePallet1 = Convert.ToBoolean(PLCConfig.appVariables.getValue(PLCTagName.RET_Zone_Place_1_inPos));
-            bool plcIsInPositionPlacePallet2 = Convert.ToBoolean(PLCConfig.appVariables.getValue(PLCTagName.RET_Zone_Place_2_inPos));
-            */
-            /*
-            if (isInPositionPick)
-            {
-                if (/*prevRobotOutPick ||*/ /*!plcIsInPositionPick)
-                {
-                    prevRobotOutPick = false;
-                    prevRobotOutPlace = true;
-                    prevInHomePos = true;
-                    prevFuoriIngombro = false;
-
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Pick_inPos, 1, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos_pallet1, 0, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos_pallet2, 0, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Home_inPos, 0, "INT16");
-                }
-            }
-            else if (isInPositionPlace1)
-            {
-                if (/*prevRobotOutPlace ||*/ /*!plcIsInPositionPlacePallet1)
-                {
-                    prevRobotOutPlace = false;
-                    prevRobotOutPick = true;
-                    prevInHomePos = true;
-                    prevFuoriIngombro = false;
-
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Pick_inPos, 0, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos_pallet1, 1, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos_pallet2, 0, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Home_inPos, 0, "INT16");
-                }
-            }
-            else if (isInPositionPlace2)
-            {
-                if (/*prevRobotOutPlace ||*/ /*!plcIsInPositionPlacePallet2)
-                {
-                    prevRobotOutPlace = false;
-                    prevRobotOutPick = true;
-                    prevInHomePos = true;
-                    prevFuoriIngombro = false;
-
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Pick_inPos, 0, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos_pallet1, 0, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos_pallet2, 1, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Home_inPos, 0, "INT16");
-                }
-            }
-
-            else if (isInPositionHome)
-            {
-                if (/*prevInHomePos != false ||*/ /*!plcIsInPositionHome)
-                {
-                    prevInHomePos = false;
-                    prevRobotOutPick = true;
-                    prevRobotOutPlace = true;
-                    prevFuoriIngombro = false;
-
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Pick_inPos, 0, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos_pallet1, 0, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos_pallet2, 0, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Home_inPos, 1, "INT16");
-                }
-            }
-            else
-            {
-                bool plcIsFuoriIngombro = !plcIsInPositionHome && !plcIsInPositionPick && !plcIsInPositionPlacePallet1 && !plcIsInPositionPlacePallet2;
-                if (/*!prevFuoriIngombro ||*/ /*!plcIsFuoriIngombro)
-                {
-                    prevFuoriIngombro = true;
-                    prevRobotOutPick = true;
-                    prevRobotOutPlace = true;
-                    prevInHomePos = true;
-
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Pick_inPos, 0, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos_pallet1, 0, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos_pallet2, 0, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Home_inPos, 0, "INT16");
-                }
-            }*/
-        }
-            
-        /// <summary>
-        /// Verifica se il punto corrente è all'interno dell'area di safe zone
-        /// </summary>
-        private static void CheckIsRobotInSafeZone(DescPose pSafeZone)
-        {
-            isInSafeZone = checker_safeZone.IsYLessThan(pSafeZone, TCPCurrentPosition);
-
-            if (!AlarmManager.isFormReady)
-                return;
-
-            if (!isInSafeZone && prevIsInSafeZone != false) // Se il robot non è nella safe zone
-            {
-                prevIsInSafeZone = false;
-                FormHomePage.Instance.RobotSafeZone.BackgroundImage = Resources.safeZone_yellow32;
-
-            }
-            else if (isInSafeZone && prevIsInSafeZone != true) // Se il robot è nella safe zone
-            {
-                prevIsInSafeZone = true;
-                FormHomePage.Instance.RobotSafeZone.BackgroundImage = Resources.safeZone_green32;
-
-            }
-
-        }
-
-        /// <summary>
-        /// Verifica se il punto corrente corrisponde ai punti di pick e/o place
-        /// </summary>
-        private static void CheckIsRobotInPos()
-        {
-            bool isInPosition = checker_pos.IsInPosition(endingPoint, TCPCurrentPosition);
-
-            if (isInPosition)
-            {
-                inPosition = true;
-            }
-            else
-            {
-                inPosition = false;
-            }
-
-        }
-
-        /// <summary>
-        /// Gestore dell'evento allarmi cancellati presente nella libreria RMLib.Alarms
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private static void RMLib_AlarmsCleared(object sender, EventArgs e)
-        {
-            var criteria = new List<(string device, string description)>
-            {
-                ("Robot", ""),
-                ("", "PLC disconnesso. Il ciclo è stato terminato.")
-            };
-
-            bool isBlocking = formAlarmPage.IsBlockingAlarmPresent(criteria);
-
-            if (isBlocking)
-            {
-                ClearRobotAlarm();
-                //ClearRobotQueue();
-
-                // Segnalo che non ci sono più allarmi bloccanti
-                AlarmManager.blockingAlarm = false;
-
-                // Abilito il tasto Start per avviare nuovamente la routine
-                EnableButtonCycleEvent?.Invoke(1, EventArgs.Empty);
-
-                // Abilito i tasti relativi al monitoring
-                EnableDragModeButtons?.Invoke(null, EventArgs.Empty);
-            }
-
-            TriggerAllarmeResettato();
-
-            // Reset degli allarmi segnalati
-            foreach (var key in allarmiSegnalati.Keys.ToList())
-            {
-                allarmiSegnalati[key] = false;
-            }
-        }
-
-        /// <summary>
-        /// Esegue get del codice di movimento del robot
-        /// </summary>
-        /// <param name="result">Codice risultato del movimento del robot</param>
-        private static void GetRobotMovementCode(int result)
-        {
-            if (result != 0) // Se il codice passato come parametro è diverso da 0, significa che il movimento ha generato un errore
-            {
-                // Get del codice di errore dal database
-                DataRow code = RobotDAO.GetRobotMovementCode(ConnectionString, result);
-
-                if (code != null) // Se il codice è presente nel dizionario nel database eseguo la get dei dettagli
-                {
-                    // Stampo messaggio di errore
-                    //CustomMessageBox.Show(
-                    //    MessageBoxTypeEnum.ERROR,
-                    //    "Errcode: " + code["Errcode"].ToString() + "\nDescribe: " + code["Describe"].ToString() + "\nProcessing method: " + code["Processing method"].ToString()
-                    //    );
-
-                    // Scrivo messaggio nel log
-                    log.Error("Errcode: " + code["Errcode"].ToString() + "\nDescribe: " + code["Describe"].ToString() + "\nProcessing method: " + code["Processing method"].ToString());
-                }
-                else // Se il codice non è presente nel dizionario nel database stampo un errore generico
-                {
-                    //CustomMessageBox.Show(
-                    //   MessageBoxTypeEnum.ERROR,
-                    //   "Errore generico durante il movimento del robot"
-                    //   );
-
-                    log.Error("Errore generico durante il movimento del robot");
-
-                }
-            }
-        }
-
-        /// <summary>
-        /// Imposta le proprietà del robot prelevandole dal database.
-        /// </summary>
-        /// <returns>True se l'operazione ha successo, altrimenti False.</returns>
-        public static bool GetRobotProperties()
-        {
-            try
-            {
-                log.Info("Inizio impostazione delle proprietà del robot dal database.");
-
-                // Ottieni le proprietà del robot dal database
-                DataTable dt_robotProperties = RobotDAO.GetRobotProperties(ConnectionString);
-                if (dt_robotProperties == null)
-                {
-                    log.Error("La tabella delle proprietà del robot è nulla.");
-                    return false;
-                }
-
-                // Estrai e assegna le proprietà del robot
-                int speed = Convert.ToInt16(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_SPEED_ROW_INDEX]
-                    [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
-                float velocity = float.Parse(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_VELOCITY_ROW_INDEX]
-                    [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
-                float blendT = float.Parse(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_BLENDT_ROW_INDEX]
-                    [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
-                float acceleration = float.Parse(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_ACCELERATION_ROW_INDEX]
-                    [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
-                float ovl = float.Parse(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_OVL_ROW_INDEX]
-                    [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
-                int tool = Convert.ToInt16(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_TOOL_ROW_INDEX]
-                    [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
-                int user = Convert.ToInt16(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_USER_ROW_INDEX]
-                    [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
-                int weight = Convert.ToInt16(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_WEIGHT_ROW_INDEX]
-                    [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
-                int velRec = Convert.ToInt16(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_VELREC_ROW_INDEX]
-                    [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
-                int collLev = Convert.ToInt16(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_COLLISION_LEVELS_ROW_INDEX]
-                    [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
-                float blendR = float.Parse(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_BLENDR_ROW_INDEX]
-                    [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
-
-                // Creazione dell'oggetto robotProperties
-                robotProperties = new RobotProperties(speed, velocity, blendT, acceleration, ovl, tool, user, weight, velRec);
-
-                log.Info($"SetRobotProperties completata: " +
-                         $" Speed: {speed}" +
-                         $" Velocity: {velocity}" + 
-                         $" Blend T: {blendT}" +
-                         $" Acceleration: {acceleration}" +
-                         $" Ovl: {ovl}" +
-                         $" Tool: {tool}" +
-                         $" User: {user}" +
-                         $" Weight: {weight}" +
-                         $" VelRec: {velRec}" +
-                         $" CollLev: {collLev}" +
-                         $" Blend R: {blendR}");
-
-                // Modifica delle variabili statiche e globali di RobotManager
-                RobotManager.speed = robotProperties.Speed;
-                RobotManager.vel = robotProperties.Velocity;
-                RobotManager.acc = robotProperties.Acceleration;
-                RobotManager.ovl = robotProperties.Ovl;
-                RobotManager.blendT = robotProperties.Blend;
-                RobotManager.tool = robotProperties.Tool;
-                RobotManager.user = robotProperties.User;
-                RobotManager.weight = robotProperties.Weight;
-                RobotManager.velRec = robotProperties.VelRec;
-                currentCollisionLevel = collLev;
-                RobotManager.blendR = blendR;
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                log.Error("Errore durante SetRobotProperties: " + ex.ToString());
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Generazione evento da allarme ricevuto
-        /// </summary>
-        /// <param name="e"></param>
-        protected static void OnAllarmeGenerato(EventArgs e)
-        {
-            AllarmeGenerato?.Invoke(null, e);
-        }
-
-        /// <summary>
-        /// Generazione evento da allarmi resettati
-        /// </summary>
-        /// <param name="e"></param>
-        protected static void OnAllarmeResettato(EventArgs e)
-        {
-            AllarmeResettato?.Invoke(null, e);
-        }
-
-        /// <summary>
-        /// Generazione eventi
-        /// </summary>
-        public static void TriggerAllarmeGenerato()
-        {
-            OnAllarmeGenerato(EventArgs.Empty);
-        }
-
-        /// <summary>
-        /// Trigger attivato quando vengono cancellati gli allarmi
-        /// </summary>
-        public static void TriggerAllarmeResettato()
-        {
-            OnAllarmeResettato(EventArgs.Empty);
-        }
-
-        /// <summary>
-        /// Normalizza angolo robot
-        /// </summary>
-        /// <param name="angle"></param>
-        /// <returns></returns>
-        static float NormalizeAngle(float angle)
-        {
-            while (angle > 180f) angle -= 360f;
-            while (angle <= -180f) angle += 360f;
-            return angle;
-        }
-
-        /// <summary>
-        /// Invia posizioni al PLC in formato cartesiano e joint
-        /// </summary>
-        /// <param name="jPos">Posizione in joint ottenuta dal calcolo di cinematica inversa partendo dalla posizione TCP</param>
-        public static async Task CheckRobotPosition(JointPos jPos)
-        {
-            // Calcolo della posizione in joint eseguendo il calcolo di cinematica inversa
-            await Task.Run(() => robot.GetInverseKin(0, TCPCurrentPosition, -1, ref jPos));
-
-            #region TCP
-
-            // Scrittura posizione su asse x
-            RefresherTask.AddUpdate(PLCTagName.x_actual_pos, TCPCurrentPosition.tran.x, "FLOAT");
-
-            // Scrittura posizione su asse y
-            RefresherTask.AddUpdate(PLCTagName.y_actual_pos, TCPCurrentPosition.tran.y, "FLOAT");
-
-            // Scrittura posizione su asse z
-            RefresherTask.AddUpdate(PLCTagName.z_actual_pos, TCPCurrentPosition.tran.z, "FLOAT");
-
-            // Scrittura posizione su asse rx
-            RefresherTask.AddUpdate(PLCTagName.rx_actual_pos, TCPCurrentPosition.rpy.rx, "FLOAT");
-
-            // Scrittura posizione su asse ry
-            RefresherTask.AddUpdate(PLCTagName.ry_actual_pos, TCPCurrentPosition.rpy.ry, "FLOAT");
-
-            // Scrittura posizione su asse rz
-            RefresherTask.AddUpdate(PLCTagName.rz_actual_pos, TCPCurrentPosition.rpy.rz, "FLOAT");
-
-            #endregion
-
-            #region Joint
-
-            // Scrittura posizione giunto 1
-            RefresherTask.AddUpdate(PLCTagName.j1_actual_pos, jPos.jPos[0], "FLOAT");
-
-            // Scrittura posizione giunto 2
-            RefresherTask.AddUpdate(PLCTagName.j2_actual_pos, jPos.jPos[1], "FLOAT");
-
-            // Scrittura posizione giunto 3
-            RefresherTask.AddUpdate(PLCTagName.j3_actual_pos, jPos.jPos[2], "FLOAT");
-
-            // Scrittura posizione giunto 4
-            RefresherTask.AddUpdate(PLCTagName.j4_actual_pos, jPos.jPos[3], "FLOAT");
-
-            // Scrittura posizione giunto 5
-            RefresherTask.AddUpdate(PLCTagName.j5_actual_pos, jPos.jPos[4], "FLOAT");
-
-            // Scrittura posizione giunto 6
-            RefresherTask.AddUpdate(PLCTagName.j6_actual_pos, jPos.jPos[5], "FLOAT");
-
-            #endregion
-        }
-
-        /// <summary>
-        /// Approssima i valori delle posizioni a n cifre decimali
-        /// </summary>
-        /// <param name="dp">Contiene il riferimento allo struct che contiene i valori da approssimare</param>
-        /// <param name="digits">Numero di cifre decimali desiderate</param>
-        private static void RoundPositionDecimals(ref DescPose dp, int digits)
-        {
-            dp.tran.x = Math.Round(dp.tran.x, digits);
-            dp.tran.y = Math.Round(dp.tran.y, digits);
-            dp.tran.z = Math.Round(dp.tran.z, digits);
-            dp.rpy.rx = Math.Round(dp.rpy.rx, digits);
-            dp.rpy.ry = Math.Round(dp.rpy.ry, digits);
-            dp.rpy.rz = Math.Round(dp.rpy.rz, digits);
-        }
-
-        #endregion
+     
 
         #endregion
         #endregion
