@@ -1396,17 +1396,17 @@ namespace RM.src.RM250714
             taskManager.AddTask(TaskHighPriorityName, CheckHighPriority, TaskType.LongRunning, true);
             taskManager.AddTask(TaskAuxiliaryWorkerName, AuxiliaryWorker, TaskType.LongRunning, true);
             taskManager.AddTask(TaskLowPriorityName, CheckLowPriority, TaskType.LongRunning, true);
-            //taskManager.AddTask(TaskApplicationManager, ApplicationTaskManager, TaskType.LongRunning, true);
-            // taskManager.AddTask(TaskPlcComHandlerName, PlcComHandler, TaskType.LongRunning, true);
-            //taskManager.AddTask(TaskSafetyManager, SafetyTaskManager, TaskType.LongRunning, true);
+            taskManager.AddTask(TaskApplicationManager, ApplicationTaskManager, TaskType.LongRunning, true);
+            taskManager.AddTask(TaskPlcComHandlerName, PlcComHandler, TaskType.LongRunning, true);
+            taskManager.AddTask(TaskSafetyManager, SafetyTaskManager, TaskType.LongRunning, true);
 
             taskManager.StartTask(TaskCheckRobotConneciton);
             taskManager.StartTask(TaskHighPriorityName);
             taskManager.StartTask(TaskAuxiliaryWorkerName);
             taskManager.StartTask(TaskLowPriorityName);
-            //taskManager.StartTask(TaskApplicationManager);
-            // taskManager.StartTask(TaskPlcComHandlerName);
-            //taskManager.StartTask(TaskSafetyManager);
+            taskManager.StartTask(TaskApplicationManager);
+            taskManager.StartTask(TaskPlcComHandlerName);
+            taskManager.StartTask(TaskSafetyManager);
 
             log.Info("Task di background del robot avviati tramite TaskManager.");
 
@@ -1902,7 +1902,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// Esegue ciclo teglie iperal
         /// </summary>
-        public async static Task _PickAndPlaceTegliaIperal(CancellationToken token)
+        public async static Task PickAndPlaceTegliaIperalDemo(CancellationToken token)
         {
             #region Parametri movimento
 
@@ -2975,7 +2975,10 @@ namespace RM.src.RM250714
             // Consensi di place
             int enableToPlace;
 
+            // Dichiarazione punto di pick
             ApplicationPositions pick = new ApplicationPositions();
+
+            // Dichiarazione punto di place
             ApplicationPositions place = new ApplicationPositions();
 
             byte ris = 0;
