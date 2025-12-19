@@ -2948,6 +2948,8 @@ namespace RM.src.RM250714
         {
             #region Variabili necessarie per funzionamento ciclo
 
+            // #region contentente tutte le variabili utilizzate all'interno del ciclo e che permette di eseguire lo stesso
+
             // Reset condizione di stop ciclo
             stopCycleRoutine = false;
 
@@ -2974,120 +2976,172 @@ namespace RM.src.RM250714
 
             // Consensi di place
             int enableToPlace;
-
-            // Dichiarazione punto di pick
-            ApplicationPositions pick = new ApplicationPositions();
-
-            // Dichiarazione punto di place
-            ApplicationPositions place = new ApplicationPositions();
-
+           
+            // Risultato del movimento
             byte ris = 0;
+
+            // Piano del carrello selezionato
+            int selectedFormat;
 
             #endregion
 
             #region Offset spostamenti
 
-            int offsetAllontamento = 700;
-            int offsetAvvicinamento = 400;
-            int offsetPrePlace = 600;
-            int offsetPreBeor = 600;
-            int offsetAllontamentoPostPlace = 300;
-            int zOffsetPrePickTeglia = 40;
-            int zOffsetPostPickTeglia = 40;
-            int zOffsetAllontanamentoPostPickTeglia1 = 40;
-            int zOffsetPrePlace = 20;
+            // Questa #region contiene tutti gli offset applicati ai punti durante il ciclo.
+            // Ogni sotto-#region è suddivisa per comportamento (pick, place, beor)
+
+            #region Offset pick
+
+            int offsetAvvicinamentoPick = 400; // Offset applicato al punto di avvicinamento pick
+            int zOffsetAvvicinamentoPick = 40; // Offset su asse Z in cui mi alzo leggermente prima di andare in pick
+            int zOffsetPostPick = 40; // Offset applicato dopo chiusura pinza (mantengo questo offset anche durante movimento di allontanamento dal pick)
+            
+            #endregion
+
+            #region Offset place
+
+            int offsetAvvicinamentoPlace = 600; // Offset per eseguire punto di avvicinamento place
+            int zOffsetAvvicinamentoPlace = 20; // Offset su asse Z in cui mi alzo leggermente prima di andare in place
+            int zOffsetPostPlace = 10; // Offset su asse Z in cui mi abbasso leggermente dopo essere andato in place
+            int offsetAllontamentoPostPlace = 300; // Offset di allontanamento dal carrello dopo aver eseguito il place
 
             #endregion
 
-            #region Altre variabili
+            #region Offset beor
 
-            int valve1_value = 0; // Valore comando valvola 1
-            int valve2_value = 0; // Valore comando valvola 2
-            int valve3_value = 0; // Valore comando valvola 3
-            int vac1_value = 0; // Valore vacuostato 1
-            int vac2_value = 0; // Valore vacuostato 2
-            int vac3_value = 0; // Valore vacuostato 3
-            bool anyValve = false; // A true se c'è almeno una valvola attiva
-
-            int selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
-
-            int selectedProduct;
-
-            int pointNumber = selectedFormat % 100; //Estrazione ultime 2 cifre
-            int indexInGroup = (pointNumber - 1) % 6;
-            bool isPuntoCritico = (indexInGroup >= 2 && indexInGroup <= 4); // se è il punto 3, 4 o 5 del piano corrente allora è un punto critico (solo per 3200)
-
-            int xOffsetPick;
-            int yOffsetPick;
-            int zOffsetPick;
-
-            int xOffsetPlace;
-            int yOffsetPlace;
-            int zOffsetPlace;
+            int offsetAvvicinamentoBeor = 600; // Offset di avvicinamento al punto beor
+            int offsetAllontamentoBeor = 700; // Offset di allontanamento dal punto beor
 
             #endregion
 
-            #region Dichiarazione punti routine pick
+            #endregion
+
+            #region Dichiarazione punti
+
+            // In questa #region sono presenti tutti i punti necessari al funzionamento del ciclo.
+            // Sono divisi in sotto-#region -> home, pick, place, beor.
+            // Ognuna di queste (esclusa la home) comprende tutti i punti relativi alla gestione del proprio punto. (es.: avvicinamento, allontanamento, ecc.)
+
+            #region Dichiarazione punto di home
 
             // home
-            JointPos jHome = new JointPos();
+
+            JointPos jHome = new JointPos(0, 0, 0, 0, 0, 0);
             var home = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
-            DescPose descPosHome = new DescPose();
 
-            // passaggio
-            JointPos jPassaggio = new JointPos();
-            var passaggio = ApplicationConfig.applicationsManager.GetPosition("pPassaggio", "RM");
-            DescPose descPosePassaggio = new DescPose();
+            DescPose descPosHome = new DescPose(
+                home.x, 
+                home.y, 
+                home.z, 
+                home.rx, 
+                home.ry, 
+                home.rz
+                );
 
-            // pick target
+            GetInverseKin(descPosHome, ref jHome, "Home");
+
+            #endregion
+
+            #region Dichiarazione dei punti di pick
+
+            #region Punto di pick
+
+            // Punto finale di pick
+
+            ApplicationPositions pick = new ApplicationPositions();
             JointPos jointPosPick = new JointPos();
             DescPose descPosPick = new DescPose();
 
-            // pick avvicinamento
+            #endregion
+
+            #region Punto di avvicinamento pick
+
+            // Punto di avvicinamento prima di eseguire il pick
+
             JointPos jointPosApproachPick = new JointPos();
             DescPose descPosApproachPick = new DescPose();
 
-            // pick allontanamento
-            JointPos jointPosRialzoPick = new JointPos();
-            DescPose descPoseRialzoPick = new DescPose();
+            #endregion
+
+            #region Punto di post-pick
+
+            // Punto post-pick in cui mi alzo leggermente sull'asse Z dopo aver chiuso la pinza
 
             JointPos jointPosPostPick = new JointPos();
             DescPose descPosPostPick = new DescPose();
 
-            // pick avvicinamento
-            JointPos jointPosApproachPlace = new JointPos();
-            DescPose descPosApproachPlace = new DescPose();
+            #endregion
 
-            // pick allontanamento
+            #region Punto di allontanamento pick
+
+            // Punto di allontanamento pick dopo aver chiuso la pinza
+
             JointPos jointPosAllontanamentoPick = new JointPos();
             DescPose descPosAllontanamentoPick = new DescPose();
 
             #endregion
 
+            #endregion
+
             #region Dichiarazione dei punti place
 
-            // place target
+            #region Punto di place
+
+            // Punto finale di place
+
+            ApplicationPositions place = new ApplicationPositions();
             JointPos jointPosPlace = new JointPos();
             DescPose descPosPlace = new DescPose();
+
+            #endregion
+
+            #region Punto di rotazione pre-place
+
+            // Punto necessario alla rotazione del robot dalla posizione di pick per prepararsi ad andare in pre-place
 
             JointPos jointPosRotationPrePlace = new JointPos();
             DescPose descPosRotationPrePlace = new DescPose();
 
-            JointPos jointPosAllontanamentoPlace = new JointPos();
-            DescPose descPosAllontanamentoPlace = new DescPose();
+            #endregion
+
+            #region Punto di avvicinamento place
+
+            // Punto di avvicinamento prima di eseguire il place
+
+            JointPos jointPosApproachPlace = new JointPos();
+            DescPose descPosApproachPlace = new DescPose();
+
+            #endregion
+
+            #region Punto post place
+
+            // Punto da eseguire dopo apertura pinza che mi permette di scendere leggermente sull'asse Z
 
             JointPos jointPosPostPlace = new JointPos();
             DescPose descPosPostPlace = new DescPose();
 
             #endregion
 
-            #region Beor
+            #region Punto di allontanamento place
+
+            // Punto di allontanamento da punto di place dopo che ho aperto le pinze e che mi sono abbassato sull'asse Z
+
+            JointPos jointPosAllontanamentoPlace = new JointPos();
+            DescPose descPosAllontanamentoPlace = new DescPose();
+
+            #endregion
+
+            #endregion
+
+            #region Dichiarazione dei punto di Beor
 
             #region Punto Beor
 
-            // beor
+            // Punto finale Beor
+
             JointPos jointPosBeor = new JointPos();
             var beor = ApplicationConfig.applicationsManager.GetPosition("pBeor", "RM");
+
             // Creazione oggetto descPose
             DescPose descPosBeor = new DescPose(
                 beor.x,
@@ -3101,15 +3155,14 @@ namespace RM.src.RM250714
             // Oggetto jointPos
             jointPosBeor = new JointPos(0, 0, 0, 0, 0, 0);
 
-
-
             GetInverseKin(descPosBeor, ref jointPosBeor, "Beor");
 
             #endregion
 
             #region Punto di rotazione da pick a beor
 
-            // Oggetto jointPos
+            // Punto che permettere la rotazione da pick in preparazione a punto Beor
+
             JointPos jointPosRotationPreBeor = new JointPos(0, 0, 0, 0, 0, 0);
 
             // Creazione oggetto descPose
@@ -3128,12 +3181,14 @@ namespace RM.src.RM250714
 
             #region Punto avvicinamento beor
 
+            // Punto di avvicinamento beor
+
             // Oggetto jointPos
             JointPos jointPosApproachBeor = new JointPos(0, 0, 0, 0, 0, 0);
 
             // Creazione oggetto descPose
             DescPose descPosApproachBeor = new DescPose(
-                beor.x - offsetPreBeor,
+                beor.x - offsetAvvicinamentoBeor,
                 beor.y,
                 beor.z,
                 beor.rx,
@@ -3146,34 +3201,16 @@ namespace RM.src.RM250714
 
             #endregion
 
-            #region Punto post beor
-
-            // Oggetto jointPos
-            JointPos jointPosPostBeor = new JointPos(0, 0, 0, 0, 0, 0);
-
-            // Creazione oggetto descPose
-            DescPose descPosPostBeor = new DescPose(
-                beor.x,
-                beor.y,
-                beor.z,
-                beor.rx,
-                beor.ry,
-                beor.rz
-                );
-
-            // Calcolo del jointPos
-            GetInverseKin(descPosPostBeor, ref jointPosPostBeor, "Post beor");
-
-            #endregion
-
             #region Punto allontanamento beor
+
+            // Punto di allontanamento da beor
 
             // Oggetto jointPos
             JointPos jointPosAllontanamentoBeor = new JointPos(0, 0, 0, 0, 0, 0);
 
             // Creazione oggetto descPose
             DescPose descPosAllontanamentoBeor = new DescPose(
-                beor.x - offsetAllontamento,
+                beor.x - offsetAllontamentoBeor,
                 beor.y,
                 beor.z,
                 beor.rx,
@@ -3187,33 +3224,27 @@ namespace RM.src.RM250714
 
             #endregion
 
+            #endregion
+
             #region Parametri movimento
 
+            // Questa #region è dedicata a tutti i parametri interni dei metodi di movimento del Robot
+
             DescPose offset = new DescPose(0, 0, 0, 0, 0, 0); // Nessun offset
-            DescPose offsetRotatedPassaggio = new DescPose(0, 0, 0, 0, 0, 90);
             ExaxisPos epos = new ExaxisPos(0, 0, 0, 0); // Nessun asse esterno
             byte offsetFlag = 0; // Flag per offset (0 = disabilitato)
-            byte offsetFlagRobot = 1; // Flag per offset in base al robot
-
-            int err1 = 0;
-            int err2 = 0;
-            int err3 = 0;
-            int errKin = 0;
-
             byte search = 0;
             // Parametri moveL
-            int velAccParamMode = 0;
-            int overSpeedStrategy = 0;
-            int speedPercent = 0;
+            int velAccParamMode = 0; // Velocity and acceleration parameter mode; 0-Percentage; 1-Physical velocity (mm/s) and acceleration (mm/s^2)
+            int overSpeedStrategy = 0; // Overspeed handling strategy, 1-Standard; 2-Stop with error on overspeed; 3-Adaptive deceleration, default is 0
+            int speedPercent = 0; // Allowed deceleration threshold percentage [0-100], default 10%
 
             #endregion
 
+
             try
             {
-                // home
-                jHome = new JointPos(0, 0, 0, 0, 0, 0);
-                descPosHome = new DescPose(home.x, home.y, home.z, home.rx, home.ry, home.rz);
-                GetInverseKin(descPosHome, ref jHome, "Home");
+               
 
 
                 if (!collisionManager.ChangeRobotCollision(currentCollisionLevel))
@@ -3303,8 +3334,8 @@ namespace RM.src.RM250714
                                     // Creazione oggetto descPose
                                     descPosApproachPick = new DescPose(
                                         pick.x,
-                                        pick.y - offsetAvvicinamento,
-                                        pick.z - zOffsetPrePickTeglia,
+                                        pick.y - offsetAvvicinamentoPick,
+                                        pick.z - zOffsetAvvicinamentoPick,
                                         pick.rx,
                                         pick.ry,
                                         pick.rz
@@ -3324,7 +3355,7 @@ namespace RM.src.RM250714
                                     descPosPostPick = new DescPose(
                                         pick.x,
                                         pick.y,
-                                        pick.z + zOffsetPostPickTeglia,
+                                        pick.z + zOffsetPostPick,
                                         pick.rx,
                                         pick.ry,
                                         pick.rz
@@ -3344,7 +3375,7 @@ namespace RM.src.RM250714
                                     descPosAllontanamentoPick = new DescPose(
                                         pick.x,
                                         home.y,
-                                        pick.z + zOffsetAllontanamentoPostPickTeglia1,
+                                        pick.z + zOffsetPostPick,
                                         pick.rx,
                                         pick.ry,
                                         pick.rz
@@ -3390,8 +3421,8 @@ namespace RM.src.RM250714
                                     // Creazione oggetto descPose
                                     descPosApproachPlace = new DescPose(
                                         place.x,
-                                        place.y - offsetPrePlace,
-                                        place.z + 20,
+                                        place.y - offsetAvvicinamentoPlace,
+                                        place.z + zOffsetAvvicinamentoPlace,
                                         place.rx,
                                         place.ry,
                                         place.rz
@@ -3411,7 +3442,7 @@ namespace RM.src.RM250714
                                     descPosRotationPrePlace = new DescPose(
                                         home.x,
                                         home.y,
-                                        place.z + zOffsetPrePlace,
+                                        place.z + zOffsetAvvicinamentoPlace,
                                         place.rx,
                                         place.ry,
                                         place.rz
@@ -3431,7 +3462,7 @@ namespace RM.src.RM250714
                                     descPosPostPlace = new DescPose(
                                        place.x,
                                        place.y,
-                                       place.z - 10,
+                                       place.z - zOffsetPostPlace,
                                        place.rx,
                                        place.ry,
                                        place.rz
@@ -3555,8 +3586,8 @@ namespace RM.src.RM250714
                                 // Creazione oggetto descPose
                                 descPosApproachPick = new DescPose(
                                     pick.x,
-                                    pick.y - offsetAvvicinamento,
-                                    pick.z - zOffsetPrePickTeglia,
+                                    pick.y - offsetAvvicinamentoPick,
+                                    pick.z - zOffsetAvvicinamentoPick,
                                     pick.rx,
                                     pick.ry,
                                     pick.rz
@@ -3576,7 +3607,7 @@ namespace RM.src.RM250714
                                 descPosPostPick = new DescPose(
                                     pick.x,
                                     pick.y,
-                                    pick.z + zOffsetPostPickTeglia,
+                                    pick.z + zOffsetPostPick,
                                     pick.rx,
                                     pick.ry,
                                     pick.rz
@@ -3595,8 +3626,8 @@ namespace RM.src.RM250714
                                 // Creazione oggetto descPose
                                 descPosAllontanamentoPick = new DescPose(
                                     pick.x,
-                                    pick.y - offsetAllontamento,
-                                    pick.z + zOffsetAllontanamentoPostPickTeglia1,
+                                    pick.y - offsetAllontamentoBeor,
+                                    pick.z + zOffsetPostPick,
                                     pick.rx,
                                     pick.ry,
                                     pick.rz
@@ -3642,7 +3673,7 @@ namespace RM.src.RM250714
                                 // Creazione oggetto descPose
                                 descPosApproachPlace = new DescPose(
                                     place.x,
-                                    place.y - offsetPrePlace,
+                                    place.y - offsetAvvicinamentoPlace,
                                     place.z + 20,
                                     place.rx,
                                     place.ry,
@@ -3663,7 +3694,7 @@ namespace RM.src.RM250714
                                 descPosRotationPrePlace = new DescPose(
                                     home.x,
                                     home.y,
-                                    place.z + zOffsetPrePlace,
+                                    place.z + zOffsetAvvicinamentoPlace,
                                     place.rx,
                                     place.ry,
                                     place.rz
@@ -3971,8 +4002,8 @@ namespace RM.src.RM250714
                                 // Creazione oggetto descPose
                                 descPosApproachPick = new DescPose(
                                     pick.x,
-                                    pick.y - offsetAvvicinamento,
-                                    pick.z - zOffsetPrePickTeglia,
+                                    pick.y - offsetAvvicinamentoPick,
+                                    pick.z - zOffsetAvvicinamentoPick,
                                     pick.rx,
                                     pick.ry,
                                     pick.rz
@@ -3992,7 +4023,7 @@ namespace RM.src.RM250714
                                 descPosPostPick = new DescPose(
                                     pick.x,
                                     pick.y,
-                                    pick.z + zOffsetPostPickTeglia,
+                                    pick.z + zOffsetPostPick,
                                     pick.rx,
                                     pick.ry,
                                     pick.rz
@@ -4012,7 +4043,7 @@ namespace RM.src.RM250714
                                 descPosAllontanamentoPick = new DescPose(
                                     pick.x,
                                     home.y,
-                                    pick.z + zOffsetAllontanamentoPostPickTeglia1,
+                                    pick.z + zOffsetPostPick,
                                     pick.rx,
                                     pick.ry,
                                     pick.rz
@@ -4058,7 +4089,7 @@ namespace RM.src.RM250714
                                 // Creazione oggetto descPose
                                 descPosApproachPlace = new DescPose(
                                     place.x,
-                                    place.y - offsetPrePlace,
+                                    place.y - offsetAvvicinamentoPlace,
                                     place.z + 20,
                                     place.rx,
                                     place.ry,
@@ -4079,7 +4110,7 @@ namespace RM.src.RM250714
                                 descPosRotationPrePlace = new DescPose(
                                     home.x,
                                     home.y,
-                                    place.z + zOffsetPrePlace,
+                                    place.z + zOffsetAvvicinamentoPlace,
                                     place.rx,
                                     place.ry,
                                     place.rz
@@ -4099,7 +4130,7 @@ namespace RM.src.RM250714
                                 descPosPostPlace = new DescPose(
                                    place.x,
                                    place.y,
-                                   place.z - 10,
+                                   place.z - zOffsetPostPlace,
                                    place.rx,
                                    place.ry,
                                    place.rz
