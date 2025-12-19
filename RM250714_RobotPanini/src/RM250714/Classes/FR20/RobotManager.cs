@@ -3258,6 +3258,7 @@ namespace RM.src.RM250714
                         case 0:
                             #region Comunicazione avvio ciclo a PLC e calcolo punto di pick e place
                             // In questo step scrivo al plc che il ciclo di main è stato avviato e passo subito allo step successivo
+                            // Eseguo anche il calcolo dei punto di pick e place la prima volta, per poi non passare più da questo step.
 
                             // Aggiorno la variabile globale e statica che scrivo al PLC nel metodo SendUpdatesToPLC 
                             // per informare il plc che il ciclo main è in esecuzione
@@ -3283,11 +3284,13 @@ namespace RM.src.RM250714
                             enableToPlace = 1;
 
                             #endregion
-
+                            
                             if (execPick == 1) // Check richiesta di pick
                             {
                                 if (enableToPick == 1 && enableToPlace == 1) // Check consensi
                                 {
+                                    #region Calcolo dei punti di pick e di place
+
                                     #region Pick
 
                                     #region Punto di Pick
@@ -3295,6 +3298,7 @@ namespace RM.src.RM250714
                                     // Get punto di pick da PLC
                                     // selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
                                     selectedFormat = 1001;
+
                                     var pPick = ApplicationConfig.applicationsManager.GetPosition(selectedFormat.ToString(), "RM");
 
                                     if (pPick != null)
@@ -3493,6 +3497,8 @@ namespace RM.src.RM250714
 
                                     #endregion
 
+                                    #endregion
+
                                     // Passaggio allo step 10
                                     step = 10;
                                 }
@@ -3537,16 +3543,20 @@ namespace RM.src.RM250714
                         #endregion
 
                         case 30:
-                            #region Calcolo punto di Pick e di Place
+                            #region Calcolo punto di Pick e di Place (step non utilizzato)
 
                             if (robotStatus == 1) // Se robot fermo
                             {
+                                #region Calcolo dei punti di pick e di place
+
                                 #region Pick
 
                                 #region Punto di Pick
 
                                 // Get punto di pick da PLC
-                                selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
+                                // selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
+                                selectedFormat = 1001;
+
                                 var pPick = ApplicationConfig.applicationsManager.GetPosition(selectedFormat.ToString(), "RM");
 
                                 if (pPick != null)
@@ -3565,11 +3575,11 @@ namespace RM.src.RM250714
                                 // place target
                                 jointPosPick = new JointPos(0, 0, 0, 0, 0, 0);
                                 descPosPick = new DescPose(
-                                    pick.x, 
-                                    pick.y, 
-                                    pick.z, 
-                                    pick.rx, 
-                                    pick.ry, 
+                                    pick.x,
+                                    pick.y,
+                                    pick.z,
+                                    pick.rx,
+                                    pick.ry,
                                     pick.rz);
 
                                 GetInverseKin(descPosPick, ref jointPosPick, "Pick");
@@ -3624,7 +3634,7 @@ namespace RM.src.RM250714
                                 // Creazione oggetto descPose
                                 descPosAllontanamentoPick = new DescPose(
                                     pick.x,
-                                    pick.y - offsetAllontamentoBeor,
+                                    home.y,
                                     pick.z + zOffsetPostPick,
                                     pick.rx,
                                     pick.ry,
@@ -3646,7 +3656,7 @@ namespace RM.src.RM250714
                                 jointPosPlace = new JointPos(0, 0, 0, 0, 0, 0);
 
                                 // Get delle coordinate del punto dal database
-                               place = pick;
+                                place = pick;
 
                                 // Creazione oggetto descPose
                                 descPosPlace = new DescPose(
@@ -3672,7 +3682,7 @@ namespace RM.src.RM250714
                                 descPosApproachPlace = new DescPose(
                                     place.x,
                                     place.y - offsetAvvicinamentoPlace,
-                                    place.z + 20,
+                                    place.z + zOffsetAvvicinamentoPlace,
                                     place.rx,
                                     place.ry,
                                     place.rz
@@ -3703,23 +3713,45 @@ namespace RM.src.RM250714
 
                                 #endregion
 
+                                #region Punto post place
+
+                                // Oggetto jointPos
+                                jointPosPostPlace = new JointPos(0, 0, 0, 0, 0, 0);
+
+                                // Creazione oggetto descPose
+                                descPosPostPlace = new DescPose(
+                                   place.x,
+                                   place.y,
+                                   place.z - zOffsetPostPlace,
+                                   place.rx,
+                                   place.ry,
+                                   place.rz
+                                   );
+
+                                // Calcolo del jointPos
+                                GetInverseKin(descPosPostPlace, ref jointPosPostPlace, "Post place");
+
+                                #endregion
+
                                 #region Punto allontanamento place
 
                                 // Oggetto jointPos
                                 jointPosAllontanamentoPlace = new JointPos(0, 0, 0, 0, 0, 0);
 
                                 // Creazione oggetto descPose
-                                 descPosAllontanamentoPlace = new DescPose(
-                                    place.x,
-                                    place.y - offsetAllontamentoPostPlace,
-                                    place.z,
-                                    place.rx,
-                                    place.ry,
-                                    place.rz
-                                    );
+                                descPosAllontanamentoPlace = new DescPose(
+                                   place.x,
+                                   place.y - offsetAllontamentoPostPlace,
+                                   place.z,
+                                   place.rx,
+                                   place.ry,
+                                   place.rz
+                                   );
 
                                 // Calcolo del jointPos
                                 GetInverseKin(descPosAllontanamentoPlace, ref jointPosAllontanamentoPlace, "Allontanamento place");
+
+                                #endregion
 
                                 #endregion
 
@@ -3954,7 +3986,7 @@ namespace RM.src.RM250714
 
                                 await Task.Delay(500);
 
-                                #region Calcolo nuovo punto di pick e place
+                                #region Calcolo nuovi punti di pick e di place
 
                                 #region Pick
 
@@ -3963,6 +3995,7 @@ namespace RM.src.RM250714
                                 // Get punto di pick da PLC
                                 // selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
                                 selectedFormat = 1001;
+
                                 var pPick = ApplicationConfig.applicationsManager.GetPosition(selectedFormat.ToString(), "RM");
 
                                 if (pPick != null)
@@ -4088,7 +4121,7 @@ namespace RM.src.RM250714
                                 descPosApproachPlace = new DescPose(
                                     place.x,
                                     place.y - offsetAvvicinamentoPlace,
-                                    place.z + 20,
+                                    place.z + zOffsetAvvicinamentoPlace,
                                     place.rx,
                                     place.ry,
                                     place.rz
@@ -4225,7 +4258,7 @@ namespace RM.src.RM250714
             }
             catch (Exception ex)
             {
-                log.Error($"[TASK] : {ex}");
+                log.Error($"[TASK] : {TaskPickAndPlaceTegliaIperal}: {ex}");
                 throw;
             }
             finally

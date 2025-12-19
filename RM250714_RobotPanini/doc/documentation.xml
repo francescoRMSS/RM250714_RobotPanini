@@ -3953,7 +3953,7 @@
             <param name="token"></param>
             <returns></returns>
         </member>
-        <member name="M:RM.src.RM250714.RobotManager._PickAndPlaceTegliaIperal(System.Threading.CancellationToken)">
+        <member name="M:RM.src.RM250714.RobotManager.PickAndPlaceTegliaIperalDemo(System.Threading.CancellationToken)">
             <summary>
             Esegue ciclo teglie iperal
             </summary>
