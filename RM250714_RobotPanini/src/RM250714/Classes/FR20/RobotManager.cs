@@ -3241,12 +3241,10 @@ namespace RM.src.RM250714
 
             #endregion
 
+            #region Ciclo
 
             try
             {
-               
-
-
                 if (!collisionManager.ChangeRobotCollision(currentCollisionLevel))
                 {
                     throw new Exception("Il comando per aggiornare il ivello di collisioni ha generato un errore");
@@ -4234,6 +4232,8 @@ namespace RM.src.RM250714
             {
 
             }
+
+            #endregion
         }
 
         /// <summary>

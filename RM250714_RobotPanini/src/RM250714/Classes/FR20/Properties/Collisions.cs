@@ -184,21 +184,15 @@ namespace RM.src.RM250714.Classes.FR20.Properties
                     errNum = 1;
                 else
                 {
-                    if (_data.Value.index == RobotManager.currentCollisionLevel) // Id già impostato
-                        errNum = 2;
+                    int err = _robot.SetAnticollision(_data.Value.mode, _data.Value.levels, _data.Value.config);
+                    if (err != 0)
+                    {
+                        errNum = 3;
+                    }
                     else
                     {
-                        int err = _robot.SetAnticollision(_data.Value.mode, _data.Value.levels, _data.Value.config);
-                        if (err != 0)
-                        {
-                            errNum = 3;
-                        }
-                        else
-                        {
-                            RobotManager.currentCollisionLevel = collisionIndex;
-                            //currentCollisionLevel = collisionIndex;
-                        }
-                    }
+                        RobotManager.currentCollisionLevel = collisionIndex;
+                    }  
                 }
             }
 
