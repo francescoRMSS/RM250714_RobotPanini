@@ -2053,10 +2053,11 @@ namespace RM.src.RM250714
         /// Invia posizioni al PLC in formato cartesiano e joint
         /// </summary>
         /// <param name="jPos">Posizione in joint ottenuta dal calcolo di cinematica inversa partendo dalla posizione TCP</param>
-        public static async Task CheckRobotPosition(JointPos jPos)
+        public static void CheckRobotPosition(JointPos jPos)
         {
             // Calcolo della posizione in joint eseguendo il calcolo di cinematica inversa
-            await Task.Run(() => robot.GetInverseKin(0, TCPCurrentPosition, -1, ref jPos));
+            //robot.GetInverseKin(0, TCPCurrentPosition, -1, ref jPos);
+            GetInverseKin(TCPCurrentPosition, ref jPos);
 
             #region TCP
 
@@ -2546,36 +2547,7 @@ namespace RM.src.RM250714
 
             }
         }
-
-        /// <summary>
-        /// Esegue check apertura/chiusura pinza
-        /// </summary>
-        /// <returns></returns>
-        private static void CheckGripperStatus()
-        {
-
-            // Get input digitale (pinza)
-            byte gripperStatus = 0;
-            RobotManager.robot.GetDI(0, 1, ref gripperStatus);
-
-            if (Convert.ToBoolean(gripperStatus) != previousGripperStatus)
-            {
-
-                if (gripperStatus == 0) // Se la pinza è chiusa
-                {
-                    GripperStatusON?.Invoke(null, EventArgs.Empty);
-                }
-                else
-                {
-                    GripperStatusOFF?.Invoke(null, EventArgs.Empty);
-                }
-
-                previousGripperStatus = gripperStatus > 0;
-            }
-
-          
-        }
-
+    
         /// <summary>
         /// Esegue controlli su modalità robot, task in uso e sceglie quali task fermare/partire
         /// </summary>
@@ -2589,7 +2561,7 @@ namespace RM.src.RM250714
 
                 while (!token.IsCancellationRequested)
                 {
-                    //CheckCommandStart();
+                    CheckCommandStart();
                     CheckCommandGoToHome();
 
                   //  await CheckCommandRecordPoint();
@@ -2619,116 +2591,6 @@ namespace RM.src.RM250714
         }
 
         /// <summary>
-        /// Check su comando di reset allarmi derivante da plc
-        /// </summary>
-        private static void CheckCommandResetAlarms()
-        {
-            int resetAlarmsCommand = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_ResetAlarms));
-
-            if (resetAlarmsCommand > 0 && resetAlarmsCommand != previousAlarmResetRequested)
-            {
-                log.Warn("Richiesto comando RESET allarmi");
-                try
-                {
-                    // Reset allarme
-                    //RMLib_AlarmsCleared(null, EventArgs.Empty);
-                    formAlarmPage.ClearActiveAlarms();
-                    // Reset valore
-                    RefresherTask.AddUpdate(PLCTagName.CMD_ResetAlarms, 0, "INT16");
-                    log.Warn("Comando RESET completato");
-                }
-                catch (Exception)
-                {
-                    log.Error("Eccezione generata durante reset allarmi");
-                }
-                previousAlarmResetRequested = resetAlarmsCommand;
-            }
-            else if (resetAlarmsCommand == 0)
-            {
-                previousAlarmResetRequested = 0;
-            }
-        }
-
-
-
-        /// <summary>
-        /// Check su comando di start derivante da plc
-        /// </summary>
-        private static void CheckCommandStart()
-        {
-            // Get valore variabile di avvio ciclo robot
-            int startStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_StartCicloAuto));
-
-            // Get valore variabile di stop ciclo robot
-            int stopStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_StopCicloAuto));
-
-            // Check su cambio di stato
-            if (Convert.ToBoolean(startStatus) != previousStartCommandStatus)
-            {
-                log.Warn("Richiesto comando START");
-
-                if (startStatus == 1 && stopStatus != 1) // Start
-                {
-                    // Controllo che il robot sia in automatico
-                    if (!isAutomaticMode)
-                    {
-                        log.Warn("Tenativo di avvio ciclo con robot non in modalità automatica");
-                        return;
-                    }
-                    // Setto della velocità del Robot dalle sue proprietà memorizzate sul database
-                    if (robotProperties.Speed > 1)
-                    {
-                        int speed = robotProperties.Speed;
-                        //robot.SetSpeed(speed);
-                        SetRobotSpeed(speed);
-                        log.Info($"Velocità Robot: {speed}");
-                    }
-                    // Se il Robot non è in movimento 
-                    if (!AlarmManager.isRobotMoving)
-                    {
-                        taskManager.AddAndStartTask(TaskPickAndPlaceTegliaIperal, PickAndPlaceTegliaIperal, TaskType.LongRunning, false);
-                        EnableButtonCycleEvent?.Invoke(0, EventArgs.Empty);
-                    }
-                    else // Se il Robot è in movimento
-                    {
-                        log.Error("Impossibile inviare nuovi punti al Robot. Robot in movimento");
-                    }
-                }
-                else // Stop
-                {
-                    stopCycleRequested = true;  // Valutare se alzare un bit o fermare subito il robot
-                    EnableButtonCycleEvent?.Invoke(1, EventArgs.Empty);
-                }
-
-                previousStartCommandStatus = startStatus > 0;
-            }
-            else if (!Convert.ToBoolean(startStatus))
-            {
-                previousStartCommandStatus = false;
-            }
-        }
-
-        /// <summary>
-        /// Check su comando di stop derivante da plc
-        /// </summary>
-        private static void CheckCommandGoToHome()
-        {
-            int homeStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_GoHome));
-
-            if (homeStatus == 1 && !previousHomeCommandStatus) // Go to home
-            {
-                log.Warn("[HOME] Richiesto comando GO TO HOME");
-                previousHomeCommandStatus = true;
-                taskManager.AddAndStartTask(TaskHomeRoutine, HomeRoutine, TaskType.Default, false);
-            }
-            else if (homeStatus == 0)
-            {
-                previousHomeCommandStatus = false; // reset status
-            }
-        }
-
-
-        /// <summary>
         /// Esegue controlli sui comandi safety: barriere->pause/resume e stop
         /// </summary>
         /// <param name="token"></param>
@@ -2739,9 +2601,9 @@ namespace RM.src.RM250714
             {
                 while (!token.IsCancellationRequested)
                 {
-                   CheckCommandStop();
-                   CheckPauseStatus();
-                   CheckResumeStatus();
+                    CheckCommandStop();
+                    await CheckPauseStatus();
+                    CheckResumeStatus();
 
                     await Task.Delay(safetyTaskManagerRefreshPeriod);
                 }
@@ -2759,127 +2621,6 @@ namespace RM.src.RM250714
             finally
             {
 
-            }
-        }
-
-        /// <summary>
-        /// Check su uscita barriere
-        /// </summary>
-        private static void CheckResumeStatus()
-        {
-            // Get valore richiesta di pausa
-            int barrierStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.MovePause));
-
-            // Get valore richiesta di resume
-            int resumeMov = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Resume));
-
-            // Controllo se c'è stato un cambio di valore della richiesta di resume
-            if (resumeMov == 1 && previousBarrierResumeStatus == 0 && barrierStatus == 0)
-            {
-                log.Warn("Richiesto comando RESUME");
-
-                // Ripresa
-                ResumeMotion();
-                robotIsPaused = false;
-
-                log.Warn("Comando RESUME completato");
-
-                previousBarrierResumeStatus = 1;
-            }
-            else if (resumeMov == 0)
-            {
-                previousBarrierResumeStatus = 0;
-            }
-        }
-
-        /// <summary>
-        /// Check su accesso barriere
-        /// </summary>
-        private static async Task CheckPauseStatus()
-        {
-            int barrierStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.MovePause));
-
-            if (barrierStatus == 1 && previousBarrierPauseStatus == 0)
-            {
-                log.Warn("Richiesto comando PAUSA");
-
-                // Richiesta di pausa
-                PauseMotion();
-                robotIsPaused = true;
-
-                // 🔁 Aspetta che lo stato robot diventi 3 (pausa)
-                const int maxAttempts = 3;
-                int attempt = 0;
-
-                do
-                {
-                    if (robotStatus == 3 || robotStatus == 1)
-                    {
-                        // robotMove_inPause = 1;
-                        break;
-                    }
-                    await Task.Delay(100); // Attendi un po' prima di riprovare
-                    attempt++;
-
-                } while (attempt < maxAttempts);
-
-                if (robotStatus != 3 && robotStatus != 1)
-                {
-                    log.Error("ERRORE: Il robot non si è messo in pausa correttamente.");
-                }
-                log.Warn("Comando PAUSA completato");
-
-                previousBarrierPauseStatus = 1;
-            }
-            else if (barrierStatus == 0)
-            {
-                previousBarrierPauseStatus = 0;
-            }
-        }
-
-
-
-        /// <summary>
-        /// Gestione comando di stop derivante da plc
-        /// </summary>
-        private static void CheckCommandStop()
-        {
-            // Get valore variabile di stop ciclo robot
-            int stopStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_StopCicloAuto));
-
-            if (stopStatus == 1 && previousStopCommandStatus != 1)
-            {
-                log.Warn("Richiesto comando STOP");
-
-                stopCycleRoutine = true; // Alzo segnale di stop ciclo main
-                CycleRun_Main = 0; // Segnalo interruzione ciclo main
-                step = 0; // reset step ciclo main
-
-                stopHomeRoutine = true; // Alzo segnale di stop ciclo home
-                CycleRun_Home = 0; // Segnalo interruzione ciclo home
-                stepHomeRoutine = 0; // reset step ciclo home
-
-                stopPickRoutine = true; // Alzo segnale di stop ciclo pick
-                CycleRun_Pick = 0; // Segnalo interruzione ciclo pick
-                stepPick = 0; // reset step ciclo pick
-
-                stopPlaceRoutine = true; // Alzo segnale di stop ciclo place
-                CycleRun_Place = 0; // Segnalo interruzione ciclo place
-                stepPlace = 0; // reset step ciclo place
-
-                //robot.PauseMotion(); 
-                //PauseMotion(); // Invio comando di pausa al robot
-                //await Task.Delay(200); // Leggero ritardo per stabilizzare il robot
-                //robot.StopMotion(); 
-                StopMotion(); // Stop Robot con conseguente cancellazione di coda di punti
-
-                previousStopCommandStatus = 1;
-
-                log.Warn("Comando STOP eseguito");
-            }
-            else if (stopStatus == 0)
-            {
-                previousStopCommandStatus = 0;
             }
         }
 
@@ -5447,9 +5188,53 @@ namespace RM.src.RM250714
             }
         }
 
-
+        #endregion
 
         #region Comandi interfaccia
+
+        /// <summary>
+        /// Gestione comando di stop derivante da plc
+        /// </summary>
+        private static void CheckCommandStop()
+        {
+            // Get valore variabile di stop ciclo robot
+            int stopStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_StopCicloAuto));
+
+            if (stopStatus == 1 && previousStopCommandStatus != 1)
+            {
+                log.Warn("Richiesto comando STOP");
+
+                stopCycleRoutine = true; // Alzo segnale di stop ciclo main
+                CycleRun_Main = 0; // Segnalo interruzione ciclo main
+                step = 0; // reset step ciclo main
+
+                stopHomeRoutine = true; // Alzo segnale di stop ciclo home
+                CycleRun_Home = 0; // Segnalo interruzione ciclo home
+                stepHomeRoutine = 0; // reset step ciclo home
+
+                stopPickRoutine = true; // Alzo segnale di stop ciclo pick
+                CycleRun_Pick = 0; // Segnalo interruzione ciclo pick
+                stepPick = 0; // reset step ciclo pick
+
+                stopPlaceRoutine = true; // Alzo segnale di stop ciclo place
+                CycleRun_Place = 0; // Segnalo interruzione ciclo place
+                stepPlace = 0; // reset step ciclo place
+
+                //robot.PauseMotion(); 
+                //PauseMotion(); // Invio comando di pausa al robot
+                //await Task.Delay(200); // Leggero ritardo per stabilizzare il robot
+                //robot.StopMotion(); 
+                StopMotion(); // Stop Robot con conseguente cancellazione di coda di punti
+
+                previousStopCommandStatus = 1;
+
+                log.Warn("Comando STOP eseguito");
+            }
+            else if (stopStatus == 0)
+            {
+                previousStopCommandStatus = 0;
+            }
+        }
 
         /// <summary>
         /// Esegue check su cambio velocità derivante dal plc
@@ -5474,6 +5259,157 @@ namespace RM.src.RM250714
                 previousVel = velocity;
 
                 log.Info("[Override speed] Comando cambio override speed completato");
+            }
+        }
+
+        /// <summary>
+        /// Check su comando di start derivante da plc
+        /// </summary>
+        private static void CheckCommandStart()
+        {
+            // Get valore variabile di avvio ciclo robot
+            int startStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_StartCicloAuto));
+
+            // Get valore variabile di stop ciclo robot
+            int stopStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_StopCicloAuto));
+
+            // Check su cambio di stato
+            if (Convert.ToBoolean(startStatus) != previousStartCommandStatus)
+            {
+                log.Warn("Richiesto comando START");
+
+                if (startStatus == 1 && stopStatus != 1) // Start
+                {
+                    // Controllo che il robot sia in automatico
+                    if (!isAutomaticMode)
+                    {
+                        log.Warn("Tenativo di avvio ciclo con robot non in modalità automatica");
+                        return;
+                    }
+                    // Setto della velocità del Robot dalle sue proprietà memorizzate sul database
+                    if (robotProperties.Speed > 1)
+                    {
+                        int speed = robotProperties.Speed;
+                        //robot.SetSpeed(speed);
+                        SetRobotSpeed(speed);
+                        log.Info($"Velocità Robot: {speed}");
+                    }
+                    // Se il Robot non è in movimento 
+                    if (!AlarmManager.isRobotMoving)
+                    {
+                        taskManager.AddAndStartTask(TaskPickAndPlaceTegliaIperal, PickAndPlaceTegliaIperal, TaskType.LongRunning, false);
+                        EnableButtonCycleEvent?.Invoke(0, EventArgs.Empty);
+                    }
+                    else // Se il Robot è in movimento
+                    {
+                        log.Error("Impossibile inviare nuovi punti al Robot. Robot in movimento");
+                    }
+                }
+                else // Stop
+                {
+                    stopCycleRequested = true;  // Valutare se alzare un bit o fermare subito il robot
+                    EnableButtonCycleEvent?.Invoke(1, EventArgs.Empty);
+                }
+
+                previousStartCommandStatus = startStatus > 0;
+            }
+            else if (!Convert.ToBoolean(startStatus))
+            {
+                previousStartCommandStatus = false;
+            }
+        }
+
+        /// <summary>
+        /// Check su comando di stop derivante da plc
+        /// </summary>
+        private static void CheckCommandGoToHome()
+        {
+            int homeStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_GoHome));
+
+            if (homeStatus == 1 && !previousHomeCommandStatus) // Go to home
+            {
+                log.Warn("[HOME] Richiesto comando GO TO HOME");
+                previousHomeCommandStatus = true;
+                taskManager.AddAndStartTask(TaskHomeRoutine, HomeRoutine, TaskType.Default, false);
+            }
+            else if (homeStatus == 0)
+            {
+                previousHomeCommandStatus = false; // reset status
+            }
+        }
+
+        /// <summary>
+        /// Check su uscita barriere
+        /// </summary>
+        private static void CheckResumeStatus()
+        {
+            // Get valore richiesta di pausa
+            int barrierStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.MovePause));
+
+            // Get valore richiesta di resume
+            int resumeMov = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Resume));
+
+            // Controllo se c'è stato un cambio di valore della richiesta di resume
+            if (resumeMov == 1 && previousBarrierResumeStatus == 0 && barrierStatus == 0)
+            {
+                log.Warn("Richiesto comando RESUME");
+
+                // Ripresa
+                ResumeMotion();
+                robotIsPaused = false;
+
+                log.Warn("Comando RESUME completato");
+
+                previousBarrierResumeStatus = 1;
+            }
+            else if (resumeMov == 0)
+            {
+                previousBarrierResumeStatus = 0;
+            }
+        }
+
+        /// <summary>
+        /// Check su accesso barriere
+        /// </summary>
+        private static async Task CheckPauseStatus()
+        {
+            int barrierStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.MovePause));
+
+            if (barrierStatus == 1 && previousBarrierPauseStatus == 0)
+            {
+                log.Warn("Richiesto comando PAUSA");
+
+                // Richiesta di pausa
+                PauseMotion();
+                robotIsPaused = true;
+
+                // 🔁 Aspetta che lo stato robot diventi 3 (pausa)
+                const int maxAttempts = 3;
+                int attempt = 0;
+
+                do
+                {
+                    if (robotStatus == 3 || robotStatus == 1)
+                    {
+                        // robotMove_inPause = 1;
+                        break;
+                    }
+                    await Task.Delay(100); // Attendi un po' prima di riprovare
+                    attempt++;
+
+                } while (attempt < maxAttempts);
+
+                if (robotStatus != 3 && robotStatus != 1)
+                {
+                    log.Error("ERRORE: Il robot non si è messo in pausa correttamente.");
+                }
+                log.Warn("Comando PAUSA completato");
+
+                previousBarrierPauseStatus = 1;
+            }
+            else if (barrierStatus == 0)
+            {
+                previousBarrierPauseStatus = 0;
             }
         }
 
@@ -5522,6 +5458,66 @@ namespace RM.src.RM250714
             else if(recordPointCommand == 0)
             {
                 previousRecordPointRequest = 0;
+            }
+        }
+
+        /// <summary>
+        /// Esegue check apertura/chiusura pinza
+        /// </summary>
+        /// <returns></returns>
+        private static void CheckGripperStatus()
+        {
+
+            // Get input digitale (pinza)
+            byte gripperStatus = 0;
+            RobotManager.robot.GetDI(0, 1, ref gripperStatus);
+
+            if (Convert.ToBoolean(gripperStatus) != previousGripperStatus)
+            {
+
+                if (gripperStatus == 0) // Se la pinza è chiusa
+                {
+                    GripperStatusON?.Invoke(null, EventArgs.Empty);
+                }
+                else
+                {
+                    GripperStatusOFF?.Invoke(null, EventArgs.Empty);
+                }
+
+                previousGripperStatus = gripperStatus > 0;
+            }
+
+
+        }
+
+        /// <summary>
+        /// Check su comando di reset allarmi derivante da plc
+        /// </summary>
+        private static void CheckCommandResetAlarms()
+        {
+            int resetAlarmsCommand = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_ResetAlarms));
+
+            if (resetAlarmsCommand > 0 && resetAlarmsCommand != previousAlarmResetRequested)
+            {
+                log.Warn("Richiesto comando RESET allarmi");
+                try
+                {
+                    // Reset allarme
+                    //RMLib_AlarmsCleared(null, EventArgs.Empty);
+                    formAlarmPage.ClearActiveAlarms();
+                    // Reset valore
+                    RefresherTask.AddUpdate(PLCTagName.CMD_ResetAlarms, 0, "INT16");
+                    log.Warn("Comando RESET completato");
+                }
+                catch (Exception)
+                {
+                    log.Error("Eccezione generata durante reset allarmi");
+                }
+                previousAlarmResetRequested = resetAlarmsCommand;
+            }
+            else if (resetAlarmsCommand == 0)
+            {
+                previousAlarmResetRequested = 0;
             }
         }
 
@@ -5882,6 +5878,6 @@ namespace RM.src.RM250714
      
 
         #endregion
-        #endregion
+        
     }
 }

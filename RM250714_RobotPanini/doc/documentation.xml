@@ -3925,12 +3925,6 @@
             <param name="token"></param>
             <returns></returns>
         </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckGripperStatus">
-            <summary>
-            Esegue check apertura/chiusura pinza
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:RM.src.RM250714.RobotManager.ApplicationTaskManager(System.Threading.CancellationToken)">
             <summary>
             Esegue controlli su modalità robot, task in uso e sceglie quali task fermare/partire
@@ -3938,42 +3932,12 @@
             <param name="token"></param>
             <returns></returns>
         </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckCommandResetAlarms">
-            <summary>
-            Check su comando di reset allarmi derivante da plc
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckCommandStart">
-            <summary>
-            Check su comando di start derivante da plc
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckCommandGoToHome">
-            <summary>
-            Check su comando di stop derivante da plc
-            </summary>
-        </member>
         <member name="M:RM.src.RM250714.RobotManager.SafetyTaskManager(System.Threading.CancellationToken)">
             <summary>
             Esegue controlli sui comandi safety: barriere->pause/resume e stop
             </summary>
             <param name="token"></param>
             <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckResumeStatus">
-            <summary>
-            Check su uscita barriere
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckPauseStatus">
-            <summary>
-            Check su accesso barriere
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckCommandStop">
-            <summary>
-            Gestione comando di stop derivante da plc
-            </summary>
         </member>
         <member name="M:RM.src.RM250714.RobotManager.PickAndPlaceTegliaIperalDemo(System.Threading.CancellationToken)">
             <summary>
@@ -3991,14 +3955,50 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RM.src.RM250714.RobotManager.CheckCommandStop">
+            <summary>
+            Gestione comando di stop derivante da plc
+            </summary>
+        </member>
         <member name="M:RM.src.RM250714.RobotManager.CheckVelCommand">
             <summary>
             Esegue check su cambio velocità derivante dal plc
             </summary>
         </member>
+        <member name="M:RM.src.RM250714.RobotManager.CheckCommandStart">
+            <summary>
+            Check su comando di start derivante da plc
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.CheckCommandGoToHome">
+            <summary>
+            Check su comando di stop derivante da plc
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.CheckResumeStatus">
+            <summary>
+            Check su uscita barriere
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.CheckPauseStatus">
+            <summary>
+            Check su accesso barriere
+            </summary>
+        </member>
         <member name="M:RM.src.RM250714.RobotManager.CheckCommandRecordPoint">
             <summary>
             Check su comando di registrazione punto derivante da plc
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.CheckGripperStatus">
+            <summary>
+            Esegue check apertura/chiusura pinza
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.CheckCommandResetAlarms">
+            <summary>
+            Check su comando di reset allarmi derivante da plc
             </summary>
         </member>
         <member name="M:RM.src.RM250714.RobotManager.AttemptReconnectToRobot">
@@ -4066,11 +4066,14 @@
             </summary>
             <param name="e"></param>
         </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckIsRobotMoving(System.Collections.Generic.List{System.ValueTuple{System.String,System.Boolean,System.String}})">
+        <member name="M:RM.src.RM250714.RobotManager.CheckIsRobotMoving">
             <summary>
             Check su movimento del Robot
             </summary>
             <param name="updates"></param>
+            <summary>
+            Check su movimento del Robot
+            </summary>
         </member>
         <member name="M:RM.src.RM250714.RobotManager.GoToHomePosition">
             <summary>
