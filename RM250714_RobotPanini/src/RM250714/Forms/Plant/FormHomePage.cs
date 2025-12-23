@@ -282,7 +282,7 @@ namespace RM.src.RM250714
             AlarmManager.isFormReady = true;
 
             //Configurazione screen saver manager - 5m
-            screenSaverManager = new ScreenSaverManager(300000, "screenSaver.mp4", true);
+            screenSaverManager = new ScreenSaverManager(300000, "screenSaver.mp4", false);
 
             ChangeTaskStatus(this, EventArgs.Empty); // Chiamo il metodo per aggiornare l'interfaccia la prima volta
         }

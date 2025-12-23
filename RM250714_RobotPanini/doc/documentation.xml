@@ -1032,17 +1032,17 @@
             A 1 quando il Robot si trova in zona di home
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.ACT_Zone_Pick_inPos">
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.ACT_Zone_Carrello1">
             <summary>
-            A 1 quando il Robot si trova in zona di pick
+            A 1 quando il Robot si trova in zona carrello 1
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.ACT_Zone_Place_inPos">
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.ACT_Zone_Carrello2">
             <summary>
-            A 1 quando il Robot si trova in zona di place
+            A 1 quando il Robot si trova in zona carrello 2
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.ACT_Zone_Beor_inPos">
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.ACT_Zone_Beor">
             <summary>
             A 1 quando il Robot si trova in zona beor
             </summary>
@@ -1792,12 +1792,17 @@
             Zona di ingombro pick (copia da altro registro)
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.RET_Zone_Place_1_inPos">
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.RET_Zone_Carrello1">
             <summary>
             Zona di ingombro place (copia da altro registro)
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.RET_Zone_Beor_inPos">
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.RET_Zone_Carrello2">
+            <summary>
+            Zona di ingombro beor
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.RET_Zone_Beor">
             <summary>
             Zona di ingombro beor
             </summary>
@@ -3108,12 +3113,12 @@
             Oggetto usato per controllare che un punto sia nella safeZone.
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.checker_ingombro_pick">
+        <member name="F:RM.src.RM250714.RobotManager.checker_ingombro_carrello1">
             <summary>
             Checker per zona di pick
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.checker_ingombro_place">
+        <member name="F:RM.src.RM250714.RobotManager.checker_ingombro_carrello2">
             <summary>
             Checker per zona di place
             </summary>
@@ -3423,12 +3428,12 @@
             A true quando viene richiesto lo stop del ciclo routine del robot
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.isInPositionPick">
+        <member name="F:RM.src.RM250714.RobotManager.isInPositionCarrello1">
             <summary>
             A true quando si trova in posizione di Pick
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.isInPositionPlace">
+        <member name="F:RM.src.RM250714.RobotManager.isInPositionCarrello2">
             <summary>
             A true quando si trova in posizione di Place
             </summary>
@@ -4010,6 +4015,11 @@
         <member name="M:RM.src.RM250714.RobotManager.SendUpdatesToPLC">
             <summary>
             Esegue scrittua su plc
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.SendHighPriorityUpdatesToPLC">
+            <summary>
+            Esegue scrittura delle variabili ad alta priorità sul plc
             </summary>
         </member>
         <member name="M:RM.src.RM250714.RobotManager.TriggerRobotVelocityChangedEvent(System.Int32)">

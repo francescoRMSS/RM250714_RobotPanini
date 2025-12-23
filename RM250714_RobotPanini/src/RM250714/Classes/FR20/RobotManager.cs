@@ -427,11 +427,11 @@ namespace RM.src.RM250714
         /// <summary>
         /// Checker per zona di pick
         /// </summary>
-        private static PositionChecker checker_ingombro_pick;
+        private static PositionChecker checker_ingombro_carrello1;
         /// <summary>
         /// Checker per zona di place
         /// </summary>
-        private static PositionChecker checker_ingombro_place;
+        private static PositionChecker checker_ingombro_carrello2;
         /// <summary>
         /// Checker per zona ingombro home
         /// </summary>
@@ -704,11 +704,11 @@ namespace RM.src.RM250714
         /// <summary>
         /// A true quando si trova in posizione di Pick
         /// </summary>
-        public static bool isInPositionPick = false;
+        public static bool isInPositionCarrello1 = false;
         /// <summary>
         /// A true quando si trova in posizione di Place
         /// </summary>
-        public static bool isInPositionPlace = false;
+        public static bool isInPositionCarrello2 = false;
         /// <summary>
         /// A true quando si trova in posizione di beor
         /// </summary>
@@ -1744,64 +1744,64 @@ namespace RM.src.RM250714
         private static void CheckIsRobotInObstructionArea(DescPose[] startPoints)
         {
             isInPositionHome = checker_ingombro_home.IsInCubeObstruction(startPoints[0], TCPCurrentPosition);
-            isInPositionPick = checker_ingombro_pick.IsInCubeObstruction(startPoints[1], TCPCurrentPosition);
-            isInPositionPlace = checker_ingombro_place.IsInCubeObstruction(startPoints[2], TCPCurrentPosition);
+            isInPositionCarrello1 = checker_ingombro_carrello1.IsInCubeObstruction(startPoints[1], TCPCurrentPosition);
+            isInPositionCarrello2 = checker_ingombro_carrello2.IsInCubeObstruction(startPoints[2], TCPCurrentPosition);
             isInPositionBeor = checker_ingombro_beor.IsInCubeObstruction(startPoints[3], TCPCurrentPosition);
 
             bool plcIsInPositionHome = Convert.ToBoolean(PLCConfig.appVariables.getValue(PLCTagName.RET_Zone_Home_inPos));
-            bool plcIsInPositionPick = Convert.ToBoolean(PLCConfig.appVariables.getValue(PLCTagName.RET_Zone_Pick_inPos));
-            bool plcIsInPositionPlace = Convert.ToBoolean(PLCConfig.appVariables.getValue(PLCTagName.RET_Zone_Place_1_inPos));
-            bool plcIsInPositionBeor = Convert.ToBoolean(PLCConfig.appVariables.getValue(PLCTagName.RET_Zone_Beor_inPos));
+            bool plcIsInPositionCarrello1 = Convert.ToBoolean(PLCConfig.appVariables.getValue(PLCTagName.RET_Zone_Carrello1));
+            bool plcIsInPositionCarrello2 = Convert.ToBoolean(PLCConfig.appVariables.getValue(PLCTagName.RET_Zone_Carrello2));
+            bool plcIsInPositionBeor = Convert.ToBoolean(PLCConfig.appVariables.getValue(PLCTagName.RET_Zone_Beor));
 
-            if (isInPositionPick) // Ora in zona di pick
+            if (isInPositionCarrello1) // Ora in zona di pick
             {
-                if (!plcIsInPositionPick) // Prima non ero in zona pick o sul plc c'è un valore diverso
+                if (!plcIsInPositionCarrello1) // Prima non ero in zona pick o sul plc c'è un valore diverso
                 {
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Pick_inPos, 1, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Carrello1, 1, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Carrello2, 0, "INT16");
                     RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Home_inPos, 0, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Beor_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Beor, 0, "INT16");
                 }
             }
-            else if (isInPositionPlace) // Ora in zona di place
+            else if (isInPositionCarrello2) // Ora in zona di place
             {
-                if (!plcIsInPositionPlace) // Prima non ero in zona place o sul plc c'è un valore diverso
+                if (!plcIsInPositionCarrello2) // Prima non ero in zona place o sul plc c'è un valore diverso
                 {
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Pick_inPos, 0, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos, 1, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Carrello1, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Carrello2, 1, "INT16");
                     RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Home_inPos, 0, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Beor_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Beor, 0, "INT16");
                 }
             }
             else if (isInPositionHome) // Ora in zona di home
             {
                 if (!plcIsInPositionHome) // Prima non ero in zona di home o sul plc c'è un valore diverso
                 {
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Pick_inPos, 0, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Carrello1, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Carrello2, 0, "INT16");
                     RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Home_inPos, 1, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Beor_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Beor, 0, "INT16");
                 }
             }
             else if (isInPositionBeor)
             {
                 if (!plcIsInPositionBeor)
                 {
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Pick_inPos, 0, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Carrello1, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Carrello2, 0, "INT16");
                     RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Home_inPos, 0, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Beor_inPos, 1, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Beor, 1, "INT16");
                 }
             }
             else // Altrimenti
             {
-                bool plcIsFuoriIngombro = !plcIsInPositionHome && !plcIsInPositionPick && !plcIsInPositionPlace && !plcIsInPositionBeor;
+                bool plcIsFuoriIngombro = !plcIsInPositionHome && !plcIsInPositionCarrello1 && !plcIsInPositionCarrello2 && !plcIsInPositionBeor;
                 if (!plcIsFuoriIngombro) // Prima non ero fuori ingombro o sul plc c'è un valore sbagliato
                 {
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Pick_inPos, 0, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Place_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Carrello1, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Carrello2, 0, "INT16");
                     RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Home_inPos, 0, "INT16");
-                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Beor_inPos, 0, "INT16");
+                    RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Beor, 0, "INT16");
                 }
             }
         }
@@ -2224,26 +2224,26 @@ namespace RM.src.RM250714
             #region ingombri
             
             // Zone di ingombro
-            var pickPose = ApplicationConfig.applicationsManager.GetPosition("1001", "RM");
-            var placePose = ApplicationConfig.applicationsManager.GetPosition("1001", "RM");
+            var carrello1 = ApplicationConfig.applicationsManager.GetPosition("1001", "RM");
+            var carrello2 = ApplicationConfig.applicationsManager.GetPosition("2001", "RM");
             var homePose = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
             var beorPose = ApplicationConfig.applicationsManager.GetPosition("pBeor", "RM");
 
             DescPose[] startPoints = new DescPose[]
             {
-                new DescPose(pickPose.x, pickPose.y, pickPose.z, pickPose.rx, pickPose.ry, pickPose.rz),
-                new DescPose(placePose.x, placePose.y, placePose.z, placePose.rx, placePose.ry, placePose.rz),
                 new DescPose(homePose.x, homePose.y, homePose.z, homePose.rx, homePose.ry, homePose.rz),
+                new DescPose(carrello1.x, carrello1.y, carrello1.z, carrello1.rx, carrello1.ry, carrello1.rz),
+                new DescPose(carrello2.x, carrello2.y, carrello2.z, carrello2.rx, carrello2.ry, carrello2.rz),
                 new DescPose(beorPose.x, beorPose.y, beorPose.z, beorPose.rx, beorPose.ry, beorPose.rz),
             };
 
             // Oggetto che rileva ingombro pick
-            double delta_ingombro_pick = 300.0;
-            checker_ingombro_pick = new PositionChecker(delta_ingombro_pick);
+            double delta_ingombro_carrello1 = 400.0;
+            checker_ingombro_carrello1 = new PositionChecker(delta_ingombro_carrello1);
 
             // Oggetto che rileva ingombro place
-            double delta_ingombro_place = 300.0;
-            checker_ingombro_place = new PositionChecker(delta_ingombro_place);
+            double delta_ingombro_carrello2 = 400.0;
+            checker_ingombro_carrello2 = new PositionChecker(delta_ingombro_carrello2);
 
             // Oggetto che rileva ingombro home
             double delta_ingombro_home = 300.0;
@@ -2264,7 +2264,7 @@ namespace RM.src.RM250714
                         await CheckIsRobotEnable();
                         CheckRobotMode();
                         CheckCurrentToolAndUser();
-                        CheckGripperStatus();
+                        //CheckGripperStatus();
                         CheckIsRobotInObstructionArea(startPoints);
                     }
 
@@ -2379,16 +2379,26 @@ namespace RM.src.RM250714
 
             JointPos jPos = new JointPos(0, 0, 0, 0, 0, 0);
 
+
+            const int LOW_PRIORITY_DELAY = 2;
+            int lowPriorityDelayNum = 0;
+
             try
             {
                 while (!token.IsCancellationRequested)
                 {
-                    CheckRobotPosition(jPos);
+                    lowPriorityDelayNum++;
+                    SendHighPriorityUpdatesToPLC();
 
-                    GetPLCErrorCode(alarmValues, alarmDescriptions, now, unixTimestamp,
-                        dateTime, formattedDate);
+                    if (lowPriorityDelayNum >= LOW_PRIORITY_DELAY)
+                    {
+                        CheckRobotPosition(jPos);
+                        GetPLCErrorCode(alarmValues, alarmDescriptions, now, unixTimestamp,
+                            dateTime, formattedDate);
+                        SendUpdatesToPLC();
 
-                    SendUpdatesToPLC();
+                        lowPriorityDelayNum = 0;
+                    }
 
                     await Task.Delay(plcComTaskRefreshPeriod, token);
                 }
@@ -2451,8 +2461,9 @@ namespace RM.src.RM250714
         /// <returns></returns>
         private async static Task CheckRobotConnection(CancellationToken token)
         {
-            const int MAX_FAILURE_ATTEMPTS = 2; // Tentativi consecutivi prima di dichiarare la disconnessione
-            int consecutiveFailures = 0;
+            const int MAX_FAILURE_ATTEMPTS = 3; // Tentativi consecutivi prima di dichiarare la disconnessione
+            int consecutiveFailures = 0; // Numero di tentativi correnti per il proxy
+            bool isReconnectionNeeded = false; // Indica se la riconnessione è necessaria
 
             try
             {
@@ -2465,24 +2476,31 @@ namespace RM.src.RM250714
 
                 while (!token.IsCancellationRequested)
                 {
-                    bool isProxyConnected = false;
+                    bool isProxyConnected;
                     try
                     {
                         // --- IL CONTROLLO DIRETTO SUL PROXY ---
                         // Eseguiamo la chiamata RPC su un thread del pool per non bloccare
                         // il nostro loop while nel caso in cui il timeout non funzioni bene.
-                        await Task.Run(() => connectionProxy.GetRobotErrorCode(), token);
+                        connectionProxy.GetRobotErrorCode();
                         isProxyConnected = true;
                     }
-                    catch (Exception)
+                    catch (Exception) // Qualsiasi eccezione (XmlRpcException, WebException) significa che non siamo connessi.
                     {
-                        // Qualsiasi eccezione (XmlRpcException, WebException) significa che non siamo connessi.
                         isProxyConnected = false;
-                        //log.Error($"[Guardian] Rilevata disconnessione: {ex.GetType().Name} - {ex.Message}");
                     }
 
-                    if (isProxyConnected) //Connessione verificata
+                    // Controllo aggiuntivo che guarda il numero di volte che un get status restituisce errore -2
+                    if (currentConnectionErrorTries >= connectionErrorMaxTries * 2)
                     {
+                        isProxyConnected = false;
+                        isReconnectionNeeded = true; // Abilita la condizione di riconnessione
+                    }
+
+                    if (isProxyConnected) //Connessione verificata dal proxy
+                    {
+                        consecutiveFailures = 0;
+
                         if (!AlarmManager.isRobotConnected)
                         {
                             // Eravamo in stato "disconnesso", ma ora la rete è tornata.
@@ -2497,14 +2515,23 @@ namespace RM.src.RM250714
                         if (consecutiveFailures < MAX_FAILURE_ATTEMPTS)
                             consecutiveFailures++;
 
-                        if (consecutiveFailures >= MAX_FAILURE_ATTEMPTS && AlarmManager.isRobotConnected)
+                        if ((consecutiveFailures >= MAX_FAILURE_ATTEMPTS && AlarmManager.isRobotConnected) ||
+                            (isReconnectionNeeded && AlarmManager.isRobotConnected))
                         {
                             // È la prima volta che rileviamo la disconnessione
                             log.Error("[Robot COM] Connessione al robot PERSA. Avvio tentativi di riconnessione...");
                             AlarmManager.isRobotConnected = false;
                             //RefresherTask.AddUpdate(PLCTagName.Emergency, 1, "INT16");
 
-                            try { robot.CloseRPC(); } catch { } //Chiusura dei thread di libreria
+                            try
+                            {
+                                //Chiusura dei thread di libreria
+                                robot.CloseRPC();
+                            }
+                            catch (Exception ex)
+                            {
+                                log.Error("Errore durante chiusura RPC: " + ex.Message);
+                            }
 
                             // Generazione allarme bloccante
                             AlarmManager.blockingAlarm = true;
@@ -2526,6 +2553,9 @@ namespace RM.src.RM250714
                                 MarkAlarmAsSignaled(id);
                                 robotError = 1;
                             }
+
+                            isReconnectionNeeded = false; // Reset del bypass
+                            currentConnectionErrorTries = 0; // Reset del numero di tentativi con errore -2
                         }
                     }
 
@@ -2547,7 +2577,7 @@ namespace RM.src.RM250714
 
             }
         }
-    
+
         /// <summary>
         /// Esegue controlli su modalità robot, task in uso e sceglie quali task fermare/partire
         /// </summary>
@@ -4005,15 +4035,6 @@ namespace RM.src.RM250714
                             // Get consensi di pick da plc
                             enableToPick = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Enable_To_Pick));
 
-                            #region Simulazione
-
-                            execPick = 1;
-                            execPlace = 1;
-                            enableToPick = 1;
-                            enableToPlace = 1;
-
-                            #endregion
-                            
                             if (execPick == 1) // Check richiesta di pick
                             {
                                 if (enableToPick == 1 && enableToPlace == 1) // Check consensi
@@ -4025,8 +4046,8 @@ namespace RM.src.RM250714
                                     #region Punto di Pick
 
                                     // Get punto di pick da PLC
-                                    // selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
-                                    selectedFormat = 1001;
+                                     selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
+                                    // selectedFormat = 1001;
 
                                     var pPick = ApplicationConfig.applicationsManager.GetPosition(selectedFormat.ToString(), "RM");
 
@@ -4250,15 +4271,6 @@ namespace RM.src.RM250714
                             // Get consensi di pick da plc
                             enableToPick = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Enable_To_Pick));
 
-                            #region Simulazione
-
-                            execPick = 1;
-                            execPlace = 1;
-                            enableToPick = 1;
-                            enableToPlace = 1;
-
-                            #endregion
-
                             if (execPick == 1 && !stopCycleRequested) // Check richiesta di pick
                             {
                                 if (enableToPick == 1 && enableToPlace == 1) // Check consensi
@@ -4288,8 +4300,8 @@ namespace RM.src.RM250714
                                 #region Punto di Pick
 
                                 // Get punto di pick da PLC
-                                // selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
-                                selectedFormat = 1001;
+                                 selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
+                                //selectedFormat = 1001;
 
                                 var pPick = ApplicationConfig.applicationsManager.GetPosition(selectedFormat.ToString(), "RM");
 
@@ -4554,7 +4566,7 @@ namespace RM.src.RM250714
                             if (inPosition && robotStatus == 1) // con robot fermo
                             {
                                 // Abilitazione pick
-                                // robot.SetDO(0, 1, 0, 0);
+                                 robot.SetDO(0, 1, 0, 0);
                                 await Task.Delay(500);
                                 step = 43; // Passaggio a step 40
                             }
@@ -4727,8 +4739,8 @@ namespace RM.src.RM250714
                                 #region Punto di Pick
 
                                 // Get punto di pick da PLC
-                                // selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
-                                selectedFormat = 1001;
+                                 selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
+                                // selectedFormat = 1001;
 
                                 var pPick = ApplicationConfig.applicationsManager.GetPosition(selectedFormat.ToString(), "RM");
 
@@ -5600,23 +5612,29 @@ namespace RM.src.RM250714
         /// </summary>
         private static void SendUpdatesToPLC()
         {
-            RefresherTask.AddUpdate(PLCTagName.ApplicationComRobot_active, Convert.ToInt16(AlarmManager.isRobotConnected), "INT16"); // Scrittura comunicazione con robot attiva
             RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Home, stepHomeRoutine, "INT16"); // Scrittura fase ciclo home a PLC
-            RefresherTask.AddUpdate(PLCTagName.ACT_Step_MainCycle, step, "INT16"); // Scrittura fase ciclo main a PLC
-            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Pick, stepPick, "INT16"); // Scrittura fase ciclo pick a PLC
-            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Place, stepPlace, "INT16"); // Scrittura fase ciclo place a PLC
             RefresherTask.AddUpdate(PLCTagName.CycleRun_Home, CycleRun_Home, "INT16"); // Scrittura valore avvio/stop ciclo home
             RefresherTask.AddUpdate(PLCTagName.CycleRun_Main, CycleRun_Main, "INT16"); // Scrittura valore avvio/stop ciclo main
             RefresherTask.AddUpdate(PLCTagName.CycleRun_Pick, CycleRun_Pick, "INT16"); // Scrittura valore avvio/stop ciclo pick
             RefresherTask.AddUpdate(PLCTagName.CycleRun_Place, CycleRun_Place, "INT16"); // Scrittura valore avvio/stop ciclo place
-            RefresherTask.AddUpdate(PLCTagName.Robot_error, robotError, "INT16"); // Scrittura stato errore del robot
-            RefresherTask.AddUpdate(PLCTagName.Robot_enable, robotEnableStatus, "INT16"); // Scrittura stato enable del robot
-            RefresherTask.AddUpdate(PLCTagName.Robot_status, robotStatus, "INT16"); // Scrittura stato del robot
             RefresherTask.AddUpdate(PLCTagName.ACT_N_Tool, currentTool, "INT16"); // Scrittura stato del robot
             RefresherTask.AddUpdate(PLCTagName.ACT_N_Frame, currentUser, "INT16"); // Scrittura stato del robot
             RefresherTask.AddUpdate(PLCTagName.ACT_CollisionLevel, currentCollisionLevel, "INT16"); // Scrittura stato del robot
-
             // RefresherTask.AddUpdate(PLCTagName.Move_InPause, robotMove_inPause, "INT16"); // Scrittura feedback pausa del robot
+        }
+
+        /// <summary>
+        /// Esegue scrittura delle variabili ad alta priorità sul plc
+        /// </summary>
+        private static void SendHighPriorityUpdatesToPLC()
+        {
+            RefresherTask.AddUpdate(PLCTagName.ApplicationComRobot_active, Convert.ToInt16(AlarmManager.isRobotConnected), "INT16"); // Scrittura comunicazione con robot attiva
+            RefresherTask.AddUpdate(PLCTagName.Robot_error, robotError, "INT16"); // Scrittura stato errore del robot
+            RefresherTask.AddUpdate(PLCTagName.Robot_enable, robotEnableStatus, "INT16"); // Scrittura stato enable del robot
+            RefresherTask.AddUpdate(PLCTagName.Robot_status, robotStatus, "INT16"); // Scrittura stato del robot
+            RefresherTask.AddUpdate(PLCTagName.ACT_Step_MainCycle, step, "INT16"); // Scrittura fase ciclo main a PLC
+            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Pick, stepPick, "INT16"); // Scrittura fase ciclo pick a PLC
+            RefresherTask.AddUpdate(PLCTagName.ACT_Step_Cycle_Place, stepPlace, "INT16"); // Scrittura fase ciclo place a PLC
         }
 
         /// <summary>

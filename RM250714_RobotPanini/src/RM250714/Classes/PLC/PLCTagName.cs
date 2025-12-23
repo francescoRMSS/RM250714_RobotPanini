@@ -102,19 +102,19 @@ namespace RM.src.RM250714.Classes.PLC
         public const string ACT_Zone_Home_inPos = "PLC1_" + "ACT_Zone_Home_inPos";
 
         /// <summary>
-        /// A 1 quando il Robot si trova in zona di pick
+        /// A 1 quando il Robot si trova in zona carrello 1
         /// </summary>
-        public const string ACT_Zone_Pick_inPos = "PLC1_" + "ACT_Zone_Pick_inPos";
+        public const string ACT_Zone_Carrello1 = "PLC1_" + "ACT_Zone_Carrello1";
 
         /// <summary>
-        /// A 1 quando il Robot si trova in zona di place
+        /// A 1 quando il Robot si trova in zona carrello 2
         /// </summary>
-        public const string ACT_Zone_Place_inPos = "PLC1_" + "ACT_Zone_Place_inPos";
+        public const string ACT_Zone_Carrello2 = "PLC1_" + "ACT_Zone_Carrello2";
 
         /// <summary>
         /// A 1 quando il Robot si trova in zona beor
         /// </summary>
-        public const string ACT_Zone_Beor_inPos = "PLC1_" + "ACT_Zone_Beor_inPos";
+        public const string ACT_Zone_Beor = "PLC1_" + "ACT_Zone_Beor";
 
         /// <summary>
         /// A 1 quando è avviato il ciclo main
@@ -881,12 +881,17 @@ namespace RM.src.RM250714.Classes.PLC
         /// <summary>
         /// Zona di ingombro place (copia da altro registro)
         /// </summary>
-        public static string RET_Zone_Place_1_inPos = "PLC1_" + "com_robot_105";
+        public static string RET_Zone_Carrello1 = "PLC1_" + "com_robot_105";
 
         /// <summary>
         /// Zona di ingombro beor
         /// </summary>
-        public static string RET_Zone_Beor_inPos = "PLC1_" + "com_robot_106";
+        public static string RET_Zone_Carrello2 = "PLC1_" + "com_robot_106";
+
+        /// <summary>
+        /// Zona di ingombro beor
+        /// </summary>
+        public static string RET_Zone_Beor = "PLC1_" + "com_robot_107";
 
         #endregion
 
