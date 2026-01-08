@@ -2470,6 +2470,14 @@
             </summary>
             <param name="delta">Soglia</param>
         </member>
+        <member name="M:RM.src.RM250714.PositionChecker.#ctor(System.Double,System.Double,System.Double)">
+            <summary>
+            Costruttore da utilizzare per parallelepipedo
+            </summary>
+            <param name="lenght">Larghezza x[mm]</param>
+            <param name="width">Lunghezza y[mm]</param>
+            <param name="height">Altezza z[mm]</param>
+        </member>
         <member name="M:RM.src.RM250714.PositionChecker.IsInPosition(fairino.DescPose,fairino.DescPose)">
             <summary>
             Controlla se il punto si trova nella posizione passata come parametro

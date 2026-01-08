@@ -41,6 +41,20 @@ namespace RM.src.RM250714
             this.delta = delta;
         }
 
+        /// <summary>
+        /// Costruttore da utilizzare per parallelepipedo
+        /// </summary>
+        /// <param name="lenght">Larghezza x[mm]</param>
+        /// <param name="width">Lunghezza y[mm]</param>
+        /// <param name="height">Altezza z[mm]</param>
+        public PositionChecker(double lenght, double width, double height)
+        {
+            this.length = lenght;
+            this.width = width;
+            this.height = height;
+        }
+
+
         #region Metodi di PositionChecker
 
         /// <summary>

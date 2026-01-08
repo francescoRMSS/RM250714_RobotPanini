@@ -144,9 +144,7 @@ namespace RM.src.RM250714.Classes.FR20
                     errNum = 1;
                 else
                 {
-                    if (_data.Value.id == RobotManager.tool)
-                        errNum = 2;
-                    else
+                    
                     {
                         _robot.SetToolCoord(toolId, _data.Value.pose, _data.Value.type, _data.Value.install, 0, 0);
                         _robot.GetActualTCPNum(0, ref _checkNewTool);
