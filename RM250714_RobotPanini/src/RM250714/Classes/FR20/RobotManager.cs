@@ -1746,8 +1746,8 @@ namespace RM.src.RM250714
         private static void CheckIsRobotInObstructionArea(DescPose[] startPoints)
         {
             isInPositionHome = checker_ingombro_home.IsInCubeObstruction(startPoints[0], TCPCurrentPosition);
-            isInPositionCarrello1 = checker_ingombro_carrello1.IsInCubeObstruction(startPoints[1], TCPCurrentPosition);
-            isInPositionCarrello2 = checker_ingombro_carrello2.IsInCubeObstruction(startPoints[2], TCPCurrentPosition);
+            isInPositionCarrello1 = checker_ingombro_carrello1.IsInParallelepipedObstruction(startPoints[1], TCPCurrentPosition);
+            isInPositionCarrello2 = checker_ingombro_carrello2.IsInParallelepipedObstruction(startPoints[2], TCPCurrentPosition);
             isInPositionBeor = checker_ingombro_beor.IsInParallelepipedObstruction(startPoints[3], TCPCurrentPosition);
 
             bool plcIsInPositionHome = Convert.ToBoolean(PLCConfig.appVariables.getValue(PLCTagName.RET_Zone_Home_inPos));
@@ -2226,8 +2226,8 @@ namespace RM.src.RM250714
             #region ingombri
             
             // Zone di ingombro
-            var carrello1 = ApplicationConfig.applicationsManager.GetPosition("1001", "RM");
-            var carrello2 = ApplicationConfig.applicationsManager.GetPosition("2001", "RM");
+            var carrello1 = ApplicationConfig.applicationsManager.GetPosition("pIngombroCarrello1", "RM");
+            var carrello2 = ApplicationConfig.applicationsManager.GetPosition("pIngombroCarrello2", "RM");
             var homePose = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
             var IngombroBeorPose = ApplicationConfig.applicationsManager.GetPosition("pIngombroBeor", "RM");
 
@@ -2239,13 +2239,17 @@ namespace RM.src.RM250714
                 new DescPose(IngombroBeorPose.x, IngombroBeorPose.y, IngombroBeorPose.z, IngombroBeorPose.rx, IngombroBeorPose.ry, IngombroBeorPose.rz),
             };
 
-            // Oggetto che rileva ingombro pick
-            double delta_ingombro_carrello1 = 400.0;
-            checker_ingombro_carrello1 = new PositionChecker(delta_ingombro_carrello1);
+            // Oggetto che rileva ingombro carrello 1 [parallelepipedo]
+            double lenght_carrello1 = 200.0;
+            double width_carrello1 = 2000.0;
+            double height_carrello1 = 2000.0;
+            checker_ingombro_carrello1 = new PositionChecker(lenght_carrello1, width_carrello1, height_carrello1);
 
-            // Oggetto che rileva ingombro place
-            double delta_ingombro_carrello2 = 400.0;
-            checker_ingombro_carrello2 = new PositionChecker(delta_ingombro_carrello2);
+            // Oggetto che rileva ingombro carrello 2 [parallelepipedo]
+            double lenght_carrello2 = 200.0;
+            double width_carrello2 = 2000.0;
+            double height_carrello2 = 2000.0;
+            checker_ingombro_carrello2 = new PositionChecker(lenght_carrello2, width_carrello2, height_carrello2);
 
             // Oggetto che rileva ingombro home
             double delta_ingombro_home = 300.0;
