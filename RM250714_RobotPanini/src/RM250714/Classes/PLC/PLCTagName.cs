@@ -117,6 +117,11 @@ namespace RM.src.RM250714.Classes.PLC
         public const string ACT_Zone_Beor = "PLC1_" + "ACT_Zone_Beor";
 
         /// <summary>
+        /// comando per muovere slitta
+        /// </summary>
+        public const string CMD_slittaAvanti = "PLC1_" + "CMD_slittaAvanti";
+
+        /// <summary>
         /// A 1 quando è avviato il ciclo main
         /// </summary>
         public const string CycleRun_Main = "PLC1_" + "CycleRun_Main";

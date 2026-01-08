@@ -3788,9 +3788,11 @@ namespace RM.src.RM250714
             #region Offset place
 
             int offsetAvvicinamentoPlace = 700; // Offset per eseguire punto di avvicinamento place
-            int zOffsetAvvicinamentoPlace = 40; // Offset su asse Z in cui mi alzo leggermente prima di andare in place
-            int zOffsetPostPlace = 10; // Offset su asse Z in cui mi abbasso leggermente dopo essere andato in place
+            int zOffsetAvvicinamentoPlace = 60; // Offset su asse Z in cui mi alzo leggermente prima di andare in place
+            int zOffsetPostPlace = 5; // Offset su asse Z in cui mi abbasso leggermente dopo essere andato in place
             int offsetAllontamentoPostPlace = 300; // Offset di allontanamento dal carrello dopo aver eseguito il place
+            int offsetAllontamentoPreSlittaAvanti = 150;
+            int zOffsetPlace = 10; // Offset del punto di place
 
             #endregion
 
@@ -4076,7 +4078,8 @@ namespace RM.src.RM250714
                                 robot.SetDO(0, 1, 0, 0);
 
                                 // Slitta avanti
-                                robot.SetDO(1, 1, 0, 0);
+                                //robot.SetDO(1, 1, 0, 0);
+                                RefresherTask.AddUpdate(PLCTagName.CMD_slittaAvanti, 1, "INT16");
 
                                 // Controllo di avere sia pick che place da fare
                                 // Se ho i consensi calcoli i punti di pick e place prima di partire col ciclo
@@ -4229,7 +4232,7 @@ namespace RM.src.RM250714
                                         descPosPlace = new DescPose(
                                             place.x,
                                             place.y,
-                                            place.z,
+                                            place.z + zOffsetPlace,
                                             place.rx,
                                             place.ry,
                                             place.rz
@@ -4289,7 +4292,7 @@ namespace RM.src.RM250714
                                         descPosPostPlace = new DescPose(
                                            place.x,
                                            place.y,
-                                           place.z - zOffsetPostPlace,
+                                           place.z - zOffsetPostPlace - zOffsetPlace,
                                            place.rx,
                                            place.ry,
                                            place.rz
@@ -4793,7 +4796,16 @@ namespace RM.src.RM250714
 
                             #endregion
 
-                            endingPoint = descPosPostPick;
+                            #region Movimento allontanamento pick
+
+                            blendR = 50;
+                            // Movimento per uscire dal carrelo dopo pick 1
+                            err = robot.MoveL(jointPosAllontanamentoPick, descPosAllontanamentoPick,
+                                tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                            #endregion
+
+                            endingPoint = descPosAllontanamentoPick;
 
                             step = 105;
 
@@ -4802,32 +4814,16 @@ namespace RM.src.RM250714
                         #endregion
 
                         case 105:
-                            #region Attesa in position punto post pick, comando slitta indietro e invio punto allontanamento pick
+                            #region Attesa in position punto intermedio allontanamento pick e invio comando slitta indietro
 
-                            if (inPosition)
+                            if (TCPCurrentPosition.tran.y <= descPosPick.tran.y - offsetAllontamentoPreSlittaIndietro)
                             {
-                                // Reset inPosition
-                                inPosition = false;
-
-                                log.Info("STEP 105 - Invio comando slitta indietro e allontamento pick");
-
                                 // Slitta indietro
-                                robot.SetDO(1, 0, 0, 0);
-
-                                #region Movimento allontanamento pick
-
-                                blendR = 50;
-                                // Movimento per uscire dal carrelo dopo pick 1
-                                err = robot.MoveL(jointPosAllontanamentoPick, descPosAllontanamentoPick,
-                                    tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
-
-                                #endregion
-
-                                endingPoint = descPosAllontanamentoPick;
+                                RefresherTask.AddUpdate(PLCTagName.CMD_slittaAvanti, 0, "INT16");
 
                                 step = 106;
-
                             }
+
 
                             break;
 
@@ -4847,7 +4843,10 @@ namespace RM.src.RM250714
                         #endregion
 
                         case 108:
-                            #region Attesa in position punto intermedio allontamento pick e invio comando di slitta indietro
+                            #region Movimento a boer
+
+                            // Reset inPosition
+                            inPosition = false;
 
                             #region Movimento a home
 
@@ -4933,7 +4932,31 @@ namespace RM.src.RM250714
 
                             endingPoint = descPosApproachPlace;
 
-                            step = 125;
+                            step = 122;
+
+                            break;
+
+                        #endregion
+
+                        case 122:
+                            #region Attesa in position punto di avvicinamento place e movimento a punto di place
+
+                            if (inPosition)
+                            {
+                                // Reset inPosition
+                                inPosition = false;
+
+                                #region Movimento a punto di  place
+
+                                err = robot.MoveL(jointPosPlace, descPosPlace,
+                                       tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                                #endregion
+
+                                endingPoint = descPosPlace;
+
+                                step = 125;
+                            }
 
                             break;
 
@@ -4942,9 +4965,12 @@ namespace RM.src.RM250714
                         case 125:
                             #region Attesa inPosition punto avvicinamento place
 
-                            if (inPosition)
+                            if (TCPCurrentPosition.tran.y >= descPosPlace.tran.y - offsetAllontamentoPreSlittaAvanti)
                             {
+                                // Slitta avanti
+                                RefresherTask.AddUpdate(PLCTagName.CMD_slittaAvanti, 1, "INT16");
 
+                                step = 130;
                             }
 
                             break;
@@ -4953,14 +4979,70 @@ namespace RM.src.RM250714
                         case 130:   
                             #region Attesa inPosition punto di place e calcolo nuovi punti di pick e place
 
-                            if (inPosition & robotStatus == 1) // Se il Robot è arrivato in posizione di Place ed è fermo
+                            if (inPosition && robotStatus == 1) // Se il Robot è arrivato in posizione di Place ed è fermo
                             {
-                                log.Info("STEP 90 - Invio comando slitta avanti");
-                                // Slitta avanti
-                                robot.SetDO(1, 1, 0, 0);
+                                // Apro la pinza
+                                robot.SetDO(0, 1, 0, 0);
 
-                                await Task.Delay(500);
+                                step = 140;
+                            }
 
+                            break;
+
+                        #endregion
+
+                        case 140:
+                            #region Check apertura pinza
+
+                            robot.GetDI(2, 1, ref isGripperOpen);
+
+                            // se la pinza è aperta
+                            if (isGripperOpen == 1)
+                            {
+                                await Task.Delay(100); // Ritardo per evitare che il robot riparta senza aver finito di chiudere la pinza
+                                step = 150;
+                            }
+
+                            break;
+
+                        #endregion
+
+                        case 150:
+                            #region Allontanamento place
+
+                            // Reset inPosition
+                            inPosition = false;
+
+                            #region Movimento post place
+
+                            blendR = 50;
+                           
+                            // Movimento a punto di allontanamento place teglia 2
+                            err = robot.MoveL(jointPosPostPlace, descPosPostPlace,
+                                tool, user, vel, acc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                            #endregion
+
+                            #region Movimento allontanamento place
+
+                            blendR = 50;
+                            // Movimento a punto di allontanamento place teglia 2
+                            err = robot.MoveL(jointPosAllontanamentoPlace, descPosAllontanamentoPlace,
+                                tool, user, vel, acc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                            #endregion
+
+                            endingPoint = descPosAllontanamentoPlace;
+
+                            step = 160;
+
+                            break;
+                        #endregion
+
+                        case 160:
+                            #region
+                            if (inPosition && robotStatus == 1)
+                            {
                                 #region Calcolo nuovi punti di pick e di place
 
                                 #region Pick
@@ -5096,7 +5178,7 @@ namespace RM.src.RM250714
                                 descPosPlace = new DescPose(
                                     place.x,
                                     place.y,
-                                    place.z,
+                                    place.z + zOffsetPlace,
                                     place.rx,
                                     place.ry,
                                     place.rz
@@ -5156,7 +5238,7 @@ namespace RM.src.RM250714
                                 descPosPostPlace = new DescPose(
                                    place.x,
                                    place.y,
-                                   place.z - zOffsetPostPlace,
+                                   place.z - zOffsetPostPlace - zOffsetPlace,
                                    place.rx,
                                    place.ry,
                                    place.rz
@@ -5190,51 +5272,7 @@ namespace RM.src.RM250714
                                 #endregion
 
                                 #endregion
-
-                                step = 140;
                             }
-
-                            break;
-
-                        #endregion
-
-                        case 140:
-                            #region Check place done
-
-                            robot.GetDI(1, 1, ref ris);
-
-                            // se place done
-                           // if (ris == 1)
-                            {
-                                await Task.Delay(100); // Ritardo per evitare che il robot riparta senza aver finito di chiudere la pinza
-                                step = 150;
-                            }
-
-                            break;
-
-                        #endregion
-
-                        case 150:
-                            #region Allontanamento place
-
-                            #region Movimento post place
-
-                            blendR = 50;
-                           
-                            // Movimento a punto di allontanamento place teglia 2
-                            err = robot.MoveL(jointPosPostPlace, descPosPostPlace,
-                                tool, user, vel, acc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
-
-                            #endregion
-
-                            #region Movimento allontanamento place
-
-                            blendR = 50;
-                            // Movimento a punto di allontanamento place teglia 2
-                            err = robot.MoveL(jointPosAllontanamentoPlace, descPosAllontanamentoPlace,
-                                tool, user, vel, acc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
-
-                            #endregion
 
                             step = 10;
 
@@ -5327,7 +5365,8 @@ namespace RM.src.RM250714
                 robot.SetDO(0, 1, 0, 0);
 
                 // Slitta avanti
-                robot.SetDO(1, 1, 0, 0);
+                //robot.SetDO(1, 1, 0, 0);
+                RefresherTask.AddUpdate(PLCTagName.CMD_slittaAvanti, 1, "INT16");
 
                 try
                 {

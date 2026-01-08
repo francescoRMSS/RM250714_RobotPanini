@@ -1047,6 +1047,11 @@
             A 1 quando il Robot si trova in zona beor
             </summary>
         </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.CMD_slittaAvanti">
+            <summary>
+            comando per muovere slitta
+            </summary>
+        </member>
         <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.CycleRun_Main">
             <summary>
             A 1 quando è avviato il ciclo main
