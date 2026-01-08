@@ -3787,8 +3787,8 @@ namespace RM.src.RM250714
 
             #region Offset place
 
-            int offsetAvvicinamentoPlace = 600; // Offset per eseguire punto di avvicinamento place
-            int zOffsetAvvicinamentoPlace = 20; // Offset su asse Z in cui mi alzo leggermente prima di andare in place
+            int offsetAvvicinamentoPlace = 700; // Offset per eseguire punto di avvicinamento place
+            int zOffsetAvvicinamentoPlace = 40; // Offset su asse Z in cui mi alzo leggermente prima di andare in place
             int zOffsetPostPlace = 10; // Offset su asse Z in cui mi abbasso leggermente dopo essere andato in place
             int offsetAllontamentoPostPlace = 300; // Offset di allontanamento dal carrello dopo aver eseguito il place
 
@@ -4806,6 +4806,9 @@ namespace RM.src.RM250714
 
                             if (inPosition)
                             {
+                                // Reset inPosition
+                                inPosition = false;
+
                                 log.Info("STEP 105 - Invio comando slitta indietro e allontamento pick");
 
                                 // Slitta indietro
@@ -4820,6 +4823,8 @@ namespace RM.src.RM250714
 
                                 #endregion
 
+                                endingPoint = descPosAllontanamentoPick;
+
                                 step = 106;
 
                             }
@@ -4829,19 +4834,13 @@ namespace RM.src.RM250714
                         #endregion
 
                         case 106:
-                            #region Check slitta indietro
+                            #region Attesa inPosition punto di allontanamento pick
 
-                            // Get slitta indietro
-                            
-                           // robot.GetDI(5, 1, ref isGripperRetracted);
-
-                           // if (isGripperExtended == 1)
-                           // {
-                           //     log.Info("STEP 106 - Check slitta indietro");
-                           //     // Slitta indietro
-                           //     robot.SetDO(1, 0, 0, 0);
-                           //     step = 108;
-                           // }
+                            if (inPosition)
+                            {
+                                log.Info("STEP 106 - Robot arrivato in posizione di allontanamento pick");
+                                step = 108;
+                            }
                             
                             break;
 
@@ -4899,7 +4898,10 @@ namespace RM.src.RM250714
                         #endregion
 
                         case 120:
-                            #region Ritorno in home e movimento in place
+                            #region Ritorno in home e movimento in avvicinamento place
+
+                            // Reset inPosition
+                            inPosition = false;
 
                             #region Movimento avvicinamento beor
 
@@ -4911,36 +4913,39 @@ namespace RM.src.RM250714
                             #endregion
 
                             #region Movimento rotazione pre place
-
+                            /*
                             blendR = 50;
                             // Movimento di rotazione pre place teglia 2
                             err = robot.MoveL(jointPosRotationPrePlace, descPosRotationPrePlace,
                                 tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
-
+                            */
                             #endregion
 
                             #region Movimento a punto di avvicinamento place
                           
                            // offset = new DescPose(0, 0, 0, 3, 0, 0);
                             // Movimento a punto di avvicinamento place teglia 2
-                            err = robot.MoveJ(jointPosApproachPlace, descPosApproachPlace,
-                                tool, user, vel, acc, ovl, epos, blendT, 1, offset);
-                           // offset = new DescPose(0, 0, 0, 0, 0, 0);
-                           
-                            #endregion
-
-                            #region Movimento a place
-
-                            blendR = 50;
-                            // Movimento a punto di place teglia 2
-                            err = robot.MoveL(jointPosPlace, descPosPlace,
-                                tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+                            err = robot.MoveL(jointPosApproachPlace, descPosApproachPlace,
+                                   tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+                            // offset = new DescPose(0, 0, 0, 0, 0, 0);
 
                             #endregion
 
-                            endingPoint = descPosPlace;
+                            endingPoint = descPosApproachPlace;
 
-                            step = 130;
+                            step = 125;
+
+                            break;
+
+                        #endregion
+
+                        case 125:
+                            #region Attesa inPosition punto avvicinamento place
+
+                            if (inPosition)
+                            {
+
+                            }
 
                             break;
                         #endregion
@@ -5234,7 +5239,11 @@ namespace RM.src.RM250714
                             step = 10;
 
                             break;
-                            #endregion
+                        #endregion
+
+                        case 999:
+
+                            break;
 
                     }
 
@@ -5282,12 +5291,12 @@ namespace RM.src.RM250714
             bool robotDangerousPoseBeor = false;
             int offsetBeor = 300;
 
-            if (TCPCurrentPosition.tran.y >= pSafeZone.tran.y)
+            if (isInPositionCarrello1 || isInPositionCarrello2)
             {
                 robotDangerousPoseCarrello = true;
             }
 
-            if (TCPCurrentPosition.tran.x >= (pBeor.tran.x - offsetBeor))
+            if (isInPositionBeor)
             {
                 robotDangerousPoseBeor = true;
             }
