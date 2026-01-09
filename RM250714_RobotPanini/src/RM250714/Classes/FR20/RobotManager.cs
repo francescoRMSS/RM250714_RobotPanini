@@ -2310,12 +2310,12 @@ namespace RM.src.RM250714
             DescPose pointSafeZone = new DescPose(pSafeZone.x, pSafeZone.y, pSafeZone.z, pSafeZone.rx, pSafeZone.ry, pSafeZone.rz);
 
             // Oggetto che rileva safe zone
-            double delta_safeZone = 500.0; // soglia
+            double delta_safeZone = 800.0; // soglia
             checker_safeZone = new PositionChecker(delta_safeZone);
 
             #endregion
 
-            checker_pos = new PositionChecker(10.0);
+            checker_pos = new PositionChecker(5.0);
 
             try
             {
@@ -3774,24 +3774,25 @@ namespace RM.src.RM250714
 
             #region Offset pick
 
-            int offsetAvvicinamentoPick = 50; // Offset applicato al punto di avvicinamento pick
+            int offsetAvvicinamentoPick = 5; // Offset applicato al punto di avvicinamento pick
             int zOffsetAvvicinamentoPick = 10; // Offset su asse Z in cui mi abbasso leggermente prima di andare in pick
             int zOffsetPostPick = 20; // Offset applicato dopo chiusura pinza (mantengo questo offset anche durante movimento di allontanamento dal pick)
             int zOffsetAllontanamentoPick = 20; // Offset applicato per punto di allontanamento pick
             int offsetAllontamentoIntPick = 250; // Offset necessario per avere un punto intermedio di allontamento post pick
-            int offsetAllontamentoPick = 700; // Offset  di allontamento post pick
+            int offsetAllontamentoPick = 750; // Offset  di allontamento post pick
             int zOffsetPick = 0; // Offset del punto di pick
-            int offsetAllontamentoPreSlittaIndietro = 100;
+            int offsetAllontamentoPreSlittaIndietro = 0;
+            int yOffsetPick = 5;
             
             #endregion
 
             #region Offset place
 
-            int offsetAvvicinamentoPlace = 700; // Offset per eseguire punto di avvicinamento place
+            int offsetAvvicinamentoPlace = 750; // Offset per eseguire punto di avvicinamento place
             int zOffsetAvvicinamentoPlace = 60; // Offset su asse Z in cui mi alzo leggermente prima di andare in place
             int zOffsetPostPlace = 5; // Offset su asse Z in cui mi abbasso leggermente dopo essere andato in place
-            int offsetAllontamentoPostPlace = 300; // Offset di allontanamento dal carrello dopo aver eseguito il place
-            int offsetAllontamentoPreSlittaAvanti = 150;
+            int offsetAllontamentoPostPlace = 100; // Offset di allontanamento dal carrello dopo aver eseguito il place
+            int offsetAllontamentoPreSlittaAvanti = 550;
             int zOffsetPlace = 10; // Offset del punto di place
 
             #endregion
@@ -3849,6 +3850,15 @@ namespace RM.src.RM250714
 
             JointPos jointPosApproachPick = new JointPos();
             DescPose descPosApproachPick = new DescPose();
+
+            #endregion
+
+            #region Punto pre avvicinamento pick
+
+            // Punto di pre avvicinamento prima di eseguire il pick
+
+            JointPos jointPosPreApproachPick = new JointPos();
+            DescPose descPosPreApproachPick = new DescPose();
 
             #endregion
 
@@ -4039,6 +4049,9 @@ namespace RM.src.RM250714
 
             #endregion
 
+            float slowVel;
+            float slowAcc;
+
             #region Ciclo
 
             try
@@ -4126,7 +4139,7 @@ namespace RM.src.RM250714
                                         jointPosPick = new JointPos(0, 0, 0, 0, 0, 0);
                                         descPosPick = new DescPose(
                                             pick.x,
-                                            pick.y,
+                                            pick.y + yOffsetPick,
                                             pick.z + zOffsetPick,
                                             pick.rx,
                                             pick.ry,
@@ -4153,6 +4166,26 @@ namespace RM.src.RM250714
 
                                         // Calcolo del jointPos
                                         GetInverseKin(descPosApproachPick, ref jointPosApproachPick, "Avvicinamento pick");
+
+                                        #endregion
+
+                                        #region Punto di pre avvicinamento Pick 
+
+                                        // Oggetto jointPos
+                                        jointPosPreApproachPick = new JointPos(0, 0, 0, 0, 0, 0);
+
+                                        // Creazione oggetto descPose
+                                        descPosPreApproachPick = new DescPose(
+                                            pick.x,
+                                            pick.y - offsetAllontamentoPostPlace,
+                                            pick.z - zOffsetAvvicinamentoPick + zOffsetPick,
+                                            pick.rx,
+                                            pick.ry,
+                                            pick.rz
+                                            );
+
+                                        // Calcolo del jointPos
+                                        GetInverseKin(descPosPreApproachPick, ref jointPosPreApproachPick, "Pre avvicinamento pick");
 
                                         #endregion
 
@@ -4664,21 +4697,38 @@ namespace RM.src.RM250714
 
                             inPosition = false; // Reset inPosition
 
+                            #region Movimento a punto di pre avvicinamento Pick
+
+                            slowVel = vel * 1f;
+                            slowAcc = acc * 1f;
+
+                            blendR = 20;
+                            // Movimento a punto di avvicinamento pick teglia 1
+                            err = robot.MoveL(jointPosPreApproachPick, descPosPreApproachPick,
+                                tool, user, slowVel, slowAcc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+                            GetRobotMovementCode(err); // Stampo risultato del movimento
+
+                            #endregion
+
                             #region Movimento a punto di avvicinamento Pick
 
-                            blendR = 50;
+                            slowVel = vel * 1f;
+                            slowAcc = acc * 1f;
+
+                            blendR = 20;
                             // Movimento a punto di avvicinamento pick teglia 1
                             err = robot.MoveL(jointPosApproachPick, descPosApproachPick,
-                                tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+                                tool, user, slowVel, slowAcc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
                             GetRobotMovementCode(err); // Stampo risultato del movimento
 
                             #endregion
 
                             #region Movimento a punto di pick
 
-                            blendR = 50;
-                            float slowVel = vel * 0.9f;
-                            float slowAcc = acc * 0.75f;
+                            blendR = 20;
+
+                            slowVel = vel * 1f;
+                            slowAcc = acc * 1f;
 
                             // Movimento a pick teglia 1
                             err = robot.MoveL(jointPosPick, descPosPick,
@@ -4832,7 +4882,10 @@ namespace RM.src.RM250714
                         case 106:
                             #region Attesa inPosition punto di allontanamento pick
 
-                            if (inPosition)
+                            // Get valore slitta indietro
+                            robot.GetDI(5, 1, ref isGripperRetracted);
+
+                            if (inPosition && isGripperRetracted == 1) // Se arrivato in posizione e la slitta è indietro
                             {
                                 log.Info("STEP 106 - Robot arrivato in posizione di allontanamento pick");
                                 step = 108;
@@ -4852,26 +4905,33 @@ namespace RM.src.RM250714
 
                             blendR = 50;
                             // Ritorno in posizione di home
-                          //  err = robot.MoveL(jHome, descPosHome,
-                           //     tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+                            //  err = robot.MoveL(jHome, descPosHome,
+                            //     tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
                             #endregion
 
                             #region Movimento avvicinamento beor
 
-                            blendR = 50;
+                            slowVel = vel * 1f;
+                            slowAcc = acc * 1f;
+
+                            blendR = 10;
                             // Movimento a punto di avvicinamento beor
                             err = robot.MoveL(jointPosApproachBeor, descPosApproachBeor,
-                                tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+                                tool, user, slowVel, slowAcc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
                             #endregion
 
                             #region Movimento a beor
 
+                            slowVel = vel * 1f;
+                            slowAcc = acc * 1f;
+
+
                             blendR = 50;
                             // Movimento a  beor
                             err = robot.MoveL(jointPosBeor, descPosBeor,
-                               tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+                               tool, user, slowVel, slowAcc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
                             #endregion
 
@@ -4886,9 +4946,9 @@ namespace RM.src.RM250714
                         case 110:
                             #region Check arrivo in Beor
 
-                            if (inPosition)
+                            if (inPosition && robotStatus == 1)
                             {
-                                await Task.Delay(2000);
+                               // await Task.Delay(2000);
                                 step = 120;
                             }
 
@@ -4904,10 +4964,14 @@ namespace RM.src.RM250714
 
                             #region Movimento avvicinamento beor
 
+                            slowVel = vel * 1f;
+                            slowAcc = acc * 1f;
+
+
                             blendR = 50;
                             // Movimento a punto di avvicinamento beor
                             err = robot.MoveL(jointPosApproachBeor, descPosApproachBeor,
-                                tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+                                tool, user, slowVel, slowAcc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
                             #endregion
 
@@ -4921,11 +4985,16 @@ namespace RM.src.RM250714
                             #endregion
 
                             #region Movimento a punto di avvicinamento place
-                          
-                           // offset = new DescPose(0, 0, 0, 3, 0, 0);
+
+                            // offset = new DescPose(0, 0, 0, 3, 0, 0);
                             // Movimento a punto di avvicinamento place teglia 2
+                            slowVel = vel * 1f;
+                            slowAcc = acc * 1f;
+
+
+                            blendR = 10;
                             err = robot.MoveL(jointPosApproachPlace, descPosApproachPlace,
-                                   tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+                                   tool, user, slowVel, slowAcc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
                             // offset = new DescPose(0, 0, 0, 0, 0, 0);
 
                             #endregion
@@ -4941,15 +5010,19 @@ namespace RM.src.RM250714
                         case 122:
                             #region Attesa in position punto di avvicinamento place e movimento a punto di place
 
-                            if (inPosition)
+                           // if (inPosition)
                             {
                                 // Reset inPosition
                                 inPosition = false;
 
                                 #region Movimento a punto di  place
 
+                                slowVel = vel * 1f;
+                                slowAcc = acc * 1f;
+
+                                blendR = 1;
                                 err = robot.MoveL(jointPosPlace, descPosPlace,
-                                       tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+                                       tool, user, slowVel, slowAcc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
                                 #endregion
 
@@ -4963,7 +5036,7 @@ namespace RM.src.RM250714
                         #endregion
 
                         case 125:
-                            #region Attesa inPosition punto avvicinamento place
+                            #region Movimento slitta in avanti
 
                             if (TCPCurrentPosition.tran.y >= descPosPlace.tran.y - offsetAllontamentoPreSlittaAvanti)
                             {
@@ -4976,11 +5049,15 @@ namespace RM.src.RM250714
                             break;
                         #endregion
 
-                        case 130:   
+                        case 130:
                             #region Attesa inPosition punto di place e calcolo nuovi punti di pick e place
 
-                            if (inPosition && robotStatus == 1) // Se il Robot è arrivato in posizione di Place ed è fermo
+                            // Get valore slitta avanti
+                            robot.GetDI(4,1,ref isGripperExtended);
+
+                            if (inPosition && robotStatus == 1 && isGripperExtended == 1) // Se il Robot è arrivato in posizione di Place ed è fermo e la slitta è avanti
                             {
+                                //await Task.Delay(200);
                                 // Apro la pinza
                                 robot.SetDO(0, 1, 0, 0);
 
@@ -4999,7 +5076,7 @@ namespace RM.src.RM250714
                             // se la pinza è aperta
                             if (isGripperOpen == 1)
                             {
-                                await Task.Delay(100); // Ritardo per evitare che il robot riparta senza aver finito di chiudere la pinza
+                               // await Task.Delay(100); // Ritardo per evitare che il robot riparta senza aver finito di chiudere la pinza
                                 step = 150;
                             }
 
@@ -5015,20 +5092,27 @@ namespace RM.src.RM250714
 
                             #region Movimento post place
 
+                            slowVel = vel * 1f;
+                            slowAcc = acc * 1f;
+
+
                             blendR = 50;
                            
                             // Movimento a punto di allontanamento place teglia 2
                             err = robot.MoveL(jointPosPostPlace, descPosPostPlace,
-                                tool, user, vel, acc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+                                tool, user, slowVel, slowAcc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
                             #endregion
 
                             #region Movimento allontanamento place
 
+                            slowVel = vel * 1f;
+                            slowAcc = acc * 1f;
+
                             blendR = 50;
                             // Movimento a punto di allontanamento place teglia 2
                             err = robot.MoveL(jointPosAllontanamentoPlace, descPosAllontanamentoPlace,
-                                tool, user, vel, acc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+                                tool, user, slowVel, slowAcc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
                             #endregion
 
@@ -5040,7 +5124,7 @@ namespace RM.src.RM250714
                         #endregion
 
                         case 160:
-                            #region
+                            #region Calcolo nuovi punti
                             if (inPosition && robotStatus == 1)
                             {
                                 #region Calcolo nuovi punti di pick e di place
@@ -5072,7 +5156,7 @@ namespace RM.src.RM250714
                                 jointPosPick = new JointPos(0, 0, 0, 0, 0, 0);
                                 descPosPick = new DescPose(
                                     pick.x,
-                                    pick.y,
+                                    pick.y + yOffsetPick,
                                     pick.z + zOffsetPick,
                                     pick.rx,
                                     pick.ry,
@@ -5099,6 +5183,26 @@ namespace RM.src.RM250714
 
                                 // Calcolo del jointPos
                                 GetInverseKin(descPosApproachPick, ref jointPosApproachPick, "Avvicinamento pick");
+
+                                #endregion
+
+                                #region Punto di pre avvicinamento Pick 
+
+                                // Oggetto jointPos
+                                jointPosPreApproachPick = new JointPos(0, 0, 0, 0, 0, 0);
+
+                                // Creazione oggetto descPose
+                                descPosPreApproachPick = new DescPose(
+                                    pick.x,
+                                    pick.y - offsetAllontamentoPostPlace,
+                                    pick.z - zOffsetAvvicinamentoPick + zOffsetPick,
+                                    pick.rx,
+                                    pick.ry,
+                                    pick.rz
+                                    );
+
+                                // Calcolo del jointPos
+                                GetInverseKin(descPosPreApproachPick, ref jointPosPreApproachPick, "Pre avvicinamento pick");
 
                                 #endregion
 
@@ -5272,9 +5376,11 @@ namespace RM.src.RM250714
                                 #endregion
 
                                 #endregion
+
+                                step = 10;
                             }
 
-                            step = 10;
+                            
 
                             break;
                         #endregion
