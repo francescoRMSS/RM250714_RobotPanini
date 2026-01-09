@@ -3789,7 +3789,7 @@ namespace RM.src.RM250714
             #region Offset place
 
             int offsetAvvicinamentoPlace = 750; // Offset per eseguire punto di avvicinamento place
-            int zOffsetAvvicinamentoPlace = 60; // Offset su asse Z in cui mi alzo leggermente prima di andare in place
+            int zOffsetAvvicinamentoPlace = 30; // Offset su asse Z in cui mi alzo leggermente prima di andare in place
             int zOffsetPostPlace = 5; // Offset su asse Z in cui mi abbasso leggermente dopo essere andato in place
             int offsetAllontamentoPostPlace = 100; // Offset di allontanamento dal carrello dopo aver eseguito il place
             int offsetAllontamentoPreSlittaAvanti = 550;
@@ -3920,6 +3920,7 @@ namespace RM.src.RM250714
             DescPose descPosApproachPlace = new DescPose();
 
             #endregion
+
 
             #region Punto post place
 
@@ -4219,7 +4220,7 @@ namespace RM.src.RM250714
                                             pick.x,
                                             pick.y - offsetAllontamentoPick,
                                             pick.z + zOffsetPostPick + zOffsetAllontanamentoPick + zOffsetPick,
-                                            pick.rx,
+                                            NormalizeAngle(pick.rx + 2),
                                             pick.ry,
                                             pick.rz
                                             );
@@ -4286,7 +4287,7 @@ namespace RM.src.RM250714
                                             place.x,
                                             place.y - offsetAvvicinamentoPlace,
                                             place.z + zOffsetAvvicinamentoPlace,
-                                            place.rx,
+                                            NormalizeAngle(place.rx + 2),
                                             place.ry,
                                             place.rz
                                             );
@@ -4838,20 +4839,34 @@ namespace RM.src.RM250714
                             inPosition = false;
 
                             #region Movimento post Pick
-
+                            
                             blendR = 50;
                             // Movimento per uscire dal carrelo dopo pick 1
                             err = robot.MoveL(jointPosPostPick, descPosPostPick,
                                 tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
-
+                            
                             #endregion
+
+
+                            #region Movimento post Pick con offset
+/*
+                            blendR = 50;
+                            offset = new DescPose(0, 0, 0, 2, 0, 0);
+                            // Movimento a punto di avvicinamento place teglia 2
+                            err = robot.MoveJ(jointPosPostPick, descPosPostPick,
+                                tool, user, vel, acc, ovl, epos, blendT, 1, offset);
+                            offset = new DescPose(0, 0, 0, 0, 0, 0);
+*/
+                            #endregion
+
 
                             #region Movimento allontanamento pick
 
                             blendR = 50;
+
                             // Movimento per uscire dal carrelo dopo pick 1
                             err = robot.MoveL(jointPosAllontanamentoPick, descPosAllontanamentoPick,
-                                tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+                                tool, user, vel, acc, ovl, blendR, epos, search, 0, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
                             #endregion
 
@@ -4997,7 +5012,10 @@ namespace RM.src.RM250714
                                    tool, user, slowVel, slowAcc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
                             // offset = new DescPose(0, 0, 0, 0, 0, 0);
 
+
                             #endregion
+
+
 
                             endingPoint = descPosApproachPlace;
 
@@ -5236,7 +5254,7 @@ namespace RM.src.RM250714
                                     pick.x,
                                     pick.y - offsetAllontamentoPick,
                                     pick.z + zOffsetPostPick + zOffsetAllontanamentoPick + zOffsetPick,
-                                    pick.rx,
+                                    NormalizeAngle(pick.rx + 2),
                                     pick.ry,
                                     pick.rz
                                     );
@@ -5303,7 +5321,7 @@ namespace RM.src.RM250714
                                     place.x,
                                     place.y - offsetAvvicinamentoPlace,
                                     place.z + zOffsetAvvicinamentoPlace,
-                                    place.rx,
+                                    NormalizeAngle(place.rx + 2),
                                     place.ry,
                                     place.rz
                                     );
