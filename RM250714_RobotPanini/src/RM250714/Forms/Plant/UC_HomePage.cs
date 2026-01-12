@@ -807,13 +807,14 @@ namespace RM.src.RM250714
             if (!SecurityManager.ActionRequestCheck("modifyRobotSpeed")) return;
             isMouseDown = false;
             continuousRemoveSpeedTimer.Stop();
-        }
+        }.
+        000
 
         /// <summary>
         /// Avvio dell'applicazione
         /// </summary>
         /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="e"></param>\
         private void ClickEvent_startApp(object sender, EventArgs e)
         {
             log.Info("Richiesta di avvio ciclo");

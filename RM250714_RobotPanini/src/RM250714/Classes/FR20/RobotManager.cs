@@ -4368,6 +4368,7 @@ namespace RM.src.RM250714
 
                                         // Passaggio allo step 10
                                         step = 10;
+                                        
                                     }
                                 }
                             }
@@ -4894,13 +4895,13 @@ namespace RM.src.RM250714
 
                             log.Info("STEP 100 - Movimento di allontanamento post chiusura pinza");
 
-                            step = 105;
+                            step = 110;
 
                             break;
 
                         #endregion
 
-                        case 105:
+                        case 110:
                             #region Invio comando slitta indietro
 
                             if (TCPCurrentPosition.tran.y <= descPosPick.tran.y - offsetAllontamentoPreSlittaIndietro)
@@ -4908,9 +4909,9 @@ namespace RM.src.RM250714
                                 // Slitta indietro
                                 RefresherTask.AddUpdate(PLCTagName.CMD_slittaAvanti, 0, "INT16");
 
-                                log.Info("STEP 105 - Invio comando slitta indietro");
+                                log.Info("STEP 110 - Invio comando slitta indietro");
 
-                                step = 106;
+                                step = 120;
                             }
 
 
@@ -4918,7 +4919,7 @@ namespace RM.src.RM250714
 
                         #endregion
 
-                        case 106:
+                        case 120:
                             #region Attesa inPosition punto di allontanamento pick
 
                             // Get valore slitta indietro
@@ -4926,15 +4927,15 @@ namespace RM.src.RM250714
 
                             if (inPosition && isGripperRetracted == 1) // Se arrivato in posizione e la slitta è indietro
                             {
-                                log.Info("STEP 106 - Robot arrivato in posizione di allontanamento pick");
-                                step = 108;
+                                log.Info("STEP 120 - Robot arrivato in posizione di allontanamento pick");
+                                step = 130;
                             }
                             
                             break;
 
                         #endregion
 
-                        case 108:
+                        case 130:
                             #region Movimento a boer
 
                             // Reset inPosition
@@ -4976,31 +4977,31 @@ namespace RM.src.RM250714
 
                             endingPoint = descPosBeor;
 
-                            log.Info("STEP 108 - Movimento a boer");
+                            log.Info("STEP 130 - Movimento a boer");
 
-                            step = 110;
+                            step = 140;
 
                             break;
 
                         #endregion
 
-                        case 110:
+                        case 140:
                             #region Check arrivo in Beor
 
                             if (inPosition && robotStatus == 1)
                             {
                                 // await Task.Delay(2000);
 
-                                log.Info("STEP 110 - Check arrivo in Beor");
+                                log.Info("STEP 140 - Check arrivo in Beor");
 
-                                step = 120;
+                                step = 150;
                             }
 
                             break;
 
                         #endregion
 
-                        case 120:
+                        case 150:
                             #region Ritorno in home e movimento in avvicinamento place
 
                             // Reset inPosition
@@ -5044,15 +5045,15 @@ namespace RM.src.RM250714
 
                             endingPoint = descPosApproachPlace;
 
-                            log.Info("STEP 120 - Ritorno in home e movimento in avvicinamento place");
+                            log.Info("STEP 150 - Ritorno in home e movimento in avvicinamento place");
 
-                            step = 122;
+                            step = 160;
 
                             break;
 
                         #endregion
 
-                        case 122:
+                        case 160:
                             #region Movimento a punto di place
 
                            // if (inPosition)
@@ -5073,16 +5074,16 @@ namespace RM.src.RM250714
 
                                 endingPoint = descPosPlace;
 
-                                log.Info("STEP 122 - Movimento a punto di place");
+                                log.Info("STEP 160 - Movimento a punto di place");
 
-                                step = 125;
+                                step = 170;
                             }
 
                             break;
 
                         #endregion
 
-                        case 125:
+                        case 170:
                             #region Movimento slitta in avanti
 
                             if (TCPCurrentPosition.tran.y >= descPosPlace.tran.y - offsetAllontamentoPreSlittaAvanti)
@@ -5090,15 +5091,15 @@ namespace RM.src.RM250714
                                 // Slitta avanti
                                 RefresherTask.AddUpdate(PLCTagName.CMD_slittaAvanti, 1, "INT16");
 
-                                log.Info("STEP 125 - Movimento slitta in avanti");
+                                log.Info("STEP 170 - Movimento slitta in avanti");
 
-                                step = 130;
+                                step = 180;
                             }
 
                             break;
                         #endregion
 
-                        case 130:
+                        case 180:
                             #region Attesa inPosition punto di place e apertura pinza
 
                             // Get valore slitta avanti
@@ -5110,16 +5111,16 @@ namespace RM.src.RM250714
                                 // Apro la pinza
                                 robot.SetDO(0, 1, 0, 0);
 
-                                log.Info("STEP 130 - Attesa inPosition punto di place e apertura pinza");
+                                log.Info("STEP 180 - Attesa inPosition punto di place e apertura pinza");
 
-                                step = 140;
+                                step = 190;
                             }
 
                             break;
 
                         #endregion
 
-                        case 140:
+                        case 190:
                             #region Check apertura pinza
 
                             robot.GetDI(2, 1, ref isGripperOpen);
@@ -5129,16 +5130,16 @@ namespace RM.src.RM250714
                             {
                                 // await Task.Delay(100); // Ritardo per evitare che il robot riparta senza aver finito di chiudere la pinza
 
-                                log.Info("STEP 140 - Check apertura pinza");
+                                log.Info("STEP 190 - Check apertura pinza");
 
-                                step = 150;
+                                step = 200;
                             }
 
                             break;
 
                         #endregion
 
-                        case 150:
+                        case 200:
                             #region Allontanamento place
 
                             // Reset inPosition
@@ -5172,18 +5173,20 @@ namespace RM.src.RM250714
 
                             endingPoint = descPosAllontanamentoPlace;
 
-                            log.Info("STEP 150 - Allontanamento place");
+                            log.Info("STEP 200 - Allontanamento place");
 
-                            step = 160;
+                            step = 210;
 
                             break;
                         #endregion
 
-                        case 160:
+                        case 210:
                             #region Calcolo nuovi punti
 
                             if (inPosition && robotStatus == 1)
                             {
+                                log.Info("STEP 210 - Calcolo nuovi punti");
+
                                 #region Calcolo dei punti di pick e di place
 
                                 #region Pick
@@ -5435,8 +5438,7 @@ namespace RM.src.RM250714
                                 #endregion
 
                                 step = 10;
-
-                                log.Info("STEP 150 - Calcolo nuovi punti");
+    
                             }
 
                             break;
@@ -5444,9 +5446,11 @@ namespace RM.src.RM250714
                         #endregion
 
                         case 999:
+                            #region Stop debug
 
                             break;
 
+                            #endregion
                     }
 
                     await Task.Delay(40); // Delay routine
