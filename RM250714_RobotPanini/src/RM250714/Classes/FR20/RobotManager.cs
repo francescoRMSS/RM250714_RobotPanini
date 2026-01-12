@@ -1755,9 +1755,9 @@ namespace RM.src.RM250714
             bool plcIsInPositionCarrello2 = Convert.ToBoolean(PLCConfig.appVariables.getValue(PLCTagName.RET_Zone_Carrello2));
             bool plcIsInPositionBeor = Convert.ToBoolean(PLCConfig.appVariables.getValue(PLCTagName.RET_Zone_Beor));
 
-            if (isInPositionCarrello1) // Ora in zona di pick
+            if (isInPositionCarrello1) // Ora in zona carrello 1
             {
-                if (!plcIsInPositionCarrello1) // Prima non ero in zona pick o sul plc c'è un valore diverso
+                if (!plcIsInPositionCarrello1) // Prima non ero in zona carrello 1 o sul plc c'è un valore diverso
                 {
                     RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Carrello1, 1, "INT16");
                     RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Carrello2, 0, "INT16");
@@ -1765,9 +1765,9 @@ namespace RM.src.RM250714
                     RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Beor, 0, "INT16");
                 }
             }
-            else if (isInPositionCarrello2) // Ora in zona di place
+            else if (isInPositionCarrello2) // Ora in zona carrello 2
             {
-                if (!plcIsInPositionCarrello2) // Prima non ero in zona place o sul plc c'è un valore diverso
+                if (!plcIsInPositionCarrello2) // Prima non ero in zona carrello 2 o sul plc c'è un valore diverso
                 {
                     RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Carrello1, 0, "INT16");
                     RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Carrello2, 1, "INT16");
@@ -1785,9 +1785,9 @@ namespace RM.src.RM250714
                     RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Beor, 0, "INT16");
                 }
             }
-            else if (isInPositionBeor)
+            else if (isInPositionBeor) // Ora in zona beor
             {
-                if (!plcIsInPositionBeor)
+                if (!plcIsInPositionBeor) // Prima non ero in zona beor o sul plc c'è un valore diverso
                 {
                     RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Carrello1, 0, "INT16");
                     RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Carrello2, 0, "INT16");
@@ -3780,7 +3780,7 @@ namespace RM.src.RM250714
             int zOffsetAllontanamentoPick = 20; // Offset applicato per punto di allontanamento pick
             int offsetAllontamentoIntPick = 250; // Offset necessario per avere un punto intermedio di allontamento post pick
             int offsetAllontamentoPick = 750; // Offset  di allontamento post pick
-            int zOffsetPick = 0; // Offset del punto di pick
+            int zOffsetPick = 3; // Offset del punto di pick
             int offsetAllontamentoPreSlittaIndietro = 0;
             int yOffsetPick = 5;
             
