@@ -3745,9 +3745,6 @@ namespace RM.src.RM250714
 
             // Consensi di place
             int enableToPlace;
-           
-            // Risultato del movimento
-            byte ris = 0;
 
             // Piano del carrello selezionato
             int selectedFormat;
@@ -3782,10 +3779,12 @@ namespace RM.src.RM250714
             int zOffsetAllontanamentoPick = 20; // Offset applicato per punto di allontanamento pick
             int offsetAllontamentoIntPick = 250; // Offset necessario per avere un punto intermedio di allontamento post pick
             int offsetAllontamentoPick = 750; // Offset  di allontamento post pick
-            int zOffsetPick = 3; // Offset del punto di pick
-            int offsetAllontamentoPreSlittaIndietro = 0;
-            int yOffsetPick = 5;
-            
+            int zOffsetPick = 3; // Offset del punto di pick su asse z
+            int offsetAllontamentoPreSlittaIndietro = 0; // Offset utilizzato per sapere quanto dopo aver eseguito il pick inviare il comando di slitta indietro
+            int yOffsetPick = 5; // Offset del punto di pick su asse y
+            int offsetPreAvvicinamentoPick = 100; // Offset di avvicinamento al punto di avvicinamento pick
+            int rxRotationPick = 2; // Gradi di rotazione su asse rx dopo aver eseguito il pick
+
             #endregion
 
             #region Offset place
@@ -3794,8 +3793,8 @@ namespace RM.src.RM250714
             int zOffsetAvvicinamentoPlace = 30; // Offset su asse Z in cui mi alzo leggermente prima di andare in place
             int zOffsetPostPlace = 5; // Offset su asse Z in cui mi abbasso leggermente dopo essere andato in place
             int offsetAllontamentoPostPlace = 100; // Offset di allontanamento dal carrello dopo aver eseguito il place
-            int offsetAllontamentoPreSlittaAvanti = 550;
-            int zOffsetPlace = 10; // Offset del punto di place
+            int offsetAllontamentoPreSlittaAvanti = 550; // Offset utilizzato per sapere quanto prima di raggiungere il place inviare il comando di slitta avanti
+            int zOffsetPlace = 10; // Offset del punto di place su asse z
 
             #endregion
 
@@ -3923,7 +3922,6 @@ namespace RM.src.RM250714
 
             #endregion
 
-
             #region Punto post place
 
             // Punto da eseguire dopo apertura pinza che mi permette di scendere leggermente sull'asse Z
@@ -4045,6 +4043,7 @@ namespace RM.src.RM250714
             ExaxisPos epos = new ExaxisPos(0, 0, 0, 0); // Nessun asse esterno
             byte offsetFlag = 0; // Flag per offset (0 = disabilitato)
             byte search = 0;
+
             // Parametri moveL
             int velAccParamMode = 0; // Velocity and acceleration parameter mode; 0-Percentage; 1-Physical velocity (mm/s) and acceleration (mm/s^2)
             int overSpeedStrategy = 0; // Overspeed handling strategy, 1-Standard; 2-Stop with error on overspeed; 3-Adaptive deceleration, default is 0
@@ -4182,7 +4181,7 @@ namespace RM.src.RM250714
                                         // Creazione oggetto descPose
                                         descPosPreApproachPick = new DescPose(
                                             pick.x,
-                                            pick.y - offsetAllontamentoPostPlace,
+                                            pick.y - offsetPreAvvicinamentoPick,
                                             pick.z - zOffsetAvvicinamentoPick + zOffsetPick,
                                             pick.rx,
                                             pick.ry,
@@ -4224,7 +4223,7 @@ namespace RM.src.RM250714
                                             pick.x,
                                             pick.y - offsetAllontamentoPick,
                                             pick.z + zOffsetPostPick + zOffsetAllontanamentoPick + zOffsetPick,
-                                            NormalizeAngle(pick.rx + 2),
+                                            NormalizeAngle(pick.rx + rxRotationPick),
                                             pick.ry,
                                             pick.rz
                                             );
@@ -4414,7 +4413,7 @@ namespace RM.src.RM250714
                                     if (enableToPick == 1 && enableToPlace == 1) // Check consensi
                                     {
                                         log.Info("STEP 10 - Check richiesta routine e consensi.");
-                                        step = 40; // Passaggio allo step dedicato alla preparazione dei punti
+                                        step = 40;
                                     }
                                 }
                                 else
@@ -4461,7 +4460,7 @@ namespace RM.src.RM250714
                                 jointPosPick = new JointPos(0, 0, 0, 0, 0, 0);
                                 descPosPick = new DescPose(
                                     pick.x,
-                                    pick.y,
+                                    pick.y + yOffsetPick,
                                     pick.z + zOffsetPick,
                                     pick.rx,
                                     pick.ry,
@@ -4488,6 +4487,26 @@ namespace RM.src.RM250714
 
                                 // Calcolo del jointPos
                                 GetInverseKin(descPosApproachPick, ref jointPosApproachPick, "Avvicinamento pick");
+
+                                #endregion
+
+                                #region Punto di pre avvicinamento Pick 
+
+                                // Oggetto jointPos
+                                jointPosPreApproachPick = new JointPos(0, 0, 0, 0, 0, 0);
+
+                                // Creazione oggetto descPose
+                                descPosPreApproachPick = new DescPose(
+                                    pick.x,
+                                    pick.y - offsetPreAvvicinamentoPick,
+                                    pick.z - zOffsetAvvicinamentoPick + zOffsetPick,
+                                    pick.rx,
+                                    pick.ry,
+                                    pick.rz
+                                    );
+
+                                // Calcolo del jointPos
+                                GetInverseKin(descPosPreApproachPick, ref jointPosPreApproachPick, "Pre avvicinamento pick");
 
                                 #endregion
 
@@ -4521,7 +4540,7 @@ namespace RM.src.RM250714
                                     pick.x,
                                     pick.y - offsetAllontamentoPick,
                                     pick.z + zOffsetPostPick + zOffsetAllontanamentoPick + zOffsetPick,
-                                    pick.rx,
+                                    NormalizeAngle(pick.rx + rxRotationPick),
                                     pick.ry,
                                     pick.rz
                                     );
@@ -4539,7 +4558,7 @@ namespace RM.src.RM250714
                                 // Creazione oggetto descPose
                                 descPosIntAllontanamentoPick = new DescPose(
                                     descPosAllontanamentoPick.tran.x,
-                                    descPosAllontanamentoPick.tran.y + offsetAllontamentoIntPick,
+                                    pick.y - offsetAllontamentoPreSlittaIndietro,
                                     descPosAllontanamentoPick.tran.z + zOffsetPick,
                                     descPosAllontanamentoPick.rpy.rx,
                                     descPosAllontanamentoPick.rpy.ry,
@@ -4567,7 +4586,7 @@ namespace RM.src.RM250714
                                 descPosPlace = new DescPose(
                                     place.x,
                                     place.y,
-                                    place.z,
+                                    place.z + zOffsetPlace,
                                     place.rx,
                                     place.ry,
                                     place.rz
@@ -4588,7 +4607,7 @@ namespace RM.src.RM250714
                                     place.x,
                                     place.y - offsetAvvicinamentoPlace,
                                     place.z + zOffsetAvvicinamentoPlace,
-                                    place.rx,
+                                    NormalizeAngle(place.rx + 2),
                                     place.ry,
                                     place.rz
                                     );
@@ -4627,7 +4646,7 @@ namespace RM.src.RM250714
                                 descPosPostPlace = new DescPose(
                                    place.x,
                                    place.y,
-                                   place.z - zOffsetPostPlace,
+                                   place.z - zOffsetPostPlace - zOffsetPlace,
                                    place.rx,
                                    place.ry,
                                    place.rz
@@ -4661,7 +4680,6 @@ namespace RM.src.RM250714
                                 #endregion
 
                                 #endregion
-
                                 step = 40;
                             }
 
@@ -4695,7 +4713,7 @@ namespace RM.src.RM250714
                         case 50:
                             #region Movimento a punto di Pick
 
-                            log.Info("[PICK] invio punto di pick : " + pick.name);
+                            log.Info("STEP 50 - invio punto di pick : " + pick.name);
 
                             CycleRun_Pick = 1;
                             CycleRun_Place = 1;
@@ -4764,7 +4782,7 @@ namespace RM.src.RM250714
 
                             if (inPosition && robotStatus == 1) // con robot fermo
                             {
-                                log.Info("STEP 60 - Invio comando chiusura pinza");
+                                log.Info("STEP 60 - Attesa inPosition punto di Pick e chiusura pinza");
                                 // Chiusura pinza
                                 robot.SetDO(0, 0, 0, 0);
                                 step = 80;
@@ -4773,9 +4791,9 @@ namespace RM.src.RM250714
                             break;
 
                         #endregion
-
-                            /*
+                          
                         case 70:
+                            /*
                             #region Check slitta avanti e presenza teglia
 
                             // Get slitta avanti
@@ -4838,7 +4856,7 @@ namespace RM.src.RM250714
                             */
 
                         case 100:
-                            #region Movimento post chiusura pinza
+                            #region Movimento di allontanamento post chiusura pinza
 
                             inPosition = false;
 
@@ -4851,18 +4869,16 @@ namespace RM.src.RM250714
                             
                             #endregion
 
-
                             #region Movimento post Pick con offset
-/*
+                            /*
                             blendR = 50;
                             offset = new DescPose(0, 0, 0, 2, 0, 0);
                             // Movimento a punto di avvicinamento place teglia 2
                             err = robot.MoveJ(jointPosPostPick, descPosPostPick,
                                 tool, user, vel, acc, ovl, epos, blendT, 1, offset);
                             offset = new DescPose(0, 0, 0, 0, 0, 0);
-*/
+                            */
                             #endregion
-
 
                             #region Movimento allontanamento pick
 
@@ -4876,6 +4892,8 @@ namespace RM.src.RM250714
 
                             endingPoint = descPosAllontanamentoPick;
 
+                            log.Info("STEP 100 - Movimento di allontanamento post chiusura pinza");
+
                             step = 105;
 
                             break;
@@ -4883,12 +4901,14 @@ namespace RM.src.RM250714
                         #endregion
 
                         case 105:
-                            #region Attesa in position punto intermedio allontanamento pick e invio comando slitta indietro
+                            #region Invio comando slitta indietro
 
                             if (TCPCurrentPosition.tran.y <= descPosPick.tran.y - offsetAllontamentoPreSlittaIndietro)
                             {
                                 // Slitta indietro
                                 RefresherTask.AddUpdate(PLCTagName.CMD_slittaAvanti, 0, "INT16");
+
+                                log.Info("STEP 105 - Invio comando slitta indietro");
 
                                 step = 106;
                             }
@@ -4956,6 +4976,8 @@ namespace RM.src.RM250714
 
                             endingPoint = descPosBeor;
 
+                            log.Info("STEP 108 - Movimento a boer");
+
                             step = 110;
 
                             break;
@@ -4967,7 +4989,10 @@ namespace RM.src.RM250714
 
                             if (inPosition && robotStatus == 1)
                             {
-                               // await Task.Delay(2000);
+                                // await Task.Delay(2000);
+
+                                log.Info("STEP 110 - Check arrivo in Beor");
+
                                 step = 120;
                             }
 
@@ -5010,18 +5035,16 @@ namespace RM.src.RM250714
                             slowVel = vel * 1f;
                             slowAcc = acc * 1f;
 
-
                             blendR = 10;
                             err = robot.MoveL(jointPosApproachPlace, descPosApproachPlace,
                                    tool, user, slowVel, slowAcc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
                             // offset = new DescPose(0, 0, 0, 0, 0, 0);
 
-
                             #endregion
 
-
-
                             endingPoint = descPosApproachPlace;
+
+                            log.Info("STEP 120 - Ritorno in home e movimento in avvicinamento place");
 
                             step = 122;
 
@@ -5030,7 +5053,7 @@ namespace RM.src.RM250714
                         #endregion
 
                         case 122:
-                            #region Attesa in position punto di avvicinamento place e movimento a punto di place
+                            #region Movimento a punto di place
 
                            // if (inPosition)
                             {
@@ -5050,6 +5073,8 @@ namespace RM.src.RM250714
 
                                 endingPoint = descPosPlace;
 
+                                log.Info("STEP 122 - Movimento a punto di place");
+
                                 step = 125;
                             }
 
@@ -5065,6 +5090,8 @@ namespace RM.src.RM250714
                                 // Slitta avanti
                                 RefresherTask.AddUpdate(PLCTagName.CMD_slittaAvanti, 1, "INT16");
 
+                                log.Info("STEP 125 - Movimento slitta in avanti");
+
                                 step = 130;
                             }
 
@@ -5072,7 +5099,7 @@ namespace RM.src.RM250714
                         #endregion
 
                         case 130:
-                            #region Attesa inPosition punto di place e calcolo nuovi punti di pick e place
+                            #region Attesa inPosition punto di place e apertura pinza
 
                             // Get valore slitta avanti
                             robot.GetDI(4,1,ref isGripperExtended);
@@ -5082,6 +5109,8 @@ namespace RM.src.RM250714
                                 //await Task.Delay(200);
                                 // Apro la pinza
                                 robot.SetDO(0, 1, 0, 0);
+
+                                log.Info("STEP 130 - Attesa inPosition punto di place e apertura pinza");
 
                                 step = 140;
                             }
@@ -5098,7 +5127,10 @@ namespace RM.src.RM250714
                             // se la pinza è aperta
                             if (isGripperOpen == 1)
                             {
-                               // await Task.Delay(100); // Ritardo per evitare che il robot riparta senza aver finito di chiudere la pinza
+                                // await Task.Delay(100); // Ritardo per evitare che il robot riparta senza aver finito di chiudere la pinza
+
+                                log.Info("STEP 140 - Check apertura pinza");
+
                                 step = 150;
                             }
 
@@ -5140,6 +5172,8 @@ namespace RM.src.RM250714
 
                             endingPoint = descPosAllontanamentoPlace;
 
+                            log.Info("STEP 150 - Allontanamento place");
+
                             step = 160;
 
                             break;
@@ -5147,9 +5181,10 @@ namespace RM.src.RM250714
 
                         case 160:
                             #region Calcolo nuovi punti
+
                             if (inPosition && robotStatus == 1)
                             {
-                                #region Calcolo nuovi punti di pick e di place
+                                #region Calcolo dei punti di pick e di place
 
                                 #region Pick
 
@@ -5216,7 +5251,7 @@ namespace RM.src.RM250714
                                 // Creazione oggetto descPose
                                 descPosPreApproachPick = new DescPose(
                                     pick.x,
-                                    pick.y - offsetAllontamentoPostPlace,
+                                    pick.y - offsetPreAvvicinamentoPick,
                                     pick.z - zOffsetAvvicinamentoPick + zOffsetPick,
                                     pick.rx,
                                     pick.ry,
@@ -5258,7 +5293,7 @@ namespace RM.src.RM250714
                                     pick.x,
                                     pick.y - offsetAllontamentoPick,
                                     pick.z + zOffsetPostPick + zOffsetAllontanamentoPick + zOffsetPick,
-                                    NormalizeAngle(pick.rx + 2),
+                                    NormalizeAngle(pick.rx + rxRotationPick),
                                     pick.ry,
                                     pick.rz
                                     );
@@ -5400,11 +5435,12 @@ namespace RM.src.RM250714
                                 #endregion
 
                                 step = 10;
+
+                                log.Info("STEP 150 - Calcolo nuovi punti");
                             }
 
-                            
-
                             break;
+
                         #endregion
 
                         case 999:
@@ -5440,6 +5476,7 @@ namespace RM.src.RM250714
         /// <returns></returns>
         public static async Task HomeRoutine(CancellationToken token)
         {
+            #region Get da db dei punti utili alla routine
 
             // Get del punto di home
             var restPose = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
@@ -5453,15 +5490,24 @@ namespace RM.src.RM250714
             var beor = ApplicationConfig.applicationsManager.GetPosition("pBeor", "RM");
             DescPose pBeor = new DescPose(beor.x, beor.y, beor.z, beor.rx, beor.ry, beor.rz);
 
-            bool robotDangerousPoseCarrello = false;
-            bool robotDangerousPoseBeor = false;
-            int offsetBeor = 300;
+            #endregion
 
+            #region offset
+
+            int offsetBeor = 300; // Offset col quale verifico distanza da macchina beor prima di lanciare la routine di home
+
+            #endregion
+
+            bool robotDangerousPoseCarrello = false; // A true se il robot si trova in zona di ingombro carrello 1 o carrello 2
+            bool robotDangerousPoseBeor = false; // A true se il robot si trova in zona di ingombro macchina beor
+
+            // Se il robot si trova in zona di ingombro carrello 1 o carrello 2, lo segnalo con il relativo bit
             if (isInPositionCarrello1 || isInPositionCarrello2)
             {
                 robotDangerousPoseCarrello = true;
             }
 
+            // Se il robot si trova in zona di ingombro macchina beor, lo segnalo con il relativo bit
             if (isInPositionBeor)
             {
                 robotDangerousPoseBeor = true;
@@ -5470,8 +5516,12 @@ namespace RM.src.RM250714
             stopHomeRoutine = false; // Reset segnale di stop ciclo home
             stepHomeRoutine = 0; // Reset degli step della HomeRoutine
 
-            //robot.RobotEnable(1);
+            int homeRoutineTaskRefreshPeriod = 100; // Tempo di refresh della HomeRoutine
+
+            // Delay per stabilizzare il sistema
             await Task.Delay(1000);
+
+            #region Check dei consensi per iniziare la routine
 
             // Get apertura pinza
             byte isGripperOpen = 0;
@@ -5485,6 +5535,8 @@ namespace RM.src.RM250714
             // Get presenza teglia
             byte isTrayPresent = 0;
             robot.GetDI(7, 1, ref isTrayPresent);
+
+            #endregion
 
             // Controllo che la pinza sia aperta e la slitta avanti oppure che la pinza sia aperta, la slitta indietro e la teglia assente
             if ((isGripperOpen == 1 && isGripperExtended == 1) || (isGripperOpen == 1 && isGripperRetracted == 1 && isTrayPresent == 0))
@@ -5503,7 +5555,8 @@ namespace RM.src.RM250714
                         switch (stepHomeRoutine)
                         {
                             case 0:
-                                #region Cancellazione coda Robot e disattivazione tasti applicazione
+                                #region Comunicazione a PLC avvio della HomeRoutine e setting HomeRoutineSpeed
+
                                 CycleRun_Home = 1;
 
                                 SetHomeRoutineSpeed();
@@ -5516,7 +5569,8 @@ namespace RM.src.RM250714
                             #endregion
 
                             case 5:
-                                #region Movimento a punto di approach home
+                                #region Check zone di ingmboro e movimento a punto di approach home
+
                                 try
                                 {
                                     if (robotDangerousPoseCarrello)
@@ -5560,6 +5614,7 @@ namespace RM.src.RM250714
                                     throw;
                                 }
                                 break;
+
                             #endregion
 
                             case 6:
@@ -5572,8 +5627,8 @@ namespace RM.src.RM250714
                             #endregion
 
                             case 10:
-
                                 #region Movimento a punto di home
+
                                 try
                                 {
                                     //MoveRobotToSafePosition();
@@ -5606,7 +5661,7 @@ namespace RM.src.RM250714
                             #endregion
 
                             case 99:
-                                #region Termine ciclo e riattivazione tasti applicazione e tasto home 
+                                #region Termine ciclo, comunicazione a PLC e reset robot speed
 
                                 ResetHomeRoutineSpeed();
 
@@ -5615,15 +5670,13 @@ namespace RM.src.RM250714
                                 stopHomeRoutine = true;
 
                                 await Task.Delay(1000);
-                                // robot.RobotEnable(0);
-
 
                                 break;
 
                                 #endregion
                         }
 
-                        await Task.Delay(100); // Delay routine
+                        await Task.Delay(homeRoutineTaskRefreshPeriod); // Delay routine
                     }
                     token.ThrowIfCancellationRequested();
                 }
@@ -5640,6 +5693,10 @@ namespace RM.src.RM250714
                 {
                     //previousHomeCommandStatus = false;   // viene resettato da plc il comando dopo 20 secondi
                 }
+            }
+            else
+            {
+                log.Error("[HOME ROUTINE] -> Mancanza condizione di avvio routine.");
             }
         }
 
@@ -6331,8 +6388,6 @@ namespace RM.src.RM250714
         }
 
         #endregion
-
-     
 
         #endregion
         
