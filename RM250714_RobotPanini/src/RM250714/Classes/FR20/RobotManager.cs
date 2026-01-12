@@ -2240,13 +2240,13 @@ namespace RM.src.RM250714
             };
 
             // Oggetto che rileva ingombro carrello 1 [parallelepipedo]
-            double lenght_carrello1 = 200.0;
+            double lenght_carrello1 = 300.0;
             double width_carrello1 = 2000.0;
             double height_carrello1 = 2000.0;
             checker_ingombro_carrello1 = new PositionChecker(lenght_carrello1, width_carrello1, height_carrello1);
 
             // Oggetto che rileva ingombro carrello 2 [parallelepipedo]
-            double lenght_carrello2 = 200.0;
+            double lenght_carrello2 = 300.0;
             double width_carrello2 = 2000.0;
             double height_carrello2 = 2000.0;
             checker_ingombro_carrello2 = new PositionChecker(lenght_carrello2, width_carrello2, height_carrello2);
@@ -4050,17 +4050,19 @@ namespace RM.src.RM250714
             int overSpeedStrategy = 0; // Overspeed handling strategy, 1-Standard; 2-Stop with error on overspeed; 3-Adaptive deceleration, default is 0
             int speedPercent = 0; // Allowed deceleration threshold percentage [0-100], default 10%
 
-            #endregion
+            float slowVel; // Velocità movimento parametrizzata
+            float slowAcc; // Accelerazione movimento parametrizzata
 
-            float slowVel;
-            float slowAcc;
+            #endregion
 
             #region Ciclo
 
             try
             {
+                // Controllo che il setting del cambio collisione robot sia andato a buon fine
                 if (!collisionManager.ChangeRobotCollision(currentCollisionLevel))
                 {
+                    log.Error("Il comando per aggiornare il ivello di collisioni ha generato un errore");
                     throw new Exception("Il comando per aggiornare il ivello di collisioni ha generato un errore");
                 }
 
