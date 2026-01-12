@@ -1813,7 +1813,7 @@ namespace RM.src.RM250714
         /// </summary>
         private static void CheckIsRobotInSafeZone(DescPose pSafeZone)
         {
-            isInSafeZone = checker_safeZone.IsInCubeObstruction(pSafeZone, TCPCurrentPosition);
+            isInSafeZone = checker_safeZone.IsInParallelepipedObstruction(pSafeZone, TCPCurrentPosition);
 
             if (!AlarmManager.isFormReady)
                 return;
@@ -2309,9 +2309,11 @@ namespace RM.src.RM250714
 
             DescPose pointSafeZone = new DescPose(pSafeZone.x, pSafeZone.y, pSafeZone.z, pSafeZone.rx, pSafeZone.ry, pSafeZone.rz);
 
-            // Oggetto che rileva safe zone
-            double delta_safeZone = 800.0; // soglia
-            checker_safeZone = new PositionChecker(delta_safeZone);
+            // Oggetto che rileva ingombro safe zone [parallelepipedo]
+            double lenght_safeZone = 2000.0;
+            double width_safeZone = 2000.0;
+            double height_safeZone = 2000.0;
+            checker_safeZone = new PositionChecker(lenght_safeZone, width_safeZone, height_safeZone);
 
             #endregion
 
@@ -5519,7 +5521,7 @@ namespace RM.src.RM250714
                                     {
                                         DescPose pApproach = new DescPose(
                                             TCPCurrentPosition.tran.x,
-                                            pSafeZone.tran.y,
+                                            pHome.tran.y,
                                             TCPCurrentPosition.tran.z,
                                             TCPCurrentPosition.rpy.rx,
                                             TCPCurrentPosition.rpy.ry,
