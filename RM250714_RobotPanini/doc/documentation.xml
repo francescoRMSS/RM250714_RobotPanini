@@ -6628,7 +6628,7 @@
             Avvio dell'applicazione
             </summary>
             <param name="sender"></param>
-            <param name="e"></param>
+            <param name="e"></param>\
         </member>
         <member name="M:RM.src.RM250714.UC_HomePage.ClickEvent_GoToHomePosition(System.Object,System.EventArgs)">
             <summary>

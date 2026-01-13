@@ -376,7 +376,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// Speed utilizzata in home routine
         /// </summary>
-        private static readonly int homeRoutineSpeed = 5;
+        private static readonly int homeRoutineSpeed = 4;
         /// <summary>
         /// Velocity utilizzata in home routine
         /// </summary>
@@ -5510,7 +5510,7 @@ namespace RM.src.RM250714
             {
                 robotDangerousPoseCarrello = true;
             }
-
+            else
             // Se il robot si trova in zona di ingombro macchina beor, lo segnalo con il relativo bit
             if (isInPositionBeor)
             {
@@ -5549,8 +5549,8 @@ namespace RM.src.RM250714
                 robot.SetDO(0, 1, 0, 0);
 
                 // Slitta avanti
-                //robot.SetDO(1, 1, 0, 0);
-                RefresherTask.AddUpdate(PLCTagName.CMD_slittaAvanti, 1, "INT16");
+                // robot.SetDO(1, 1, 0, 0);
+                // RefresherTask.AddUpdate(PLCTagName.CMD_slittaAvanti, 1, "INT16");
 
                 try
                 {

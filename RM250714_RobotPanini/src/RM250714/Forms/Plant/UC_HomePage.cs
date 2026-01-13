@@ -807,9 +807,7 @@ namespace RM.src.RM250714
             if (!SecurityManager.ActionRequestCheck("modifyRobotSpeed")) return;
             isMouseDown = false;
             continuousRemoveSpeedTimer.Stop();
-        }.
-        000
-
+        }
         /// <summary>
         /// Avvio dell'applicazione
         /// </summary>
