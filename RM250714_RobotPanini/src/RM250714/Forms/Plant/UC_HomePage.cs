@@ -15,6 +15,7 @@ using RMLib.VATView;
 using RM.src.RM250714.Classes.PLC;
 using RM.src.RM250714.Forms.ScreenSaver;
 using RM.src.RM250714.Classes.FR20;
+using fairino;
 
 namespace RM.src.RM250714
 {
@@ -919,7 +920,7 @@ namespace RM.src.RM250714
 
         private void button3_Click(object sender, EventArgs e)
         {
-            RobotManager.robot.SetDO(0, 0, 0, 0);
+          RobotManager.robot.SetDO(0, 1, 0, 0);
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -935,6 +936,52 @@ namespace RM.src.RM250714
         private void button5_Click(object sender, EventArgs e)
         {
             RobotManager.StopMotion();
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            // Get apertura pinza
+            byte isGripperClose = 0;
+            RobotManager.robot.GetDI(3, 1, ref isGripperClose);
+            MessageBox.Show(isGripperClose.ToString());
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            // Get apertura pinza
+            byte isGripperClose = 0;
+            RobotManager.robot.GetDI(5, 1, ref isGripperClose);
+            MessageBox.Show(isGripperClose.ToString());
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            RobotManager.robot.SetDO(0, 0, 0, 0);
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            byte isGripperClose = 0;
+            RobotManager.robot.GetDI(2, 1, ref isGripperClose);
+            MessageBox.Show(isGripperClose.ToString());
+        }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            // Get apertura pinza
+            byte isGripperClose = 0;
+            RobotManager.robot.GetDI(5, 1, ref isGripperClose);
+            MessageBox.Show(isGripperClose.ToString());
+        }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            RobotManager.robot.SetDO(1, 0, 0, 0);
+        }
+
+        private void button12_Click(object sender, EventArgs e)
+        {
+            RobotManager.robot.SetDO(1, 1, 0, 0);
         }
     } 
 }

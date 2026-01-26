@@ -3778,7 +3778,7 @@ namespace RM.src.RM250714
             int zOffsetPostPick = 20; // Offset applicato dopo chiusura pinza (mantengo questo offset anche durante movimento di allontanamento dal pick)
             int zOffsetAllontanamentoPick = 20; // Offset applicato per punto di allontanamento pick
             int offsetAllontamentoIntPick = 250; // Offset necessario per avere un punto intermedio di allontamento post pick
-            int offsetAllontamentoPick = 750; // Offset  di allontamento post pick
+            int offsetAllontamentoPick = 770; // Offset  di allontamento post pick
             int zOffsetPick = 3; // Offset del punto di pick su asse z
             int offsetAllontamentoPreSlittaIndietro = 0; // Offset utilizzato per sapere quanto dopo aver eseguito il pick inviare il comando di slitta indietro
             int yOffsetPick = 5; // Offset del punto di pick su asse y
@@ -3789,7 +3789,7 @@ namespace RM.src.RM250714
 
             #region Offset place
 
-            int offsetAvvicinamentoPlace = 750; // Offset per eseguire punto di avvicinamento place
+            int offsetAvvicinamentoPlace = 770; // Offset per eseguire punto di avvicinamento place
             int zOffsetAvvicinamentoPlace = 30; // Offset su asse Z in cui mi alzo leggermente prima di andare in place
             int zOffsetPostPlace = 5; // Offset su asse Z in cui mi abbasso leggermente dopo essere andato in place
             int offsetAllontamentoPostPlace = 100; // Offset di allontanamento dal carrello dopo aver eseguito il place
@@ -4827,7 +4827,7 @@ namespace RM.src.RM250714
                             robot.GetDI(2, 1, ref isGripperOpen);
 
                             // Se la pinza è chiusa e non è aperta
-                            if (isGripperClosed == 1 && isGripperOpen == 0)
+                            if (isGripperOpen == 0) // && isGripperClosed == 1 )
                             {
                                 log.Info("STEP 80 - Pinza chiusa e non è aperta");
                                 step = 100;
@@ -4921,11 +4921,16 @@ namespace RM.src.RM250714
 
                         case 120:
                             #region Attesa inPosition punto di allontanamento pick
+                            // Get presenza teglia
+                            robot.GetDI(7, 1, ref isTrayPresent);
 
-                            // Get valore slitta indietro
+                            // Get apertura pinza
+                            robot.GetDI(2, 1, ref isGripperOpen);
+
+                            // Get valore slitta indietro e presenza teglia e pinza non aperta
                             robot.GetDI(5, 1, ref isGripperRetracted);
 
-                            if (inPosition && isGripperRetracted == 1) // Se arrivato in posizione e la slitta è indietro
+                            if (inPosition && isGripperRetracted == 1 && isGripperOpen == 0) //&& isTrayPresent == 1) // Se arrivato in posizione e la slitta è indietro
                             {
                                 log.Info("STEP 120 - Robot arrivato in posizione di allontanamento pick");
                                 step = 130;
@@ -6356,7 +6361,22 @@ namespace RM.src.RM250714
             var restPose = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
             DescPose pHome = new DescPose(restPose.x, restPose.y, restPose.z, restPose.rx, restPose.ry, restPose.rz);
 
-            int result = robot.MoveCart(pHome, tool, user, homeRoutineVel, homeRoutineAcc, ovl, blendT, config);
+            //int result = robot.MoveCart(pHome, tool, user, homeRoutineVel, homeRoutineAcc, ovl, blendT, config);
+
+            ExaxisPos epos = new ExaxisPos(0, 0, 0, 0); // Nessun asse esterno
+            byte offsetFlag = 0; // Flag per offset (0 = disabilitato)
+            // Parametri moveL
+            int velAccParamMode = 0;
+            int overSpeedStrategy = 0;
+            int speedPercent = 0;
+            byte search = 0;
+
+            JointPos jointTarget = new JointPos(0, 0, 0, 0, 0, 0);
+            robot.GetInverseKin(0, pHome, -1, ref jointTarget);
+
+            int result = robot.MoveL(jointTarget, pHome,
+                tool, user, homeRoutineVel, homeRoutineAcc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
 
             GetRobotMovementCode(result);
 
