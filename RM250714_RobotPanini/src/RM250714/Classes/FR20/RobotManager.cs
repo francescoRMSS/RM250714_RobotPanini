@@ -3782,7 +3782,7 @@ namespace RM.src.RM250714
             int zOffsetPick = 3; // Offset del punto di pick su asse z
             int offsetAllontamentoPreSlittaIndietro = 0; // Offset utilizzato per sapere quanto dopo aver eseguito il pick inviare il comando di slitta indietro
             int yOffsetPick = 5; // Offset del punto di pick su asse y
-            int offsetPreAvvicinamentoPick = 100; // Offset di avvicinamento al punto di avvicinamento pick
+            int offsetPreAvvicinamentoPick = 130; // Offset di avvicinamento al punto di avvicinamento pick
             int rxRotationPick = 2; // Gradi di rotazione su asse rx dopo aver eseguito il pick
 
             #endregion
@@ -3792,7 +3792,7 @@ namespace RM.src.RM250714
             int offsetAvvicinamentoPlace = 770; // Offset per eseguire punto di avvicinamento place
             int zOffsetAvvicinamentoPlace = 30; // Offset su asse Z in cui mi alzo leggermente prima di andare in place
             int zOffsetPostPlace = 5; // Offset su asse Z in cui mi abbasso leggermente dopo essere andato in place
-            int offsetAllontamentoPostPlace = 100; // Offset di allontanamento dal carrello dopo aver eseguito il place
+            int offsetAllontamentoPostPlace = 130; // Offset di allontanamento dal carrello dopo aver eseguito il place
             int offsetAllontamentoPreSlittaAvanti = 550; // Offset utilizzato per sapere quanto prima di raggiungere il place inviare il comando di slitta avanti
             int zOffsetPlace = 10; // Offset del punto di place su asse z
 
