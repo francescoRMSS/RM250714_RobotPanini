@@ -3783,18 +3783,20 @@ namespace RM.src.RM250714
             int offsetAllontamentoPreSlittaIndietro = 0; // Offset utilizzato per sapere quanto dopo aver eseguito il pick inviare il comando di slitta indietro
             int yOffsetPick = 5; // Offset del punto di pick su asse y
             int offsetPreAvvicinamentoPick = 130; // Offset di avvicinamento al punto di avvicinamento pick
-            int rxRotationPick = 2; // Gradi di rotazione su asse rx dopo aver eseguito il pick
+            int rxRotationPick = 3; // Gradi di rotazione su asse rx dopo aver eseguito il pick
 
             #endregion
 
             #region Offset place
 
             int offsetAvvicinamentoPlace = 770; // Offset per eseguire punto di avvicinamento place
-            int zOffsetAvvicinamentoPlace = 30; // Offset su asse Z in cui mi alzo leggermente prima di andare in place
+            int zOffsetAvvicinamentoPlace = 40; // Offset su asse Z in cui mi alzo leggermente prima di andare in place
             int zOffsetPostPlace = 5; // Offset su asse Z in cui mi abbasso leggermente dopo essere andato in place
             int offsetAllontamentoPostPlace = 130; // Offset di allontanamento dal carrello dopo aver eseguito il place
             int offsetAllontamentoPreSlittaAvanti = 550; // Offset utilizzato per sapere quanto prima di raggiungere il place inviare il comando di slitta avanti
             int zOffsetPlace = 10; // Offset del punto di place su asse z
+            int yOffsetPlace = 40; // Offset del punto di place su asse y
+            int rxOffsetPrePlace = 2; // Offset di rotazione su asse x applicato al punto di avvicinamento place
 
             #endregion
 
@@ -4268,7 +4270,7 @@ namespace RM.src.RM250714
                                         // Creazione oggetto descPose
                                         descPosPlace = new DescPose(
                                             place.x,
-                                            place.y,
+                                            place.y - yOffsetPlace,
                                             place.z + zOffsetPlace,
                                             place.rx,
                                             place.ry,
@@ -4290,7 +4292,7 @@ namespace RM.src.RM250714
                                             place.x,
                                             place.y - offsetAvvicinamentoPlace,
                                             place.z + zOffsetAvvicinamentoPlace,
-                                            NormalizeAngle(place.rx + 2),
+                                            NormalizeAngle(place.rx + rxOffsetPrePlace),
                                             place.ry,
                                             place.rz
                                             );
@@ -4586,7 +4588,7 @@ namespace RM.src.RM250714
                                 // Creazione oggetto descPose
                                 descPosPlace = new DescPose(
                                     place.x,
-                                    place.y,
+                                    place.y - yOffsetPlace,
                                     place.z + zOffsetPlace,
                                     place.rx,
                                     place.ry,
@@ -4608,7 +4610,7 @@ namespace RM.src.RM250714
                                     place.x,
                                     place.y - offsetAvvicinamentoPlace,
                                     place.z + zOffsetAvvicinamentoPlace,
-                                    NormalizeAngle(place.rx + 2),
+                                    NormalizeAngle(place.rx + rxOffsetPrePlace),
                                     place.ry,
                                     place.rz
                                     );
@@ -4681,6 +4683,7 @@ namespace RM.src.RM250714
                                 #endregion
 
                                 #endregion
+
                                 step = 40;
                             }
 
@@ -5346,7 +5349,7 @@ namespace RM.src.RM250714
                                 // Creazione oggetto descPose
                                 descPosPlace = new DescPose(
                                     place.x,
-                                    place.y,
+                                    place.y - yOffsetPlace,
                                     place.z + zOffsetPlace,
                                     place.rx,
                                     place.ry,
@@ -5368,7 +5371,7 @@ namespace RM.src.RM250714
                                     place.x,
                                     place.y - offsetAvvicinamentoPlace,
                                     place.z + zOffsetAvvicinamentoPlace,
-                                    NormalizeAngle(place.rx + 2),
+                                    NormalizeAngle(place.rx + rxOffsetPrePlace),
                                     place.ry,
                                     place.rz
                                     );
