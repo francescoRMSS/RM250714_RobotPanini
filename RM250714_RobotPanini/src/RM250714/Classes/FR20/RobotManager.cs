@@ -2236,7 +2236,15 @@ namespace RM.src.RM250714
                 //return false;
             }
 
-          
+            // Se fallisce setting della proprietà del Robot
+            if (!GetRobotProperties())
+                return false;
+
+            if (!SetRobotProperties())
+            {
+                log.Error("Errore durante set parametri del robot");
+            }
+
             log.Info("Parametri del robot assegnati");
 
             GetRobotInfo();
@@ -2302,7 +2310,7 @@ namespace RM.src.RM250714
                         await CheckIsRobotEnable();
                         CheckRobotMode();
                         CheckCurrentToolAndUser();
-                        CheckLevelCollision();
+                        //CheckLevelCollision();
                         //CheckGripperStatus();
                         CheckIsRobotInObstructionArea(startPoints);
                     }
