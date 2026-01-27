@@ -186,6 +186,7 @@ namespace RM.src.RM250714
         /// Livello di collisione corrente.
         /// </summary>
         public static int currentCollisionLevel = 0;
+        //public static collisionLevel
         /// <summary>
         /// Tempo massimo in ms per controllare che il proxy stia comunicando
         /// </summary>
@@ -491,6 +492,10 @@ namespace RM.src.RM250714
         /// Memorizza lo stato precedente della variabile stop ciclo dal PLC
         /// </summary>
         private static int previousStopCommandStatus = 0;
+        /// <summary>
+        /// Memorizza lo stato precedente della variabile richiesta stop ciclo dal PLC
+        /// </summary>
+        private static int previousRequestedStopCommandStatus = 0;
         /// <summary>
         /// Memorizza lo stato precedente della variabile go to home position dal PLC
         /// </summary>
@@ -1691,6 +1696,30 @@ namespace RM.src.RM250714
             robot.GetActualWObjNum(1, ref currentUser);
         }
 
+        public static int changeCollisionLevel = 1;
+        public static int prevChangeCollisionLevel = 1;
+        /// <summary>
+        /// Controlla il livello di collisione da impostare
+        /// </summary>
+        private static void CheckLevelCollision()
+        {
+            changeCollisionLevel = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Sel_Service));
+
+            if (changeCollisionLevel == 0 && prevChangeCollisionLevel != 0)
+            {
+                currentCollisionLevel = 3;
+                prevChangeCollisionLevel = 0;
+                collisionManager.ChangeRobotCollision(currentCollisionLevel);
+            }
+            else
+            if (changeCollisionLevel == 1 && prevChangeCollisionLevel != 1)
+            {
+                currentCollisionLevel = 8;
+                prevChangeCollisionLevel = 1;
+                collisionManager.ChangeRobotCollision(currentCollisionLevel);
+            }
+        }
+
         /// <summary>
         /// Check su connessione PLC
         /// </summary>
@@ -1993,7 +2022,7 @@ namespace RM.src.RM250714
                 RobotManager.user = robotProperties.User;
                 RobotManager.weight = robotProperties.Weight;
                 RobotManager.velRec = robotProperties.VelRec;
-                currentCollisionLevel = collLev;
+                RobotManager.currentCollisionLevel = collLev;
                 RobotManager.blendR = blendR;
 
                 return true;
@@ -2173,6 +2202,15 @@ namespace RM.src.RM250714
             currentRobotMode = robot_state_pkg.robot_mode;
             isAutomaticMode = currentRobotMode == 0;
 
+            // Se fallisce setting della proprietà del Robot
+            if (!GetRobotProperties())
+                return false;
+
+            if (!SetRobotProperties())
+            {
+                log.Error("Errore durante set parametri del robot");
+            }
+
             // Faccio partire i task
             taskManager.AddTask(TaskCheckRobotConneciton, CheckRobotConnection, TaskType.LongRunning, true);
             taskManager.AddTask(TaskHighPriorityName, CheckHighPriority, TaskType.LongRunning, true);
@@ -2198,15 +2236,7 @@ namespace RM.src.RM250714
                 //return false;
             }
 
-            // Se fallisce setting della proprietà del Robot
-            if (!GetRobotProperties())
-                return false;
-
-            if (!SetRobotProperties())
-            {
-                log.Error("Errore durante set parametri del robot");
-            }
-
+          
             log.Info("Parametri del robot assegnati");
 
             GetRobotInfo();
@@ -2272,6 +2302,7 @@ namespace RM.src.RM250714
                         await CheckIsRobotEnable();
                         CheckRobotMode();
                         CheckCurrentToolAndUser();
+                        CheckLevelCollision();
                         //CheckGripperStatus();
                         CheckIsRobotInObstructionArea(startPoints);
                     }
@@ -2642,6 +2673,7 @@ namespace RM.src.RM250714
                 while (!token.IsCancellationRequested)
                 {
                     CheckCommandStop();
+                    CheckCommandRequestedStop();
                     await CheckPauseStatus();
                     CheckResumeStatus();
 
@@ -3776,6 +3808,11 @@ namespace RM.src.RM250714
             // Segnala quando il carrello è pieno
             bool carrelloTerminato = false;
 
+            CancellationTokenSource _homeCts = null;
+            Task _homeTask = null;
+
+            bool homeRequested = false;
+            bool homeInProgress = false;
             #endregion
 
             #region Offset spostamenti
@@ -4125,7 +4162,7 @@ namespace RM.src.RM250714
                                 enableToPick = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Enable_To_Pick));
 
                                 if (execPick == 1) // Check richiesta di pick
-                                { 
+                                {
                                     if (enableToPick == 1 && enableToPlace == 1) // Check consensi
                                     {
                                         #region Calcolo dei punti di pick e di place
@@ -4382,7 +4419,7 @@ namespace RM.src.RM250714
 
                                         // Passaggio allo step 10
                                         step = 10;
-                                        
+
                                     }
                                 }
                             }
@@ -4394,47 +4431,60 @@ namespace RM.src.RM250714
                         case 10:
                             #region Check richiesta routine e consensi
 
-                            // Get apertura pinza
-                            robot.GetDI(2, 1, ref isGripperOpen);
-                            // Get slitta avanti
-                            robot.GetDI(4, 1, ref isGripperExtended);
-                            // Get slitta indietro
-                            robot.GetDI(5, 1, ref isGripperRetracted);
-                            // Get presenza teglia
-                            robot.GetDI(7, 1, ref isTrayPresent);
-
-                            // Controllo che la pinza sia aperta e la slitta avanti oppure che la pinza sia aperta, la slitta indietro e la teglia assente
-                            if ((isGripperOpen == 1 && isGripperExtended == 1) || (isGripperOpen == 1 && isGripperRetracted == 1 && isTrayPresent == 0))
+                            if (stopCycleRequested)
                             {
-                                // Apro la pinza
-                                robot.SetDO(0, 1, 0, 0);
+                                homeRequested = true;
+                            }
 
-                                // Slitta avanti
-                                robot.SetDO(1, 1, 0, 0);
+                            if (homeRequested && !homeInProgress)
+                            {
+                                step = 220;   // step dedicato alla home
+                            }
+                            else
+                            {
 
-                                // Controllo di avere sia pick che place da fare
+                                // Get apertura pinza
+                                robot.GetDI(2, 1, ref isGripperOpen);
+                                // Get slitta avanti
+                                robot.GetDI(4, 1, ref isGripperExtended);
+                                // Get slitta indietro
+                                robot.GetDI(5, 1, ref isGripperRetracted);
+                                // Get presenza teglia
+                                robot.GetDI(7, 1, ref isTrayPresent);
 
-                                // Get comando di place da plc
-                                execPlace = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Place));
-                                // Get consensi di place da plc
-                                enableToPlace = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Enable_To_Place));
-                                // Get comando di pick da plc
-                                execPick = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Pick));
-                                // Get consensi di pick da plc
-                                enableToPick = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Enable_To_Pick));
-
-                                if (execPick == 1 && !stopCycleRequested) // Check richiesta di pick
+                                // Controllo che la pinza sia aperta e la slitta avanti oppure che la pinza sia aperta, la slitta indietro e la teglia assente
+                                if ((isGripperOpen == 1 && isGripperExtended == 1) || (isGripperOpen == 1 && isGripperRetracted == 1 && isTrayPresent == 0))
                                 {
-                                    if (enableToPick == 1 && enableToPlace == 1) // Check consensi
+                                    // Apro la pinza
+                                    robot.SetDO(0, 1, 0, 0);
+
+                                    // Slitta avanti
+                                    robot.SetDO(1, 1, 0, 0);
+
+                                    // Controllo di avere sia pick che place da fare
+
+                                    // Get comando di place da plc
+                                    execPlace = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Place));
+                                    // Get consensi di place da plc
+                                    enableToPlace = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Enable_To_Place));
+                                    // Get comando di pick da plc
+                                    execPick = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_Pick));
+                                    // Get consensi di pick da plc
+                                    enableToPick = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Enable_To_Pick));
+
+                                    if (execPick == 1) // Check richiesta di pick
                                     {
-                                        log.Info("STEP 10 - Check richiesta routine e consensi.");
-                                        step = 40;
+                                        if (enableToPick == 1 && enableToPlace == 1) // Check consensi
+                                        {
+                                            log.Info("STEP 10 - Check richiesta routine e consensi.");
+                                            step = 40;
+                                        }
                                     }
-                                }
-                                else
-                                {
-                                    stopCycleRoutine = true;
-                                    step = 0;
+                                    else
+                                    {
+                                        stopCycleRoutine = true;
+                                        step = 0;
+                                    }
                                 }
                             }
                             break;
@@ -5072,8 +5122,16 @@ namespace RM.src.RM250714
 
                             // offset = new DescPose(0, 0, 0, 3, 0, 0);
                             // Movimento a punto di avvicinamento place teglia 2
-                            slowVel = vel * 1f;
-                            slowAcc = acc * 1f;
+                            if (vel > 70)
+                            {
+                                slowVel = vel * 0.7f;
+                                slowAcc = acc * 0.7f;
+                            }
+                            else
+                            {
+                                slowVel = vel * 1f;
+                                slowAcc = acc * 1f;
+                            }
 
                             blendR = 10;
                             err3 = robot.MoveL(jointPosApproachPlace, descPosApproachPlace,
@@ -5109,8 +5167,16 @@ namespace RM.src.RM250714
 
                                 #region Movimento a punto di  place
 
-                                slowVel = vel * 1f;
-                                slowAcc = acc * 1f;
+                                if (vel > 70)
+                                {
+                                    slowVel = vel * 0.7f;
+                                    slowAcc = acc * 0.7f;
+                                }
+                                else
+                                {
+                                    slowVel = vel * 1f;
+                                    slowAcc = acc * 1f;
+                                }
 
                                 blendR = 1;
                                 err1 = robot.MoveL(jointPosPlace, descPosPlace,
@@ -5246,262 +5312,360 @@ namespace RM.src.RM250714
                             {
                                 log.Info("STEP 210 - Calcolo nuovi punti");
 
-                                #region Calcolo dei punti di pick e di place
-
-                                #region Pick
-
-                                #region Punto di Pick
-
-                                // Get punto di pick da PLC
-                                selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
-                                // selectedFormat = 1001;
-
-                                var pPick = ApplicationConfig.applicationsManager.GetPosition(selectedFormat.ToString(), "RM");
-
-                                if (pPick != null)
+                                if (carrelloTerminato)
                                 {
-                                    // Check validità del punto
-                                    if (pPick.x != 0 && pPick.y != 0 && pPick.z != 0 && pPick.rx != 0 && pPick.ry != 0 && pPick.rz != 0) // Se il punto è valido
+                                    homeRequested = true;
+                                    step = 220;
+                                }
+                                else
+                                {
+
+                                    #region Calcolo dei punti di pick e di place
+
+                                    #region Pick
+
+                                    #region Punto di Pick
+
+                                    // Get punto di pick da PLC
+                                    selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
+                                    // selectedFormat = 1001;
+
+                                    var pPick = ApplicationConfig.applicationsManager.GetPosition(selectedFormat.ToString(), "RM");
+
+                                    if (pPick != null)
                                     {
-                                        pick = pPick;
+                                        // Check validità del punto
+                                        if (pPick.x != 0 && pPick.y != 0 && pPick.z != 0 && pPick.rx != 0 && pPick.ry != 0 && pPick.rz != 0) // Se il punto è valido
+                                        {
+                                            pick = pPick;
+                                        }
+                                        else
+                                            throw new Exception("Punto di pick non presente nel dizionario");
                                     }
                                     else
                                         throw new Exception("Punto di pick non presente nel dizionario");
+
+                                    // pick target
+                                    jointPosPick = new JointPos(0, 0, 0, 0, 0, 0);
+                                    descPosPick = new DescPose(
+                                        pick.x,
+                                        pick.y + yOffsetPick,
+                                        pick.z + zOffsetPick,
+                                        pick.rx,
+                                        pick.ry,
+                                        pick.rz);
+
+                                    GetInverseKin(descPosPick, ref jointPosPick, "Pick");
+
+                                    #endregion
+
+                                    #region Punto di avvicinamento Pick 
+
+                                    // Oggetto jointPos
+                                    jointPosApproachPick = new JointPos(0, 0, 0, 0, 0, 0);
+
+                                    // Creazione oggetto descPose
+                                    descPosApproachPick = new DescPose(
+                                        pick.x,
+                                        pick.y - offsetAvvicinamentoPick,
+                                        pick.z - zOffsetAvvicinamentoPick + zOffsetPick,
+                                        pick.rx,
+                                        pick.ry,
+                                        pick.rz
+                                        );
+
+                                    // Calcolo del jointPos
+                                    GetInverseKin(descPosApproachPick, ref jointPosApproachPick, "Avvicinamento pick");
+
+                                    #endregion
+
+                                    #region Punto di pre avvicinamento Pick 
+
+                                    // Oggetto jointPos
+                                    jointPosPreApproachPick = new JointPos(0, 0, 0, 0, 0, 0);
+
+                                    // Creazione oggetto descPose
+                                    descPosPreApproachPick = new DescPose(
+                                        pick.x,
+                                        pick.y - offsetPreAvvicinamentoPick,
+                                        pick.z - zOffsetAvvicinamentoPick + zOffsetPick,
+                                        pick.rx,
+                                        pick.ry,
+                                        pick.rz
+                                        );
+
+                                    // Calcolo del jointPos
+                                    GetInverseKin(descPosPreApproachPick, ref jointPosPreApproachPick, "Pre avvicinamento pick");
+
+                                    #endregion
+
+                                    #region Punto post Pick
+
+                                    // Oggetto jointPos
+                                    jointPosPostPick = new JointPos(0, 0, 0, 0, 0, 0);
+
+                                    // Creazione oggetto descPose
+                                    descPosPostPick = new DescPose(
+                                        pick.x,
+                                        pick.y,
+                                        pick.z + zOffsetPostPick + zOffsetPick,
+                                        pick.rx,
+                                        pick.ry,
+                                        pick.rz
+                                        );
+
+                                    // Calcolo del jointPos
+                                    GetInverseKin(descPosPostPick, ref jointPosPostPick, "Post pick");
+
+                                    #endregion
+
+                                    #region Punto allontanamento post Pick
+
+                                    // Oggetto jointPos
+                                    jointPosAllontanamentoPick = new JointPos(0, 0, 0, 0, 0, 0);
+
+                                    // Creazione oggetto descPose
+                                    descPosAllontanamentoPick = new DescPose(
+                                        pick.x,
+                                        pick.y - offsetAllontamentoPick,
+                                        pick.z + zOffsetPostPick + zOffsetAllontanamentoPick + zOffsetPick,
+                                        NormalizeAngle(pick.rx + rxRotationPick),
+                                        pick.ry,
+                                        pick.rz
+                                        );
+
+                                    // Calcolo del jointPos
+                                    GetInverseKin(descPosAllontanamentoPick, ref jointPosAllontanamentoPick, "Allontanamento pick");
+
+                                    #endregion
+
+                                    #region Punto intermedio allontanamento post Pick
+
+                                    // Oggetto jointPos
+                                    jointPosIntAllontanamentoPick = new JointPos(0, 0, 0, 0, 0, 0);
+
+                                    // Creazione oggetto descPose
+                                    descPosIntAllontanamentoPick = new DescPose(
+                                        descPosAllontanamentoPick.tran.x,
+                                        pick.y - offsetAllontamentoPreSlittaIndietro,
+                                        descPosAllontanamentoPick.tran.z + zOffsetPick,
+                                        descPosAllontanamentoPick.rpy.rx,
+                                        descPosAllontanamentoPick.rpy.ry,
+                                        descPosAllontanamentoPick.rpy.rz
+                                        );
+
+                                    // Calcolo del jointPos
+                                    GetInverseKin(descPosIntAllontanamentoPick, ref jointPosIntAllontanamentoPick, "Allontanamento intermedio pick");
+
+                                    #endregion
+
+                                    #endregion
+
+                                    #region Place
+
+                                    #region Punto di place
+
+                                    // Oggetto jointPos
+                                    jointPosPlace = new JointPos(0, 0, 0, 0, 0, 0);
+
+                                    // Get delle coordinate del punto dal database
+                                    place = pick;
+
+                                    // Creazione oggetto descPose
+                                    descPosPlace = new DescPose(
+                                        place.x,
+                                        place.y - yOffsetPlace,
+                                        place.z + zOffsetPlace,
+                                        place.rx,
+                                        place.ry,
+                                        place.rz
+                                        );
+
+                                    // Calcolo del jointPos
+                                    GetInverseKin(descPosPlace, ref jointPosPlace, "Place");
+
+                                    #endregion
+
+                                    #region Punto avvicinamento place
+
+                                    // Oggetto jointPos
+                                    jointPosApproachPlace = new JointPos(0, 0, 0, 0, 0, 0);
+
+                                    // Creazione oggetto descPose
+                                    descPosApproachPlace = new DescPose(
+                                        place.x,
+                                        place.y - offsetAvvicinamentoPlace,
+                                        place.z + zOffsetAvvicinamentoPlace,
+                                        NormalizeAngle(place.rx + rxOffsetPrePlace),
+                                        place.ry,
+                                        place.rz
+                                        );
+
+                                    // Calcolo del jointPos
+                                    GetInverseKin(descPosApproachPlace, ref jointPosApproachPlace, "Avvicinamento place");
+
+                                    #endregion
+
+                                    #region Punto di rotazione pre place
+
+                                    // Oggetto jointPos
+                                    jointPosRotationPrePlace = new JointPos(0, 0, 0, 0, 0, 0);
+
+                                    // Creazione oggetto descPose
+                                    descPosRotationPrePlace = new DescPose(
+                                        home.x,
+                                        home.y,
+                                        place.z + zOffsetAvvicinamentoPlace,
+                                        place.rx,
+                                        place.ry,
+                                        place.rz
+                                        );
+
+                                    // Calcolo del jointPos
+                                    GetInverseKin(descPosRotationPrePlace, ref jointPosRotationPrePlace, "Rotazione pre place");
+
+                                    #endregion
+
+                                    #region Punto post place
+
+                                    // Oggetto jointPos
+                                    jointPosPostPlace = new JointPos(0, 0, 0, 0, 0, 0);
+
+                                    // Creazione oggetto descPose
+                                    descPosPostPlace = new DescPose(
+                                       place.x,
+                                       place.y,
+                                       place.z - zOffsetPostPlace - zOffsetPlace,
+                                       place.rx,
+                                       place.ry,
+                                       place.rz
+                                       );
+
+                                    // Calcolo del jointPos
+                                    GetInverseKin(descPosPostPlace, ref jointPosPostPlace, "Post place");
+
+                                    #endregion
+
+                                    #region Punto allontanamento place
+
+                                    // Oggetto jointPos
+                                    jointPosAllontanamentoPlace = new JointPos(0, 0, 0, 0, 0, 0);
+
+                                    // Creazione oggetto descPose
+                                    descPosAllontanamentoPlace = new DescPose(
+                                       place.x,
+                                       place.y - offsetAllontamentoPostPlace,
+                                       place.z,
+                                       place.rx,
+                                       place.ry,
+                                       place.rz
+                                       );
+
+                                    // Calcolo del jointPos
+                                    GetInverseKin(descPosAllontanamentoPlace, ref jointPosAllontanamentoPlace, "Allontanamento place");
+
+                                    #endregion
+
+                                    #endregion
+
+                                    #endregion
+
+                                    if (selectedFormat == 1015 || selectedFormat == 1015)
+                                        carrelloTerminato = true;
+
+                                    step = 10;
                                 }
-                                else
-                                    throw new Exception("Punto di pick non presente nel dizionario");
-
-                                // pick target
-                                jointPosPick = new JointPos(0, 0, 0, 0, 0, 0);
-                                descPosPick = new DescPose(
-                                    pick.x,
-                                    pick.y + yOffsetPick,
-                                    pick.z + zOffsetPick,
-                                    pick.rx,
-                                    pick.ry,
-                                    pick.rz);
-
-                                GetInverseKin(descPosPick, ref jointPosPick, "Pick");
-
-                                #endregion
-
-                                #region Punto di avvicinamento Pick 
-
-                                // Oggetto jointPos
-                                jointPosApproachPick = new JointPos(0, 0, 0, 0, 0, 0);
-
-                                // Creazione oggetto descPose
-                                descPosApproachPick = new DescPose(
-                                    pick.x,
-                                    pick.y - offsetAvvicinamentoPick,
-                                    pick.z - zOffsetAvvicinamentoPick + zOffsetPick,
-                                    pick.rx,
-                                    pick.ry,
-                                    pick.rz
-                                    );
-
-                                // Calcolo del jointPos
-                                GetInverseKin(descPosApproachPick, ref jointPosApproachPick, "Avvicinamento pick");
-
-                                #endregion
-
-                                #region Punto di pre avvicinamento Pick 
-
-                                // Oggetto jointPos
-                                jointPosPreApproachPick = new JointPos(0, 0, 0, 0, 0, 0);
-
-                                // Creazione oggetto descPose
-                                descPosPreApproachPick = new DescPose(
-                                    pick.x,
-                                    pick.y - offsetPreAvvicinamentoPick,
-                                    pick.z - zOffsetAvvicinamentoPick + zOffsetPick,
-                                    pick.rx,
-                                    pick.ry,
-                                    pick.rz
-                                    );
-
-                                // Calcolo del jointPos
-                                GetInverseKin(descPosPreApproachPick, ref jointPosPreApproachPick, "Pre avvicinamento pick");
-
-                                #endregion
-
-                                #region Punto post Pick
-
-                                // Oggetto jointPos
-                                jointPosPostPick = new JointPos(0, 0, 0, 0, 0, 0);
-
-                                // Creazione oggetto descPose
-                                descPosPostPick = new DescPose(
-                                    pick.x,
-                                    pick.y,
-                                    pick.z + zOffsetPostPick + zOffsetPick,
-                                    pick.rx,
-                                    pick.ry,
-                                    pick.rz
-                                    );
-
-                                // Calcolo del jointPos
-                                GetInverseKin(descPosPostPick, ref jointPosPostPick, "Post pick");
-
-                                #endregion
-
-                                #region Punto allontanamento post Pick
-
-                                // Oggetto jointPos
-                                jointPosAllontanamentoPick = new JointPos(0, 0, 0, 0, 0, 0);
-
-                                // Creazione oggetto descPose
-                                descPosAllontanamentoPick = new DescPose(
-                                    pick.x,
-                                    pick.y - offsetAllontamentoPick,
-                                    pick.z + zOffsetPostPick + zOffsetAllontanamentoPick + zOffsetPick,
-                                    NormalizeAngle(pick.rx + rxRotationPick),
-                                    pick.ry,
-                                    pick.rz
-                                    );
-
-                                // Calcolo del jointPos
-                                GetInverseKin(descPosAllontanamentoPick, ref jointPosAllontanamentoPick, "Allontanamento pick");
-
-                                #endregion
-
-                                #region Punto intermedio allontanamento post Pick
-
-                                // Oggetto jointPos
-                                jointPosIntAllontanamentoPick = new JointPos(0, 0, 0, 0, 0, 0);
-
-                                // Creazione oggetto descPose
-                                descPosIntAllontanamentoPick = new DescPose(
-                                    descPosAllontanamentoPick.tran.x,
-                                    pick.y - offsetAllontamentoPreSlittaIndietro,
-                                    descPosAllontanamentoPick.tran.z + zOffsetPick,
-                                    descPosAllontanamentoPick.rpy.rx,
-                                    descPosAllontanamentoPick.rpy.ry,
-                                    descPosAllontanamentoPick.rpy.rz
-                                    );
-
-                                // Calcolo del jointPos
-                                GetInverseKin(descPosIntAllontanamentoPick, ref jointPosIntAllontanamentoPick, "Allontanamento intermedio pick");
-
-                                #endregion
-
-                                #endregion
-
-                                #region Place
-
-                                #region Punto di place
-
-                                // Oggetto jointPos
-                                jointPosPlace = new JointPos(0, 0, 0, 0, 0, 0);
-
-                                // Get delle coordinate del punto dal database
-                                place = pick;
-
-                                // Creazione oggetto descPose
-                                descPosPlace = new DescPose(
-                                    place.x,
-                                    place.y - yOffsetPlace,
-                                    place.z + zOffsetPlace,
-                                    place.rx,
-                                    place.ry,
-                                    place.rz
-                                    );
-
-                                // Calcolo del jointPos
-                                GetInverseKin(descPosPlace, ref jointPosPlace, "Place");
-
-                                #endregion
-
-                                #region Punto avvicinamento place
-
-                                // Oggetto jointPos
-                                jointPosApproachPlace = new JointPos(0, 0, 0, 0, 0, 0);
-
-                                // Creazione oggetto descPose
-                                descPosApproachPlace = new DescPose(
-                                    place.x,
-                                    place.y - offsetAvvicinamentoPlace,
-                                    place.z + zOffsetAvvicinamentoPlace,
-                                    NormalizeAngle(place.rx + rxOffsetPrePlace),
-                                    place.ry,
-                                    place.rz
-                                    );
-
-                                // Calcolo del jointPos
-                                GetInverseKin(descPosApproachPlace, ref jointPosApproachPlace, "Avvicinamento place");
-
-                                #endregion
-
-                                #region Punto di rotazione pre place
-
-                                // Oggetto jointPos
-                                jointPosRotationPrePlace = new JointPos(0, 0, 0, 0, 0, 0);
-
-                                // Creazione oggetto descPose
-                                descPosRotationPrePlace = new DescPose(
-                                    home.x,
-                                    home.y,
-                                    place.z + zOffsetAvvicinamentoPlace,
-                                    place.rx,
-                                    place.ry,
-                                    place.rz
-                                    );
-
-                                // Calcolo del jointPos
-                                GetInverseKin(descPosRotationPrePlace, ref jointPosRotationPrePlace, "Rotazione pre place");
-
-                                #endregion
-
-                                #region Punto post place
-
-                                // Oggetto jointPos
-                                jointPosPostPlace = new JointPos(0, 0, 0, 0, 0, 0);
-
-                                // Creazione oggetto descPose
-                                descPosPostPlace = new DescPose(
-                                   place.x,
-                                   place.y,
-                                   place.z - zOffsetPostPlace - zOffsetPlace,
-                                   place.rx,
-                                   place.ry,
-                                   place.rz
-                                   );
-
-                                // Calcolo del jointPos
-                                GetInverseKin(descPosPostPlace, ref jointPosPostPlace, "Post place");
-
-                                #endregion
-
-                                #region Punto allontanamento place
-
-                                // Oggetto jointPos
-                                jointPosAllontanamentoPlace = new JointPos(0, 0, 0, 0, 0, 0);
-
-                                // Creazione oggetto descPose
-                                descPosAllontanamentoPlace = new DescPose(
-                                   place.x,
-                                   place.y - offsetAllontamentoPostPlace,
-                                   place.z,
-                                   place.rx,
-                                   place.ry,
-                                   place.rz
-                                   );
-
-                                // Calcolo del jointPos
-                                GetInverseKin(descPosAllontanamentoPlace, ref jointPosAllontanamentoPlace, "Allontanamento place");
-
-                                #endregion
-
-                                #endregion
-
-                                #endregion
-
-                                step = 10;
-    
                             }
 
                             break;
 
+                        #endregion
+
+                        case 220:
+                            #region HomeRoutine
+
+                            /*
+                            if (_homeTask == null)
+                            {
+                                _homeCts = new CancellationTokenSource();
+                                _homeTask = HomeRoutine(_homeCts.Token);
+                            }
+
+
+                            if (_homeTask != null && _homeTask.IsCompleted)
+                            {
+                                try
+                                {
+                                    await _homeTask;
+                                }
+                                catch (OperationCanceledException)
+                                {
+                                    log.Info("HomeRoutine cancellata");
+                                }
+                                catch (Exception ex)
+                                {
+                                    log.Error($"Errore HomeRoutine: {ex}");
+                                }
+                                finally
+                                {
+                                    _homeCts.Dispose();
+                                    _homeTask = null;
+                                    _homeCts = null;
+
+                                    homeRequested = false;
+                                    homeInProgress = false;
+                                    //stopCycleRoutine = true;
+                                    carrelloTerminato = false;
+                                    step = 0;
+                                }
+                            }
+                            */
+
+                            #region Movimento a punto avvicinamento home
+
+                            DescPose descPoseApproachHome = new DescPose(
+                                           TCPCurrentPosition.tran.x,
+                                           descPosHome.tran.y,
+                                           TCPCurrentPosition.tran.z,
+                                           TCPCurrentPosition.rpy.rx,
+                                           TCPCurrentPosition.rpy.ry,
+                                           TCPCurrentPosition.rpy.rz);
+
+                            JointPos JointPosApproachHome = new JointPos(0, 0, 0, 0, 0, 0);
+                            robot.GetInverseKin(0, descPoseApproachHome, -1, ref JointPosApproachHome);
+
+                            int result = robot.MoveL(JointPosApproachHome, descPoseApproachHome,
+                                tool, user, vel, acc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                            #endregion
+
+                            #region Movimento a punto di home
+
+                            result = robot.MoveL(jHome, descPosHome,
+                                tool, user, vel, acc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                            #endregion
+
+                            inPosition = false; // reset inPosition
+                            endingPoint = descPosHome;
+
+                            step = 230;
+
+                            break;
+                        #endregion
+
+                        case 230:
+                            #region Check arrivo in HomePosition
+
+                            if (inPosition) // Se sono arrivato in posizione di home
+                            {
+                                homeRequested = false;
+                                homeInProgress = false;
+                                carrelloTerminato = false;
+                                step = 0;
+                            }
+
+                            break;
                         #endregion
 
                         case 999:
@@ -5812,6 +5976,29 @@ namespace RM.src.RM250714
         }
 
         /// <summary>
+        /// Gestione comando di richiesta stop derivante da plc
+        /// </summary>
+        private static void CheckCommandRequestedStop()
+        {
+            // Get valore variabile di stop ciclo robot
+            int requestedStopStatus = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Stop_Cycle_Requested));
+
+            if (requestedStopStatus == 1 && previousRequestedStopCommandStatus != 1)
+            {
+                log.Warn("Richiesto comando di richiesta STOP");
+
+                stopCycleRequested = true; // Alzo segnale di richiesta stop ciclo main
+                previousRequestedStopCommandStatus = 1;
+
+                log.Warn("Comando di richiesta STOP eseguito");
+            }
+            else if (requestedStopStatus == 0)
+            {
+                previousRequestedStopCommandStatus = 0;
+            }
+        }
+
+        /// <summary>
         /// Esegue check su cambio velocità derivante dal plc
         /// </summary>
         private static void CheckVelCommand()
@@ -5882,7 +6069,7 @@ namespace RM.src.RM250714
                 }
                 else // Stop
                 {
-                    stopCycleRequested = true;  // Valutare se alzare un bit o fermare subito il robot
+                    // stopCycleRequested = true;  // Valutare se alzare un bit o fermare subito il robot
                     EnableButtonCycleEvent?.Invoke(1, EventArgs.Empty);
                 }
 

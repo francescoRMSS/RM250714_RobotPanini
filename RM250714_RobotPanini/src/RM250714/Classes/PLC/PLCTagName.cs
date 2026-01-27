@@ -534,9 +534,9 @@ namespace RM.src.RM250714.Classes.PLC
         public static string Start_Auto_Robot = "PLC1_" + "com_robot_2";
 
         /// <summary>
-        /// spare
+        /// A 1 per richiesta termine ciclo
         /// </summary>
-        public static string spare_to_read_50 = "PLC1_" + "com_robot_3";
+        public static string Stop_Cycle_Requested = "PLC1_" + "com_robot_3";
 
         /// <summary>
         /// spare
@@ -667,6 +667,11 @@ namespace RM.src.RM250714.Classes.PLC
         /// 0...1(bool)
         /// </summary>
         public static string JogRZ_neg = "PLC1_" + "com_robot_29";
+
+        /// <summary>
+        /// 0...1(bool)
+        /// </summary>
+        public static string Sel_Service = "PLC1_" + "com_robot_30";
 
         #endregion
 

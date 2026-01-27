@@ -1452,9 +1452,9 @@
             A 1 durante tutta la durante del ciclo
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.spare_to_read_50">
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.Stop_Cycle_Requested">
             <summary>
-            spare
+            A 1 per richiesta termine ciclo
             </summary>
         </member>
         <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.CMD_OverrideAuto">
@@ -1583,6 +1583,11 @@
             </summary>
         </member>
         <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.JogRZ_neg">
+            <summary>
+            0...1(bool)
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.Sel_Service">
             <summary>
             0...1(bool)
             </summary>
@@ -3196,6 +3201,11 @@
             Memorizza lo stato precedente della variabile stop ciclo dal PLC
             </summary>
         </member>
+        <member name="F:RM.src.RM250714.RobotManager.previousRequestedStopCommandStatus">
+            <summary>
+            Memorizza lo stato precedente della variabile richiesta stop ciclo dal PLC
+            </summary>
+        </member>
         <member name="F:RM.src.RM250714.RobotManager.previousHomeCommandStatus">
             <summary>
             Memorizza lo stato precedente della variabile go to home position dal PLC
@@ -3816,6 +3826,11 @@
             Controlla il tool e user correnti
             </summary>
         </member>
+        <member name="M:RM.src.RM250714.RobotManager.CheckLevelCollision">
+            <summary>
+            Controlla il livello di collisione da impostare
+            </summary>
+        </member>
         <member name="M:RM.src.RM250714.RobotManager.CheckPLCConnection">
             <summary>
             Check su connessione PLC
@@ -3976,6 +3991,11 @@
         <member name="M:RM.src.RM250714.RobotManager.CheckCommandStop">
             <summary>
             Gestione comando di stop derivante da plc
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.CheckCommandRequestedStop">
+            <summary>
+            Gestione comando di richiesta stop derivante da plc
             </summary>
         </member>
         <member name="M:RM.src.RM250714.RobotManager.CheckVelCommand">
