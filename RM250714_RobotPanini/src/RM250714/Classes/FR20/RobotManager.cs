@@ -3764,6 +3764,18 @@ namespace RM.src.RM250714
             // Slitta avanti/indietro
             byte isTrayPresent = 0;
 
+            // Cod. errore movimento 1
+            int err1 = 0;
+
+            // Cod. errore movimento 2
+            int err2 = 0;
+
+            // Cod. errore movimento 3
+            int err3 = 0;
+
+            // Segnala quando il carrello è pieno
+            bool carrelloTerminato = false;
+
             #endregion
 
             #region Offset spostamenti
@@ -3802,7 +3814,7 @@ namespace RM.src.RM250714
 
             #region Offset beor
 
-            float offsetAvvicinamentoBeor = 600; // Offset di avvicinamento al punto beor
+            float offsetAvvicinamentoBeor = 900; // Offset di avvicinamento al punto beor
             float offsetAllontamentoBeor = 700; // Offset di allontanamento dal punto beor
 
             #endregion
@@ -4057,7 +4069,7 @@ namespace RM.src.RM250714
             #endregion
 
             #region Ciclo
-
+            
             try
             {
                 // Controllo che il setting del cambio collisione robot sia andato a buon fine
@@ -4731,7 +4743,7 @@ namespace RM.src.RM250714
 
                             blendR = 20;
                             // Movimento a punto di avvicinamento pick teglia 1
-                            err = robot.MoveL(jointPosPreApproachPick, descPosPreApproachPick,
+                            err1 = robot.MoveL(jointPosPreApproachPick, descPosPreApproachPick,
                                 tool, user, slowVel, slowAcc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
                             GetRobotMovementCode(err); // Stampo risultato del movimento
 
@@ -4744,7 +4756,7 @@ namespace RM.src.RM250714
 
                             blendR = 20;
                             // Movimento a punto di avvicinamento pick teglia 1
-                            err = robot.MoveL(jointPosApproachPick, descPosApproachPick,
+                            err2 = robot.MoveL(jointPosApproachPick, descPosApproachPick,
                                 tool, user, slowVel, slowAcc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
                             GetRobotMovementCode(err); // Stampo risultato del movimento
 
@@ -4758,23 +4770,25 @@ namespace RM.src.RM250714
                             slowAcc = acc * 1f;
 
                             // Movimento a pick teglia 1
-                            err = robot.MoveL(jointPosPick, descPosPick,
+                            err3 = robot.MoveL(jointPosPick, descPosPick,
                                 tool, user, slowVel, slowAcc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
                             GetRobotMovementCode(err); // Stampo risultato del movimento
 
                             #endregion
                           
-                            //if (err == 99)
-                            //{
-                            //   await Task.Delay(500);
-                            //}
-                            //else
-                            //{
+                            // Se uno dei movimenti a generato un errore relativo alla pausa,
+                            // riavvio lo step
+                            if (err1 == 99 || err2 == 99 || err3 == 99)
+                            {
+                               await Task.Delay(500);
+                            }
+                            else
+                            {
                                 endingPoint = descPosPick; // Assegnazione endingPoint
 
                                 step = 60; // Passaggio allo step successivo
                                 stepPick = 10;
-                            //}
+                            }
 
                             break;
 
@@ -4862,13 +4876,15 @@ namespace RM.src.RM250714
                         case 100:
                             #region Movimento di allontanamento post chiusura pinza
 
+                            log.Info("STEP 100 - Invio movimento di allontanamento post chiusura pinza");
+
                             inPosition = false;
 
                             #region Movimento post Pick
                             
                             blendR = 50;
                             // Movimento per uscire dal carrelo dopo pick 1
-                            err = robot.MoveL(jointPosPostPick, descPosPostPick,
+                            err1 = robot.MoveL(jointPosPostPick, descPosPostPick,
                                 tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
                             
                             #endregion
@@ -4878,7 +4894,7 @@ namespace RM.src.RM250714
                             blendR = 50;
                             offset = new DescPose(0, 0, 0, 2, 0, 0);
                             // Movimento a punto di avvicinamento place teglia 2
-                            err = robot.MoveJ(jointPosPostPick, descPosPostPick,
+                            err2 = robot.MoveJ(jointPosPostPick, descPosPostPick,
                                 tool, user, vel, acc, ovl, epos, blendT, 1, offset);
                             offset = new DescPose(0, 0, 0, 0, 0, 0);
                             */
@@ -4889,16 +4905,22 @@ namespace RM.src.RM250714
                             blendR = 50;
 
                             // Movimento per uscire dal carrelo dopo pick 1
-                            err = robot.MoveL(jointPosAllontanamentoPick, descPosAllontanamentoPick,
+                            err3 = robot.MoveL(jointPosAllontanamentoPick, descPosAllontanamentoPick,
                                 tool, user, vel, acc, ovl, blendR, epos, search, 0, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
                             #endregion
 
-                            endingPoint = descPosAllontanamentoPick;
-
-                            log.Info("STEP 100 - Movimento di allontanamento post chiusura pinza");
-
-                            step = 110;
+                            // Se uno dei movimenti a generato un errore relativo alla pausa,
+                            // riavvio lo step
+                            if (err1 == 99 || err3 == 99)
+                            {
+                                await Task.Delay(500);
+                            }
+                            else
+                            {
+                                endingPoint = descPosAllontanamentoPick;
+                                step = 110;
+                            }
 
                             break;
 
@@ -4946,6 +4968,8 @@ namespace RM.src.RM250714
                         case 130:
                             #region Movimento a boer
 
+                            log.Info("STEP 130 - Invio movimento a boer");
+
                             // Reset inPosition
                             inPosition = false;
 
@@ -4953,7 +4977,7 @@ namespace RM.src.RM250714
 
                             blendR = 50;
                             // Ritorno in posizione di home
-                            //  err = robot.MoveL(jHome, descPosHome,
+                            //  err1 = robot.MoveL(jHome, descPosHome,
                             //     tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
                             #endregion
@@ -4965,7 +4989,7 @@ namespace RM.src.RM250714
 
                             blendR = 10;
                             // Movimento a punto di avvicinamento beor
-                            err = robot.MoveL(jointPosApproachBeor, descPosApproachBeor,
+                            err2 = robot.MoveL(jointPosApproachBeor, descPosApproachBeor,
                                 tool, user, slowVel, slowAcc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
                             #endregion
@@ -4978,16 +5002,21 @@ namespace RM.src.RM250714
 
                             blendR = 50;
                             // Movimento a  beor
-                            err = robot.MoveL(jointPosBeor, descPosBeor,
+                            err3 = robot.MoveL(jointPosBeor, descPosBeor,
                                tool, user, slowVel, slowAcc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
                             #endregion
 
-                            endingPoint = descPosBeor;
+                            if (err2 == 99 || err3 == 99)
+                            {
+                                await Task.Delay(500);
+                            }
+                            else
+                            {
+                                endingPoint = descPosBeor;
 
-                            log.Info("STEP 130 - Movimento a boer");
-
-                            step = 140;
+                                step = 140;
+                            }
 
                             break;
 
@@ -5012,6 +5041,8 @@ namespace RM.src.RM250714
                         case 150:
                             #region Ritorno in home e movimento in avvicinamento place
 
+                            log.Info("STEP 150 - Invio ritorno in home e movimento in avvicinamento place");
+
                             // Reset inPosition
                             inPosition = false;
 
@@ -5023,7 +5054,7 @@ namespace RM.src.RM250714
 
                             blendR = 50;
                             // Movimento a punto di avvicinamento beor
-                            err = robot.MoveL(jointPosApproachBeor, descPosApproachBeor,
+                            err1 = robot.MoveL(jointPosApproachBeor, descPosApproachBeor,
                                 tool, user, slowVel, slowAcc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
                             #endregion
@@ -5032,7 +5063,7 @@ namespace RM.src.RM250714
                             /*
                             blendR = 50;
                             // Movimento di rotazione pre place teglia 2
-                            err = robot.MoveL(jointPosRotationPrePlace, descPosRotationPrePlace,
+                            err2 = robot.MoveL(jointPosRotationPrePlace, descPosRotationPrePlace,
                                 tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
                             */
                             #endregion
@@ -5045,17 +5076,22 @@ namespace RM.src.RM250714
                             slowAcc = acc * 1f;
 
                             blendR = 10;
-                            err = robot.MoveL(jointPosApproachPlace, descPosApproachPlace,
+                            err3 = robot.MoveL(jointPosApproachPlace, descPosApproachPlace,
                                    tool, user, slowVel, slowAcc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
                             // offset = new DescPose(0, 0, 0, 0, 0, 0);
 
                             #endregion
 
-                            endingPoint = descPosApproachPlace;
+                            if (err1 == 99 || err3 == 99)
+                            {
+                                await Task.Delay(500);
+                            }
+                            else
+                            {
+                                endingPoint = descPosApproachPlace;
 
-                            log.Info("STEP 150 - Ritorno in home e movimento in avvicinamento place");
-
-                            step = 160;
+                                step = 160;
+                            }
 
                             break;
 
@@ -5066,6 +5102,8 @@ namespace RM.src.RM250714
 
                            // if (inPosition)
                             {
+                                log.Info("STEP 160 - Invio movimento a punto di place");
+
                                 // Reset inPosition
                                 inPosition = false;
 
@@ -5075,16 +5113,21 @@ namespace RM.src.RM250714
                                 slowAcc = acc * 1f;
 
                                 blendR = 1;
-                                err = robot.MoveL(jointPosPlace, descPosPlace,
+                                err1 = robot.MoveL(jointPosPlace, descPosPlace,
                                        tool, user, slowVel, slowAcc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
                                 #endregion
 
-                                endingPoint = descPosPlace;
+                                if (err1 == 99)
+                                {
+                                    await Task.Delay(500);
+                                }
+                                else
+                                {
+                                    endingPoint = descPosPlace;
 
-                                log.Info("STEP 160 - Movimento a punto di place");
-
-                                step = 170;
+                                    step = 170;
+                                } 
                             }
 
                             break;
@@ -5150,6 +5193,8 @@ namespace RM.src.RM250714
                         case 200:
                             #region Allontanamento place
 
+                            log.Info("STEP 200 - Invio allontanamento place");
+
                             // Reset inPosition
                             inPosition = false;
 
@@ -5162,7 +5207,7 @@ namespace RM.src.RM250714
                             blendR = 50;
                            
                             // Movimento a punto di allontanamento place teglia 2
-                            err = robot.MoveL(jointPosPostPlace, descPosPostPlace,
+                            err1 = robot.MoveL(jointPosPostPlace, descPosPostPlace,
                                 tool, user, slowVel, slowAcc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
                             #endregion
@@ -5174,18 +5219,24 @@ namespace RM.src.RM250714
 
                             blendR = 50;
                             // Movimento a punto di allontanamento place teglia 2
-                            err = robot.MoveL(jointPosAllontanamentoPlace, descPosAllontanamentoPlace,
+                            err2 = robot.MoveL(jointPosAllontanamentoPlace, descPosAllontanamentoPlace,
                                 tool, user, slowVel, slowAcc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
                             #endregion
 
-                            endingPoint = descPosAllontanamentoPlace;
+                            if (err1 == 99 || err2 == 99)
+                            {
+                                await Task.Delay(500);
+                            }
+                            else
+                            {
+                                endingPoint = descPosAllontanamentoPlace;
 
-                            log.Info("STEP 200 - Allontanamento place");
-
-                            step = 210;
+                                step = 210;
+                            }
 
                             break;
+
                         #endregion
 
                         case 210:
@@ -6219,9 +6270,9 @@ namespace RM.src.RM250714
             {
                 // Disabilitazione del robot
                 log.Warn("[ENABLE] Richiesta disabilitazione robot");
-                robot.StopMotion(); // Cancellazione della coda di punti
-                AlarmManager.blockingAlarm = true;
-                JogMovement.StopJogRobotTask(); // Ferma il thread di Jog
+                //robot.StopMotion(); // Cancellazione della coda di punti
+                // AlarmManager.blockingAlarm = true;
+                JogMovement.StopJogRobotTask(); // Ferma il task di Jog
                 await Task.Delay(10);
                 robot.RobotEnable(0);
                 prevIsNotEnable = true;
