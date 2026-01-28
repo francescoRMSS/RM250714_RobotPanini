@@ -195,6 +195,14 @@ namespace RM.src.RM250714
         /// </summary>
         public static int collisionLevelService = 0;
         /// <summary>
+        /// Richiesta cambio livello di collisione
+        /// </summary>
+        public static int changeCollisionLevel = 0;
+        /// <summary>
+        /// Stato precedente della richiesta di cambio collisione
+        /// </summary>
+        public static int? prevChangeCollisionLevel;
+        /// <summary>
         /// Tempo massimo in ms per controllare che il proxy stia comunicando
         /// </summary>
         private const int connectionCheckMaxTimeout = 500;
@@ -384,7 +392,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// Speed utilizzata in home routine
         /// </summary>
-        private static readonly int homeRoutineSpeed = 4;
+        private static readonly int homeRoutineSpeed = 5;
         /// <summary>
         /// Velocity utilizzata in home routine
         /// </summary>
@@ -976,8 +984,12 @@ namespace RM.src.RM250714
             if (!frameManager.ChangeRobotFrame(user))
                 return false;
 
-           /* if (!collisionManager.ChangeRobotCollision(currentCollisionLevel))
-                return false;*/
+           /* Il cambio di collisione è gestita dal metodo CheckLevelCollision
+             
+            if (!collisionManager.ChangeRobotCollision(currentCollisionLevel))
+                return false;
+           
+            */
 
             if (!SetRobotPayload(robotProperties.Weight))
                 return false;
@@ -1703,9 +1715,6 @@ namespace RM.src.RM250714
             robot.GetActualWObjNum(1, ref currentUser);
         }
 
-        public static int changeCollisionLevel = 0;
-        public static int? prevChangeCollisionLevel;
-
         /// <summary>
         /// Controlla e aggiorna il livello di collisione
         /// </summary>
@@ -1719,8 +1728,8 @@ namespace RM.src.RM250714
             {
                 prevChangeCollisionLevel = 0;
                 collisionManager.ChangeRobotCollision(collisionLevelService); 
-            } 
-            else 
+            }
+            else  // Se il valore è 1 ed è cambiato di stato
             if (changeCollisionLevel == 1 && (changeCollisionLevel != prevChangeCollisionLevel)) 
             {
                 prevChangeCollisionLevel = 1;
@@ -2249,10 +2258,6 @@ namespace RM.src.RM250714
                 //return false;
             }
 
-            
-
-            
-
             GetRobotInfo();
 
             ResetPLCVariables();
@@ -2741,6 +2746,7 @@ namespace RM.src.RM250714
             stopCycleRequested = false;
             // Reset step routine
             step = 0;
+            // Valore input controllore
             byte ris = 0;
 
             #endregion
@@ -3061,7 +3067,6 @@ namespace RM.src.RM250714
 
             #endregion
 
-
             #endregion
 
             #region Pick teglia1
@@ -3254,6 +3259,8 @@ namespace RM.src.RM250714
             robot.SetAnticollision(0, levelCollision6, 1);
 
             #endregion
+
+            #region Ciclo
 
             // Aspetto che il metodo termini, ma senza bloccare il thread principale
             // La routine è incapsulata come 'async' per supportare futuri operatori 'await' nel caso ci fosse la necessità
@@ -3754,6 +3761,7 @@ namespace RM.src.RM250714
                 }
             });
 
+            #endregion
         }
 
         /// <summary>
@@ -4123,12 +4131,14 @@ namespace RM.src.RM250714
             
             try
             {
+                /* Cambio livello di collisione gestito dentro il metodo CheckLevelCollision
                 // Controllo che il setting del cambio collisione robot sia andato a buon fine
-               /* if (!collisionManager.ChangeRobotCollision(currentCollisionLevel))
+                if (!collisionManager.ChangeRobotCollision(currentCollisionLevel))
                 {
                     log.Error("Il comando per aggiornare il ivello di collisioni ha generato un errore");
                     throw new Exception("Il comando per aggiornare il ivello di collisioni ha generato un errore");
-                }*/
+                }
+                */
 
                 // Fino a quando la condizione di stop routine non è true e non sono presenti allarmi bloccanti
                 while (!stopCycleRoutine && !AlarmManager.blockingAlarm && !token.IsCancellationRequested)
@@ -4136,7 +4146,7 @@ namespace RM.src.RM250714
                     switch (step)
                     {
                         case 0:
-                            #region Comunicazione avvio ciclo a PLC e calcolo punto di pick e place
+                            #region Comunicazione avvio ciclo a PLC, check dei consensi e calcolo punto di pick e place
                             // In questo step scrivo al plc che il ciclo di main è stato avviato e passo subito allo step successivo
                             // Eseguo anche il calcolo dei punto di pick e place la prima volta, per poi non passare più da questo step.
 
@@ -4429,7 +4439,7 @@ namespace RM.src.RM250714
 
                                         #endregion
 
-                                        log.Info("STEP 0 - Comunicazione avvio ciclo a PLC e calcolo punto di pick e place.");
+                                        log.Info("STEP 0 - Comunicazione avvio ciclo a PLC, check dei consensi e calcolo punto di pick e place.");
 
                                         // Passaggio allo step 10
                                         step = 10;
@@ -4445,7 +4455,7 @@ namespace RM.src.RM250714
                         case 10:
                             #region Check richiesta routine e consensi
 
-                            if (stopCycleRequested)
+                            if (stopCycleRequested) // Se è stata richiesto uno stop ciclo, vado allo step per mandare in home il robot
                             {
                                 homeRequested = true;
                             }
@@ -6059,7 +6069,7 @@ namespace RM.src.RM250714
                     // Controllo che il robot sia in automatico
                     if (!isAutomaticMode)
                     {
-                        log.Warn("Tenativo di avvio ciclo con robot non in modalità automatica");
+                        log.Warn("Tentativo di avvio ciclo con robot non in modalità automatica");
                         return;
                     }
                     // Setto della velocità del Robot dalle sue proprietà memorizzate sul database
