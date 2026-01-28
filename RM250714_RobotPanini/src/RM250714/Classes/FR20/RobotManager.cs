@@ -186,7 +186,14 @@ namespace RM.src.RM250714
         /// Livello di collisione corrente.
         /// </summary>
         public static int currentCollisionLevel = 0;
-        //public static collisionLevel
+        /// <summary>
+        /// Livello di collisione ciclo
+        /// </summary>
+        public static int collisionLevel = 0;
+        /// <summary>
+        /// Livello di collisione service
+        /// </summary>
+        public static int collisionLevelService = 0;
         /// <summary>
         /// Tempo massimo in ms per controllare che il proxy stia comunicando
         /// </summary>
@@ -969,8 +976,8 @@ namespace RM.src.RM250714
             if (!frameManager.ChangeRobotFrame(user))
                 return false;
 
-            if (!collisionManager.ChangeRobotCollision(currentCollisionLevel))
-                return false;
+           /* if (!collisionManager.ChangeRobotCollision(currentCollisionLevel))
+                return false;*/
 
             if (!SetRobotPayload(robotProperties.Weight))
                 return false;
@@ -1696,28 +1703,29 @@ namespace RM.src.RM250714
             robot.GetActualWObjNum(1, ref currentUser);
         }
 
-        public static int changeCollisionLevel = 1;
-        public static int prevChangeCollisionLevel = 1;
-        /// <summary>
-        /// Controlla il livello di collisione da impostare
-        /// </summary>
-        private static void CheckLevelCollision()
-        {
-            changeCollisionLevel = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Sel_Service));
+        public static int changeCollisionLevel = 0;
+        public static int? prevChangeCollisionLevel;
 
-            if (changeCollisionLevel == 0 && prevChangeCollisionLevel != 0)
+        /// <summary>
+        /// Controlla e aggiorna il livello di collisione
+        /// </summary>
+        private static void CheckLevelCollision() 
+        {
+            // Get del valore PLC
+            changeCollisionLevel = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Sel_Service)); 
+
+            // Se il valore è 0 ed è cambiato di stato
+            if (changeCollisionLevel == 0 && (changeCollisionLevel != prevChangeCollisionLevel)) 
             {
-                currentCollisionLevel = 3;
                 prevChangeCollisionLevel = 0;
-                collisionManager.ChangeRobotCollision(currentCollisionLevel);
-            }
-            else
-            if (changeCollisionLevel == 1 && prevChangeCollisionLevel != 1)
+                collisionManager.ChangeRobotCollision(collisionLevelService); 
+            } 
+            else 
+            if (changeCollisionLevel == 1 && (changeCollisionLevel != prevChangeCollisionLevel)) 
             {
-                currentCollisionLevel = 8;
                 prevChangeCollisionLevel = 1;
-                collisionManager.ChangeRobotCollision(currentCollisionLevel);
-            }
+                collisionManager.ChangeRobotCollision(collisionLevel);
+            } 
         }
 
         /// <summary>
@@ -1995,6 +2003,8 @@ namespace RM.src.RM250714
                     [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
                 float blendR = float.Parse(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_BLENDR_ROW_INDEX]
                     [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
+                int collLevService = Convert.ToInt16(dt_robotProperties.Rows[RobotDAOSqlite.ROBOT_PROPERTIES_COLLISION_LEVELS_SERVICE_ROW_INDEX]
+                    [RobotDAOSqlite.ROBOT_PROPERTIES_VALUE_COLUMN_INDEX].ToString());
 
                 // Creazione dell'oggetto robotProperties
                 robotProperties = new RobotProperties(speed, velocity, blendT, acceleration, ovl, tool, user, weight, velRec);
@@ -2022,8 +2032,9 @@ namespace RM.src.RM250714
                 RobotManager.user = robotProperties.User;
                 RobotManager.weight = robotProperties.Weight;
                 RobotManager.velRec = robotProperties.VelRec;
-                RobotManager.currentCollisionLevel = collLev;
+                RobotManager.collisionLevel = collLev;
                 RobotManager.blendR = blendR;
+                RobotManager.collisionLevelService = collLevService;
 
                 return true;
             }
@@ -2211,6 +2222,8 @@ namespace RM.src.RM250714
                 log.Error("Errore durante set parametri del robot");
             }
 
+            log.Info("Parametri del robot assegnati");
+
             // Faccio partire i task
             taskManager.AddTask(TaskCheckRobotConneciton, CheckRobotConnection, TaskType.LongRunning, true);
             taskManager.AddTask(TaskHighPriorityName, CheckHighPriority, TaskType.LongRunning, true);
@@ -2236,16 +2249,9 @@ namespace RM.src.RM250714
                 //return false;
             }
 
-            // Se fallisce setting della proprietà del Robot
-            if (!GetRobotProperties())
-                return false;
+            
 
-            if (!SetRobotProperties())
-            {
-                log.Error("Errore durante set parametri del robot");
-            }
-
-            log.Info("Parametri del robot assegnati");
+            
 
             GetRobotInfo();
 
@@ -2310,7 +2316,7 @@ namespace RM.src.RM250714
                         await CheckIsRobotEnable();
                         CheckRobotMode();
                         CheckCurrentToolAndUser();
-                        //CheckLevelCollision();
+                        CheckLevelCollision();
                         //CheckGripperStatus();
                         CheckIsRobotInObstructionArea(startPoints);
                     }
@@ -4118,11 +4124,11 @@ namespace RM.src.RM250714
             try
             {
                 // Controllo che il setting del cambio collisione robot sia andato a buon fine
-                if (!collisionManager.ChangeRobotCollision(currentCollisionLevel))
+               /* if (!collisionManager.ChangeRobotCollision(currentCollisionLevel))
                 {
                     log.Error("Il comando per aggiornare il ivello di collisioni ha generato un errore");
                     throw new Exception("Il comando per aggiornare il ivello di collisioni ha generato un errore");
-                }
+                }*/
 
                 // Fino a quando la condizione di stop routine non è true e non sono presenti allarmi bloccanti
                 while (!stopCycleRoutine && !AlarmManager.blockingAlarm && !token.IsCancellationRequested)

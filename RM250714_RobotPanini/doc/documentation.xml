@@ -2861,6 +2861,16 @@
             Livello di collisione corrente.
             </summary>
         </member>
+        <member name="F:RM.src.RM250714.RobotManager.collisionLevel">
+            <summary>
+            Livello di collisione ciclo
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.collisionLevelService">
+            <summary>
+            Livello di collisione service
+            </summary>
+        </member>
         <member name="F:RM.src.RM250714.RobotManager.connectionCheckMaxTimeout">
             <summary>
             Tempo massimo in ms per controllare che il proxy stia comunicando
@@ -3828,7 +3838,7 @@
         </member>
         <member name="M:RM.src.RM250714.RobotManager.CheckLevelCollision">
             <summary>
-            Controlla il livello di collisione da impostare
+            Controlla e aggiorna il livello di collisione
             </summary>
         </member>
         <member name="M:RM.src.RM250714.RobotManager.CheckPLCConnection">

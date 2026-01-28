@@ -92,6 +92,7 @@ namespace RM.src.RM250714
         public const int ROBOT_PROPERTIES_VELREC_ROW_INDEX = 8;
         public const int ROBOT_PROPERTIES_COLLISION_LEVELS_ROW_INDEX = 9;
         public const int ROBOT_PROPERTIES_BLENDR_ROW_INDEX = 10;
+        public const int ROBOT_PROPERTIES_COLLISION_LEVELS_SERVICE_ROW_INDEX = 11;
 
         public const int ROBOT_PROPERTIES_VALUE_COLUMN_INDEX = 2;
         #endregion
