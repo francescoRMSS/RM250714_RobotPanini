@@ -118,9 +118,6 @@ namespace RM.src.RM250714
         /// </summary>
         /// <param name="origin">Angolo di riferimento del pallet (es. punto in basso a sinistra)</param>
         /// <param name="currentPoint">Posizione corrente del robot</param>
-        /// <param name="length">Lunghezza del pallet in mm</param>
-        /// <param name="width">Larghezza del pallet in mm</param>
-        /// <param name="height">Altezza totale in mm</param>
         /// <returns>True se il punto è dentro il parallelepipedo, false altrimenti</returns>
         public bool IsInParallelepipedObstruction(DescPose origin, DescPose currentPoint)
         {

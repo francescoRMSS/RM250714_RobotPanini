@@ -298,6 +298,61 @@
             Costruttore vuoto
             </summary>
         </member>
+        <member name="T:RM.src.RM250714.Classes.FR20.Exceptions.DataErrorException">
+            <summary>
+            Eccezioni per errori di dati mancanti o dati errati provenienti da database o strutture dati
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.Classes.FR20.Exceptions.DataErrorException.#ctor(System.String)">
+            <summary>
+            Istanzia l'eccezione 
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="T:RM.src.RM250714.Classes.FR20.Exceptions.RobotKinException">
+            <summary>
+            Eccezioni per i calcoli di cinametica inversa o cinematica diretta da parte del robot
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.Classes.FR20.Exceptions.RobotKinException.#ctor(System.String)">
+            <summary>
+            Istanzia l'eccezione
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="T:RM.src.RM250714.Classes.FR20.Exceptions.RobotPropertiesChangeException">
+            <summary>
+            Eccezioni per metodi che cambiano o leggono le proprietà del robot
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.Classes.FR20.Exceptions.RobotPropertiesChangeException.#ctor(System.String)">
+            <summary>
+            Istanzia l'eccezione
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="T:RM.src.RM250714.Classes.FR20.Exceptions.RobotMovementException">
+            <summary>
+            Eccezioni per movimenti del robot
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.Classes.FR20.Exceptions.RobotMovementException.#ctor(System.String)">
+            <summary>
+            Istanzia l'eccezione
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="T:RM.src.RM250714.Classes.FR20.Exceptions.RunTimeException">
+            <summary>
+            Eccezioni generiche che avvengono a runtime 
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.Classes.FR20.Exceptions.RunTimeException.#ctor(System.String)">
+            <summary>
+            Istanzia l'eccezione
+            </summary>
+            <param name="message"></param>
+        </member>
         <member name="T:RM.src.RM250714.Classes.FR20.Properties.Collisions">
             <summary>
             Gestisce il livello di collisioni del robot
@@ -2525,9 +2580,6 @@
             </summary>
             <param name="origin">Angolo di riferimento del pallet (es. punto in basso a sinistra)</param>
             <param name="currentPoint">Posizione corrente del robot</param>
-            <param name="length">Lunghezza del pallet in mm</param>
-            <param name="width">Larghezza del pallet in mm</param>
-            <param name="height">Altezza totale in mm</param>
             <returns>True se il punto è dentro il parallelepipedo, false altrimenti</returns>
         </member>
         <member name="M:RM.src.RM250714.PositionChecker.CalculateDistance(fairino.DescPose,fairino.DescPose)">
@@ -2728,7 +2780,7 @@
             Campo privato contenente l'istanza del Robot dalla libreria fairino.
             </summary>
         </member>
-        <member name="P:RM.src.RM250714.RobotManager.robot">
+        <member name="P:RM.src.RM250714.RobotManager.Robot">
             <summary>
             Proprietà pubblica e thread-safe per accedere all'istanza del Robot.
             </summary>
@@ -3856,6 +3908,22 @@
             <param name="state"></param>
             <returns></returns>
         </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetActualTcpPose(System.Byte,fairino.DescPose@)">
+            <summary>
+            Get delle coordinate del tool nello spazio del frame
+            </summary>
+            <param name="flag"></param>
+            <param name="TcpCurrentPos"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetRobotErrorCode(System.Int32@,System.Int32@)">
+            <summary>
+            Get degli errori del robot sotto forma di main code + sub code
+            </summary>
+            <param name="mainCode"></param>
+            <param name="subCode"></param>
+            <returns></returns>
+        </member>
         <member name="M:RM.src.RM250714.RobotManager.SetRobotSpeed(System.Int32)">
             <summary>
             Imposta la velocità di movimento del robot in percentuale
@@ -4188,6 +4256,57 @@
             Lettura dello stato delle uscite del tool.
             </summary>
             <param name="do_state">output state, do0~do1 corresponds to bit1~bit2, start from bit0</param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetRobotSDKVersion(System.String@)">
+            <summary>
+            Restituisce la versione sdk c# di farino
+            </summary>
+            <param name="sdkVer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetRobotControllerIP(System.String@)">
+            <summary>
+            Restituisce l'ip impostato nel controllore
+            </summary>
+            <param name="controllerIp"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetRobotSoftwareVersion(System.String@,System.String@,System.String@)">
+            <summary>
+            Restituisce le versioni del modello, web e controller
+            </summary>
+            <param name="modelVer"></param>
+            <param name="webVer"></param>
+            <param name="controllerVer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetRobotFirmwareVersion(System.String@,System.String@,System.String@,System.String@,System.String@,System.String@,System.String@,System.String@)">
+            <summary>
+            Get della versione firmware del controllore e driver
+            </summary>
+            <param name="fwBoardBoxBoardVer"></param>
+            <param name="fwDriver1Ver"></param>
+            <param name="fwDriver2Ver"></param>
+            <param name="fwDriver3Ver"></param>
+            <param name="fwDriver4Ver"></param>
+            <param name="fwDriver5Ver"></param>
+            <param name="fwDriver6Ver"></param>
+            <param name="fwEndBoardVer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetRobotHardwareVersion(System.String@,System.String@,System.String@,System.String@,System.String@,System.String@,System.String@,System.String@)">
+            <summary>
+            Get della versione hardware del controllore e driver
+            </summary>
+            <param name="hwBoardBoxBoardVer"></param>
+            <param name="hwDriver1Ver"></param>
+            <param name="hwDriver2Ver"></param>
+            <param name="hwDriver3Ver"></param>
+            <param name="hwDriver4Ver"></param>
+            <param name="hwDriver5Ver"></param>
+            <param name="hwDriver6Ver"></param>
+            <param name="hwEndBoardVer"></param>
             <returns></returns>
         </member>
         <member name="M:RM.src.RM250714.RobotManager.TryGetSingleDOState(System.Int32,System.Boolean@,System.Int32,System.Int32)">

@@ -133,6 +133,11 @@
     <Compile Include="src\RM250714\Classes\FR20\Applications\Application\RobotApplication.cs" />
     <Compile Include="src\RM250714\Classes\FR20\Applications\ObservableApplicationsDictionary.cs" />
     <Compile Include="src\RM250714\Classes\FR20\DAO\SQLite\RobotDAOSqlite.cs" />
+    <Compile Include="src\RM250714\Classes\FR20\Exceptions\DataErrorException.cs" />
+    <Compile Include="src\RM250714\Classes\FR20\Exceptions\RobotKinException.cs" />
+    <Compile Include="src\RM250714\Classes\FR20\Exceptions\RobotPropertiesChangeException.cs" />
+    <Compile Include="src\RM250714\Classes\FR20\Exceptions\RobotMovementException.cs" />
+    <Compile Include="src\RM250714\Classes\FR20\Exceptions\RunTimeException.cs" />
     <Compile Include="src\RM250714\Classes\FR20\Properties\Collisions.cs" />
     <Compile Include="src\RM250714\Classes\FR20\Properties\Frames.cs" />
     <Compile Include="src\RM250714\Classes\FR20\Jog\JogMovement.cs" />
