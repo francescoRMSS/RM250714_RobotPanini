@@ -2871,6 +2871,16 @@
             Livello di collisione service
             </summary>
         </member>
+        <member name="F:RM.src.RM250714.RobotManager.changeCollisionLevel">
+            <summary>
+            Richiesta cambio livello di collisione
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.prevChangeCollisionLevel">
+            <summary>
+            Stato precedente della richiesta di cambio collisione
+            </summary>
+        </member>
         <member name="F:RM.src.RM250714.RobotManager.connectionCheckMaxTimeout">
             <summary>
             Tempo massimo in ms per controllare che il proxy stia comunicando
