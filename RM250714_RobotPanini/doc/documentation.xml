@@ -308,11 +308,30 @@
             Logger
             </summary>
         </member>
+        <member name="M:RM.src.RM250714.Classes.FR20.Properties.Collisions.#ctor">
+            <summary>
+            Costruisce il manager dei livelli di collisione
+            </summary>
+        </member>
         <member name="M:RM.src.RM250714.Classes.FR20.Properties.Collisions.ChangeRobotCollision(System.Int32)">
             <summary>
             Modifica il livello delle collisioni sul robot
             </summary>
             <param name="collisionIndex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.Classes.FR20.Properties.Collisions.IsErrorBlocking(System.Int32)">
+            <summary>
+            In base all'errNum dice se l'errore è bloccante o meno
+            </summary>
+            <param name="errNum"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.Classes.FR20.Properties.Collisions.GetErrorCode(System.Int32)">
+            <summary>
+            In base all'errNum restituisce un messaggio di errore
+            </summary>
+            <param name="errNum"></param>
             <returns></returns>
         </member>
         <member name="T:RM.src.RM250714.Classes.FR20.FrameStruct">
@@ -330,16 +349,10 @@
             Logger
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.Classes.FR20.Frames.currentFrame">
-            <summary>
-            Frame corrente
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Classes.FR20.Frames.#ctor(fairino.Robot)">
+        <member name="M:RM.src.RM250714.Classes.FR20.Frames.#ctor">
             <summary>
             Costruisce il frame manager
             </summary>
-            <param name="robot"></param>
         </member>
         <member name="M:RM.src.RM250714.Classes.FR20.Frames.ChangeRobotFrame(System.Int32)">
             <summary>
@@ -692,16 +705,10 @@
             Logger
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.Classes.FR20.Tools.currentTool">
-            <summary>
-            Tool corrente
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Classes.FR20.Tools.#ctor(fairino.Robot)">
+        <member name="M:RM.src.RM250714.Classes.FR20.Tools.#ctor">
             <summary>
             Costruisce il tool manager
             </summary>
-            <param name="robot"></param>
         </member>
         <member name="M:RM.src.RM250714.Classes.FR20.Tools.ChangeRobotTool(System.Int32)">
             <summary>
@@ -2861,11 +2868,6 @@
             Livello di collisione corrente.
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.collisionLevel">
-            <summary>
-            Livello di collisione ciclo
-            </summary>
-        </member>
         <member name="F:RM.src.RM250714.RobotManager.collisionLevelService">
             <summary>
             Livello di collisione service
@@ -3596,343 +3598,6 @@
             Nome del task che gestisce il ciclo teglie
             </summary>
         </member>
-        <member name="M:RM.src.RM250714.RobotManager.PauseMotion">
-            <summary>
-            Metodo che mette in pausa il Robot
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.ResumeMotion">
-            <summary>
-            Metodo che riprende movimento Robot
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.StopMotion">
-            <summary>
-            Metodo che mette in stop il Robot
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.EnableRobot(System.Byte)">
-            <summary>
-            Abilita o disabilita il Robot
-            </summary>
-            <param name="enableFlag"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.SetRobotMode(System.Int32)">
-            <summary>
-            Imposta la modalità operativa del robot: 
-            <para>0 = automatico</para>
-            <para>1 = manuale</para>
-            </summary>
-            <param name="mode"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.SetRobotSpeed(System.Int32)">
-            <summary>
-            Imposta la velocità di movimento del robot in percentuale
-            </summary>
-            <param name="speedPerc"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.SetRobotPayload(System.Int32)">
-            <summary>
-            Imposta il payload
-            </summary>
-            <param name="payload"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.SetRobotProperties">
-            <summary>
-            Imposta le proprietà principali del robot: speed-frame-tool-collision levels
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.ClearRobotAlarm">
-            <summary>
-            Metodo per reset errori Robot
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.GetInverseKin(fairino.DescPose,fairino.JointPos@,System.Int32,System.Int32)">
-            <summary>
-            Invia comando al robot per calcolare la cinematica inversa e ottenere la posizione dei giunti a partire dalle coordinate
-            </summary>
-            <param name="pose"></param>
-            <param name="jPos"></param>
-            <param name="type"></param>
-            <param name="config"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.GetInverseKin(fairino.DescPose,fairino.JointPos@,System.String,System.Int32,System.Int32)">
-            <summary>
-            Invia comando al robot per calcolare la cinematica inversa e ottenere la posizione dei giunti a partire dalle coordinate.
-            Lancia una eccezione se si verifica un errore.
-            </summary>
-            <param name="pose"></param>
-            <param name="jPos"></param>
-            <param name="type"></param>
-            <param name="config"></param>
-            <param name="pointName"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.GetForwardKin(fairino.JointPos,fairino.DescPose@)">
-            <summary>
-            Invia comando al robot per calcolare la cinematica inversa 
-            </summary>
-            <param name="jPos"></param>
-            <param name="pose"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.GetRobotRealTimeState(fairino.ROBOT_STATE_PKG@)">
-            <summary>
-            Ottiene lo stato corrente del robot sotto forma di struct
-            </summary>
-            <param name="robot_state_pkg"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.MoveL(fairino.JointPos,fairino.DescPose,System.Int32,System.Int32,System.Single,System.Single,System.Single,System.Single,fairino.ExaxisPos,System.Byte,System.Byte,fairino.DescPose,System.Int32,System.Int32)">
-            <summary>
-            Movimento lineare al punto target.
-            </summary>
-            <param name="jPos">Configurazione dei giunti</param>
-            <param name="pose">Coordinate del punto target</param>
-            <param name="tool">tool da utilizzare</param>
-            <param name="user">Workspace da utilizzare</param>
-            <param name="vel">Override della speed [0-100]</param>
-            <param name="acc">Accelerazione da usare [0-100]</param>
-            <param name="ovl">Scalatura della velocità [0-100]</param>
-            <param name="blendR">Raggio di curvatura per smoothness in mm. -1.0 = movimento completo, [0 - 1000.0]</param>
-            <param name="epos">Configurazione degli assi esterni in mm</param>
-            <param name="search">0 = no wire search, 1 = wire search</param>
-            <param name="offsetFlag">0-No offset, 1-Offset in base/workpiece coordinate system, 2-Offset in tool coordinate system</param>
-            <param name="offsetPos">Coordinate di offset</param>
-            <param name="overSpeedStrategy">Overspeed handling strategy, 1-Standard; 2-Stop with error on overspeed; 3-Adaptive deceleration, default is 0</param>
-            <param name="speedPercent">Allowed deceleration threshold percentage [0-100], default 10%</param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.MoveL(fairino.JointPos,fairino.DescPose,System.Int32,System.Int32,System.Single,System.Single,System.Single,System.Single,System.Int32,fairino.ExaxisPos,System.Byte,System.Byte,fairino.DescPose,System.Int32,System.Int32)">
-            <summary>
-            Movimento lineare al punto target.
-            </summary>
-            <param name="jPos">Configurazione dei giunti</param>
-            <param name="pose">Coordinate del punto target</param>
-            <param name="tool">tool da utilizzare</param>
-            <param name="user">Workspace da utilizzare</param>
-            <param name="vel">Override della speed [0-100]</param>
-            <param name="acc">Accelerazione da usare [0-100]</param>
-            <param name="ovl">Scalatura della velocità [0-100]</param>
-            <param name="blendR">Raggio di curvatura per smoothness in mm. -1.0 = movimento completo, [0 - 1000.0]</param>
-            <param name="blendMode">Transition mode; 0-Tangent transition; 1-Corner transition</param>
-            <param name="epos">Configurazione degli assi esterni in mm</param>
-            <param name="search"> 0 = no wire search, 1 = wire search</param>
-            <param name="offsetFlag">0-No offset, 1-Offset in base/workpiece coordinate system, 2-Offset in tool coordinate system</param>
-            <param name="offsetPos">Coordinate di offset</param>
-            <param name="overSpeedStrategy">Overspeed handling strategy, 1-Standard; 2-Stop with error on overspeed; 3-Adaptive deceleration, default is 0</param>
-            <param name="speedPercent">Allowed deceleration threshold percentage [0-100], default 10%</param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.MoveJ(fairino.JointPos,fairino.DescPose,System.Int32,System.Int32,System.Single,System.Single,System.Single,fairino.ExaxisPos,System.Single,System.Byte,fairino.DescPose)">
-            <summary>
-            Movimento in joint al punto target.
-            </summary>
-            <param name="jPos">Configurazione dei giunti</param>
-            <param name="pose">Coordinate del punto target</param>
-            <param name="tool">tool da utilizzare</param>
-            <param name="user">Workspace da utilizzare</param>
-            <param name="vel">Override della speed [0-100]</param>
-            <param name="acc">Accelerazione da usare [0-100]</param>
-            <param name="ovl">Scalatura della velocità [0-100]</param>
-            <param name="epos">Configurazione degli assi esterni in mm</param>
-            <param name="blendT">[-1.0]-move to position (blocking), [0~500.0]-smoothing time (non-blocking), unit ms</param>
-            <param name="offsetFlag">0-No offset, 1-Offset in base/workpiece coordinate system, 2-Offset in tool coordinate system</param>
-            <param name="offsetPos">Coordinate di offset</param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.StartJOG(System.Byte,System.Byte,System.Byte,System.Single,System.Single,System.Single)">
-            <summary>
-            Movimento in JOG
-            </summary>
-            <param name="refType">0-joint pointing, 2-pointing in base coordinate system, 4-pointing in tool coordinate system, 8-pointing in artifact coordinate system.</param>
-            <param name="nb">1-joint 1 (or x-axis), 2-joint 2 (or y-axis), 3-joint 3 (or z-axis), 4-joint 4 (or rotate around x-axis), 5-joint 5 (or rotate around y-axis), 6-joint 6 (or rotate around z-axis)</param>
-            <param name="dir">0-negative direction, 1-positive direction</param>
-            <param name="vel">Override della speed [0-100]</param>
-            <param name="acc">Accelerazione da usare [0-100]</param>
-            <param name="maxDis">Maximum angle of a single tap, in [°] or distance, in [mm]</param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.StopJOG(System.Byte)">
-            <summary>
-            jog pointwise deceleration stops.
-            </summary>
-            <param name="stopByte">1-joint-point deceleration stop, 3-point deceleration stop in base coordinate system, 5-point deceleration stop in tool coordinate system, 9-point deceleration stop in workpiece coordinate system</param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.ImmStopJOG">
-            <summary>
-            jog tapping stops immediately.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.TryGetSingleDOState(System.Int32,System.Boolean@,System.Int32,System.Int32)">
-            <summary>
-            Legge lo stato di una singola Uscita Digitale (DO) del controllore.
-            </summary>
-            <param name="doIndex">L'indice dell'uscita da leggere (da 0 a 15).</param>
-            <param name="isOn">True se l'uscita è ON, False se è OFF.</param>
-            <param name="do_state_h"></param>
-            <param name="do_state_l"></param>
-            <returns>True se la lettura ha avuto successo, False in caso di errore.</returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.GenerateAlarm(System.Int32,System.Int32)">
-            <summary>
-            Gnerazione di un allarme
-            </summary>
-            <param name="maincode"></param>
-            <param name="subcode"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.GetRobotInfo">
-            <summary>
-            Ottiene le informazioni del robot attraverso i metodi bloccanti della libreria
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.GetPLCErrorCode(System.Collections.Generic.Dictionary{System.String,System.Object},System.Collections.Generic.Dictionary{System.String,System.String},System.DateTime,System.Int64,System.DateTime,System.String)">
-            <summary>
-            Check su errori comunicati da PLC
-            </summary>
-            <param name="alarmValues"></param>
-            <param name="alarmDescriptions"></param>
-            <param name="now"></param>
-            <param name="unixTimestamp"></param>
-            <param name="dateTime"></param>
-            <param name="formattedDate"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.IsAlarmAlreadySignaled(System.String)">
-            <summary>
-            Avvisa se un allarme è già stato segnalato
-            </summary>
-            <param name="alarmKey"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.MarkAlarmAsSignaled(System.String)">
-            <summary>
-            Imposta l'allarme come segnalato
-            </summary>
-            <param name="alarmKey"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.GetRobotErrorCode">
-            <summary>
-            Legge allarmi derivanti dal Robot
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.ResetPLCVariables">
-            <summary>
-            Reset iniziali delle variabili PLC
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckRobotMode">
-            <summary>
-            Esegue check su modalità Robot
-            </summary>
-            <summary>
-            Esegue check su modalità Robot
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckStatusRobot">
-            <summary>
-            Legge lo stato del robot
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.ResetRobotSteps">
-            <summary>
-            Esegue reset del contatore degli step delle routine
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckCurrentToolAndUser">
-            <summary>
-            Controlla il tool e user correnti
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckLevelCollision">
-            <summary>
-            Controlla e aggiorna il livello di collisione
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckPLCConnection">
-            <summary>
-            Check su connessione PLC
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckIsRobotInObstructionArea(fairino.DescPose[])">
-            <summary>
-            Verifica se il punto corrente è all'interno dell'area di ingombro rispetto a uno qualsiasi dei punti di partenza
-            </summary>
-            <param name="startPoints">Array con i punti di partenza per Pick, Place e Home</param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckIsRobotInSafeZone(fairino.DescPose)">
-            <summary>
-            Verifica se il punto corrente è all'interno dell'area di safe zone
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckIsRobotInPos">
-            <summary>
-            Verifica se il punto corrente corrisponde ai punti di pick e/o place
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.RMLib_AlarmsCleared(System.Object,System.EventArgs)">
-            <summary>
-            Gestore dell'evento allarmi cancellati presente nella libreria RMLib.Alarms
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.GetRobotMovementCode(System.Int32)">
-            <summary>
-            Esegue get del codice di movimento del robot
-            </summary>
-            <param name="result">Codice risultato del movimento del robot</param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.GetRobotProperties">
-            <summary>
-            Imposta le proprietà del robot prelevandole dal database.
-            </summary>
-            <returns>True se l'operazione ha successo, altrimenti False.</returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.OnAllarmeGenerato(System.EventArgs)">
-            <summary>
-            Generazione evento da allarme ricevuto
-            </summary>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.OnAllarmeResettato(System.EventArgs)">
-            <summary>
-            Generazione evento da allarmi resettati
-            </summary>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.TriggerAllarmeGenerato">
-            <summary>
-            Generazione eventi
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.TriggerAllarmeResettato">
-            <summary>
-            Trigger attivato quando vengono cancellati gli allarmi
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.NormalizeAngle(System.Single)">
-            <summary>
-            Normalizza angolo robot
-            </summary>
-            <param name="angle"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckRobotPosition(fairino.JointPos)">
-            <summary>
-            Invia posizioni al PLC in formato cartesiano e joint
-            </summary>
-            <param name="jPos">Posizione in joint ottenuta dal calcolo di cinematica inversa partendo dalla posizione TCP</param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.RoundPositionDecimals(fairino.DescPose@,System.Int32)">
-            <summary>
-            Approssima i valori delle posizioni a n cifre decimali
-            </summary>
-            <param name="dp">Contiene il riferimento allo struct che contiene i valori da approssimare</param>
-            <param name="digits">Numero di cifre decimali desiderate</param>
-        </member>
         <member name="M:RM.src.RM250714.RobotManager.#cctor">
             <summary>
             Costruttore statico, chiamato dal programma in automatico all'inizio
@@ -4149,6 +3814,517 @@
             </summary>
             <param name="target"></param>
             <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.PauseMotion">
+            <summary>
+            Metodo che mette in pausa il Robot
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.ResumeMotion">
+            <summary>
+            Metodo che riprende movimento Robot
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.StopMotion">
+            <summary>
+            Metodo che mette in stop il Robot
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.EnableRobot(System.Byte)">
+            <summary>
+            Abilita o disabilita il Robot
+            </summary>
+            <param name="enableFlag"></param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.SetRobotMode(System.Int32)">
+            <summary>
+            Imposta la modalità operativa del robot: 
+            <para>0 = automatico</para>
+            <para>1 = manuale</para>
+            </summary>
+            <param name="mode"></param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.ClearRobotAlarm">
+            <summary>
+            Metodo per reset errori Robot
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.SetRobotSpeed(System.Int32)">
+            <summary>
+            Imposta la velocità di movimento del robot in percentuale
+            </summary>
+            <param name="speedPerc"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.SetRobotPayload(System.Single,System.Int32)">
+            <summary>
+            Imposta il payload
+            </summary>
+            <param name="payload">Peso in kg</param>
+            <param name="loadNum">Load number</param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.SetRobotProperties">
+            <summary>
+            Imposta le proprietà principali del robot: speed-frame-tool-collision levels
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.SetWObjCoord(System.Int32,fairino.DescPose,System.Int32)">
+            <summary>
+            Cambio frame al robot
+            NB: il cambio funziona solo se il parametro coord contiene esattamente le stesse coordinate che possiede il frame 
+            nel controllore.
+            </summary>
+            <param name="id">id numerico del frame [0-14]</param>
+            <param name="coord">struttura contenente le coordinate per il calcolo del frame</param>
+            <param name="refFrame">Reference coordinate system</param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.SetToolCoord(System.Int32,fairino.DescPose,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Cambio tool al robot
+            NB: il cambio funziona solo se il parametro coord contiene esattamente le stesse coordinate che possiede il tool 
+            nel controllore.
+            </summary>
+            <param name="id">id numerico del tool [0-14]</param>
+            <param name="coord">coordinate del tool (a partire dalla flangia)</param>
+            <param name="type">0 : coordinate system, 1: sensor coordinate system</param>
+            <param name="install">posizione di installazione: 0: robot end, 1: external to robot</param>
+            <param name="toolId">tool id</param>
+            <param name="loadNum">load number</param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.SetAntiCollision(System.Int32,System.Double[],System.Int32)">
+            <summary>
+            Imposta il livello di collisioni
+            </summary>
+            <param name="mode">0-level, 1-percentage</param>
+            <param name="levels">level Collision threshold. Level range: [1-10 corresponds to levels 1-10, 100-disabled]. Percentage range: [0~10 corresponds to 0% - 100%]</param>
+            <param name="config">config 0-Do not update config file, 1-Update config file</param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetActualWobjCoord(System.Int32@,System.Byte)">
+            <summary>
+            Ottiene il frame corrente sotto forma di id
+            </summary>
+            <param name="flag"></param>
+            <param name="checkNewFrame">id del frame corrente</param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetActualTCPNum(System.Int32@,System.Byte)">
+            <summary>
+            Ottiene il tool corrente sotto forma di id
+            </summary>
+            <param name="checkNewTool"> id del tool corrente</param>
+            <param name="flag"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetRobotRealTimeState(fairino.ROBOT_STATE_PKG@)">
+            <summary>
+            Ottiene lo stato corrente del robot sotto forma di struct
+            </summary>
+            <param name="robot_state_pkg"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetInverseKin(fairino.DescPose,fairino.JointPos@,System.Int32,System.Int32)">
+            <summary>
+            Invia comando al robot per calcolare la cinematica inversa e ottenere la posizione dei giunti a partire dalle coordinate
+            </summary>
+            <param name="pose">Cartesian pose</param>
+            <param name="jPos">Joint position</param>
+            <param name="type">0-Absolute pose (base frame), 1-Incremental pose (base frame), 2-Incremental pose (tool frame)</param>
+            <param name="config">Joint space configuration, [-1]-Calculate based on current joint position, [0~7]-Solve according to specific joint space configuration
+            0	Spalla DX + Gomito ALTO + Polso NoFlip	
+            1	Spalla SX + Gomito ALTO + Polso NoFlip	
+            2	Spalla DX + Gomito BASSO + Polso NoFlip	
+            3	Spalla SX + Gomito BASSO + Polso NoFlip	
+            4	Spalla DX + Gomito ALTO + Polso Flip	
+            5	Spalla SX + Gomito ALTO + Polso Flip	
+            6	Spalla DX + Gomito BASSO + Polso Flip	
+            7	Spalla SX + Gomito BASSO + Polso Flip</param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetInverseKin(fairino.DescPose,fairino.JointPos@,System.String,System.Int32,System.Int32)">
+            <summary>
+            Invia comando al robot per calcolare la cinematica inversa e ottenere la posizione dei giunti a partire dalle coordinate
+            Genera una eccezione se viene generato un errore dal controllore
+            </summary>
+            <param name="pose">Cartesian pose</param>
+            <param name="jPos">Joint position</param>
+            <param name="pointName">Nome del punto da scrivere nel log</param>
+            <param name="type">0-Absolute pose (base frame), 1-Incremental pose (base frame), 2-Incremental pose (tool frame)</param>
+            <param name="config">Joint space configuration, [-1]-Calculate based on current joint position, [0~7]-Solve according to specific joint space configuration
+            0	Spalla DX + Gomito ALTO + Polso NoFlip	
+            1	Spalla SX + Gomito ALTO + Polso NoFlip	
+            2	Spalla DX + Gomito BASSO + Polso NoFlip	
+            3	Spalla SX + Gomito BASSO + Polso NoFlip	
+            4	Spalla DX + Gomito ALTO + Polso Flip	
+            5	Spalla SX + Gomito ALTO + Polso Flip	
+            6	Spalla DX + Gomito BASSO + Polso Flip	
+            7	Spalla SX + Gomito BASSO + Polso Flip</param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetForwardKin(fairino.JointPos,fairino.DescPose@)">
+            <summary>
+            Invia comando al robot per calcolare la cinematica diretta per ottenere le coordinate a partire dai giunti. 
+            </summary>
+            <param name="jPos"></param>
+            <param name="pose"></param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetForwardKin(fairino.JointPos,fairino.DescPose@,System.String)">
+            <summary>
+            Invia comando al robot per calcolare la cinematica diretta per ottenere le coordinate a partire dai giunti.
+            Genera una eccezione se il robot restituisce un errore.
+            </summary>
+            <param name="jPos"></param>
+            <param name="pose"></param>
+            <param name="pointName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.MoveL(fairino.JointPos,fairino.DescPose,System.Int32,System.Int32,System.Single,System.Single,System.Single,System.Single,fairino.ExaxisPos,System.Byte,System.Byte,fairino.DescPose,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Movimento lineare al punto target.
+            </summary>
+            <param name="jPos">Configurazione dei giunti</param>
+            <param name="pose">Coordinate del punto target</param>
+            <param name="tool">tool da utilizzare</param>
+            <param name="user">Workspace da utilizzare</param>
+            <param name="vel">Override della speed [0-100]</param>
+            <param name="acc">Accelerazione da usare [0-100]</param>
+            <param name="ovl">Scalatura della velocità [0-100]</param>
+            <param name="blendR">Raggio di curvatura per smoothness in mm. -1.0 = movimento completo, [0 - 1000.0]</param>
+            <param name="epos">Configurazione degli assi esterni in mm</param>
+            <param name="search">0 = no wire search, 1 = wire search</param>
+            <param name="offsetFlag">0 = No offset, 1 = Offset in base/workpiece coordinate system, 2 = Offset in tool coordinate system</param>
+            <param name="offsetPos">Coordinate di offset</param>
+            <param name="velAccParamMode">Parametro per velocità e accelerazione: 0 = percentuale, 1 = velocità fisica (mm/s) e accelerazione fisica (mm/s^2) </param>
+            <param name="overSpeedStrategy">Overspeed handling strategy, 1 = Standard; 2 = Stop with error on overspeed; 3 = Adaptive deceleration, default is 0</param>
+            <param name="speedPercent">Allowed deceleration threshold percentage [0-100], default 10%</param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.MoveL(fairino.JointPos,fairino.DescPose,System.Int32,System.Int32,System.Single,System.Single,System.Single,System.Single,System.Int32,fairino.ExaxisPos,System.Byte,System.Byte,fairino.DescPose,System.Int32,System.Int32)">
+            <summary>
+            Movimento lineare al punto target con blendMode.
+            </summary>
+            <param name="jPos">Configurazione dei giunti</param>
+            <param name="pose">Coordinate del punto target</param>
+            <param name="tool">tool da utilizzare</param>
+            <param name="user">Workspace da utilizzare</param>
+            <param name="vel">Override della speed [0-100]</param>
+            <param name="acc">Accelerazione da usare [0-100]</param>
+            <param name="ovl">Scalatura della velocità [0-100]</param>
+            <param name="blendR">Raggio di curvatura per smoothness in mm. -1.0 = movimento completo, [0 - 1000.0]</param>
+            <param name="blendMode">Transition mode; 0 = Tangent transition; 1 = Corner transition</param>
+            <param name="epos">Configurazione degli assi esterni in mm</param>
+            <param name="search"> 0 = no wire search, 1 = wire search</param>
+            <param name="offsetFlag">0 = No offset, 1 = Offset in base/workpiece coordinate system, 2 = Offset in tool coordinate system</param>
+            <param name="offsetPos">Coordinate di offset</param>
+            <param name="overSpeedStrategy">Overspeed handling strategy, 1 = Standard; 2 = Stop with error on overspeed; 3 = Adaptive deceleration, default is 0</param>
+            <param name="speedPercent">Allowed deceleration threshold percentage [0-100], default 10%</param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.MoveL(fairino.JointPos,fairino.DescPose,System.Int32,System.Int32,System.Single,System.Single,System.Single,System.Single,System.Int32,fairino.ExaxisPos,System.Byte,System.Byte,fairino.DescPose,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Movimento lineare al punto target con blendMode e velAccParamMode.
+            </summary>
+            <param name="jPos">Configurazione dei giunti</param>
+            <param name="pose">Coordinate del punto target</param>
+            <param name="tool">tool da utilizzare</param>
+            <param name="user">Workspace da utilizzare</param>
+            <param name="vel">Override della speed [0-100]</param>
+            <param name="acc">Accelerazione da usare [0-100]</param>
+            <param name="ovl">Scalatura della velocità [0-100]</param>
+            <param name="blendR">Raggio di curvatura per smoothness in mm. -1.0 = movimento completo, [0 - 1000.0]</param>
+            <param name="blendMode">Transition mode; 0 = Tangent transition; 1 = Corner transition</param>
+            <param name="epos">Configurazione degli assi esterni in mm</param>
+            <param name="search"> 0 = no wire search, 1 = wire search</param>
+            <param name="offsetFlag">0 = No offset, 1 = Offset in base/workpiece coordinate system, 2 = Offset in tool coordinate system</param>
+            <param name="offsetPos">Coordinate di offset</param>
+            <param name="velAccParamMode">Parametro per velocità e accelerazione: 0 = percentuale, 1 = velocità fisica (mm/s) e accelerazione fisica (mm/s^2) </param>
+            <param name="overSpeedStrategy">Overspeed handling strategy, 1 = Standard; 2 = Stop with error on overspeed; 3 = Adaptive deceleration, default is 0</param>
+            <param name="speedPercent">Allowed deceleration threshold percentage [0-100], default 10%</param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.MoveL(fairino.DescPose,System.Int32,System.Int32,System.Single,System.Single,System.Single,System.Single,System.Int32,fairino.ExaxisPos,System.Byte,System.Byte,fairino.DescPose,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Movimento lineare al punto target con calcolo automatico della cinematica inversa.
+            </summary>
+            <param name="pose">Coordinate del punto target</param>
+            <param name="tool">tool da utilizzare</param>
+            <param name="user">Workspace da utilizzare</param>
+            <param name="vel">Override della speed [0-100]</param>
+            <param name="acc">Accelerazione da usare [0-100]</param>
+            <param name="ovl">Scalatura della velocità [0-100]</param>
+            <param name="blendR">Raggio di curvatura per smoothness in mm. -1.0 = movimento completo, [0 - 1000.0]</param>
+            <param name="blendMode">Transition mode; 0 = Tangent transition; 1 = Corner transition</param>
+            <param name="epos">Configurazione degli assi esterni in mm</param>
+            <param name="search"> 0 = no wire search, 1 = wire search</param>
+            <param name="offsetFlag">0 = No offset, 1 = Offset in base/workpiece coordinate system, 2 = Offset in tool coordinate system</param>
+            <param name="offsetPos">Coordinate di offset</param>
+            <param name="config">Inverse kinematic joint space configuration, [-1] = Reference current joint position for calculation, [0~7] = Solve based on specific joint space configuration</param>
+            <param name="velAccParamMode">Parametro per velocità e accelerazione: 0 = percentuale, 1 = velocità fisica (mm/s) e accelerazione fisica (mm/s^2) </param>
+            <param name="overSpeedStrategy">Overspeed handling strategy, 1 = Standard; 2 = Stop with error on overspeed; 3 = Adaptive deceleration, default is 0</param>
+            <param name="speedPercent">Allowed deceleration threshold percentage [0-100], default 10%</param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.MoveJ(fairino.JointPos,fairino.DescPose,System.Int32,System.Int32,System.Single,System.Single,System.Single,fairino.ExaxisPos,System.Single,System.Byte,fairino.DescPose)">
+            <summary>
+            Movimento in joint al punto target.
+            </summary>
+            <param name="jPos">Configurazione dei giunti</param>
+            <param name="pose">Coordinate del punto target</param>
+            <param name="tool">Tool da utilizzare</param>
+            <param name="user">Workspace da utilizzare</param>
+            <param name="vel">Override della speed [0-100]</param>
+            <param name="acc">Accelerazione da usare [0-100]</param>
+            <param name="ovl">Scalatura della velocità [0-100]</param>
+            <param name="epos">Configurazione degli assi esterni in mm</param>
+            <param name="blendT">[-1.0] = move to position (blocking), [0~500.0] = smoothing time (non-blocking), unit ms</param>
+            <param name="offsetFlag">0 = No offset, 1 = Offset in base/workpiece coordinate system, 2 = Offset in tool coordinate system</param>
+            <param name="offsetPos">Coordinate di offset</param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.MoveJ(fairino.JointPos,System.Int32,System.Int32,System.Single,System.Single,System.Single,fairino.ExaxisPos,System.Single,System.Byte,fairino.DescPose)">
+            <summary>
+            Movimento ni joint al punto target, calcola automaticamente la cinematica diretta per ottenere il desc pose
+            </summary>
+            <param name="jPos">Configurazione dei giunti</param>
+            <param name="tool">Tool da utilizzare</param>
+            <param name="user">Workspace da utilizzare</param>
+            <param name="vel">Override della speed [0-100]</param>
+            <param name="acc">Accelerazione da usare [0-100]</param>
+            <param name="ovl">Scalatura della velocità [0-100]</param>
+            <param name="epos">Configurazione degli assi esterni in mm</param>
+            <param name="blendT">[-1.0] = move to position (blocking), [0~500.0] = smoothing time (non-blocking), unit ms</param>
+            <param name="offsetFlag">0 = No offset, 1 = Offset in base/workpiece coordinate system, 2 = Offset in tool coordinate system</param>
+            <param name="offsetPos">Coordinate di offset</param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.StartJOG(System.Byte,System.Byte,System.Byte,System.Single,System.Single,System.Single)">
+            <summary>
+            Movimento in JOG
+            </summary>
+            <param name="refType">0-joint pointing, 2-pointing in base coordinate system, 4-pointing in tool coordinate system, 8-pointing in artifact coordinate system.</param>
+            <param name="nb">1-joint 1 (or x-axis), 2-joint 2 (or y-axis), 3-joint 3 (or z-axis), 4-joint 4 (or rotate around x-axis), 5-joint 5 (or rotate around y-axis), 6-joint 6 (or rotate around z-axis)</param>
+            <param name="dir">0-negative direction, 1-positive direction</param>
+            <param name="vel">Override della speed [0-100]</param>
+            <param name="acc">Accelerazione da usare [0-100]</param>
+            <param name="maxDis">Maximum angle of a single tap, in [°] or distance, in [mm]</param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.StopJOG(System.Byte)">
+            <summary>
+            jog pointwise deceleration stops.
+            </summary>
+            <param name="stopByte">1-joint-point deceleration stop, 3-point deceleration stop in base coordinate system, 5-point deceleration stop in tool coordinate system, 9-point deceleration stop in workpiece coordinate system</param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.ImmStopJOG">
+            <summary>
+            jog tapping stops immediately.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.SetDO(System.Int32,System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Imposta l'uscita digitale a on o a off del controllore.
+            NB: Può capitare che il relè sia collegato in modo che funzioni in modo invertito (1=OFF, 0=ON)
+            </summary>
+            <param name="index">id dell'uscita da usare</param>
+            <param name="status">0: OFF, 1: ON</param>
+            <param name="smooth">0-non-smooth, 1-smooth</param>
+            <param name="block">0-blocking, 1-non-blocking</param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetDO(System.Int32@,System.Int32@)">
+            <summary>
+            Lettura dello stato delle uscite del controllore.
+            </summary>
+            <param name="state_high"></param>
+            <param name="state_low"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.SetToolDO(System.Int32,System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Imposta l'uscita digitale a on o a off del tool.
+            </summary>
+            <param name="index">id dell'uscita da usare</param>
+            <param name="status">0: OFF, 1: ON</param>
+            <param name="smooth">0-non-smooth, 1-smooth</param>
+            <param name="block">0-blocking, 1-non-blocking</param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetToolDO(System.Byte@)">
+            <summary>
+            Lettura dello stato delle uscite del tool.
+            </summary>
+            <param name="do_state">output state, do0~do1 corresponds to bit1~bit2, start from bit0</param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.TryGetSingleDOState(System.Int32,System.Boolean@,System.Int32,System.Int32)">
+            <summary>
+            Legge lo stato di una singola Uscita Digitale (DO) del controllore.
+            </summary>
+            <param name="doIndex">L'indice dell'uscita da leggere (da 0 a 15).</param>
+            <param name="isOn">True se l'uscita è ON, False se è OFF.</param>
+            <param name="do_state_h"></param>
+            <param name="do_state_l"></param>
+            <returns>True se la lettura ha avuto successo, False in caso di errore.</returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.GenerateAlarm(System.Int32,System.Int32)">
+            <summary>
+            Gnerazione di un allarme
+            </summary>
+            <param name="maincode"></param>
+            <param name="subcode"></param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetRobotInfo">
+            <summary>
+            Ottiene le informazioni del robot attraverso i metodi bloccanti della libreria
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetPLCErrorCode(System.Collections.Generic.Dictionary{System.String,System.Object},System.Collections.Generic.Dictionary{System.String,System.String},System.DateTime,System.Int64,System.DateTime,System.String)">
+            <summary>
+            Check su errori comunicati da PLC
+            </summary>
+            <param name="alarmValues"></param>
+            <param name="alarmDescriptions"></param>
+            <param name="now"></param>
+            <param name="unixTimestamp"></param>
+            <param name="dateTime"></param>
+            <param name="formattedDate"></param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.IsAlarmAlreadySignaled(System.String)">
+            <summary>
+            Avvisa se un allarme è già stato segnalato
+            </summary>
+            <param name="alarmKey"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.MarkAlarmAsSignaled(System.String)">
+            <summary>
+            Imposta l'allarme come segnalato
+            </summary>
+            <param name="alarmKey"></param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetRobotErrorCode">
+            <summary>
+            Legge allarmi derivanti dal Robot
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.ResetPLCVariables">
+            <summary>
+            Reset iniziali delle variabili PLC
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.CheckRobotMode">
+            <summary>
+            Esegue check su modalità Robot
+            </summary>
+            <summary>
+            Esegue check su modalità Robot
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.CheckStatusRobot">
+            <summary>
+            Legge lo stato del robot
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.ResetRobotSteps">
+            <summary>
+            Esegue reset del contatore degli step delle routine
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.CheckCurrentToolAndUser">
+            <summary>
+            Controlla il tool e user correnti
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.CheckLevelCollision">
+            <summary>
+            Controlla e aggiorna il livello di collisione
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.CheckPLCConnection">
+            <summary>
+            Check su connessione PLC
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.CheckIsRobotInObstructionArea(fairino.DescPose[])">
+            <summary>
+            Verifica se il punto corrente è all'interno dell'area di ingombro rispetto a uno qualsiasi dei punti di partenza
+            </summary>
+            <param name="startPoints">Array con i punti di partenza per Pick, Place e Home</param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.CheckIsRobotInSafeZone(fairino.DescPose)">
+            <summary>
+            Verifica se il punto corrente è all'interno dell'area di safe zone
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.CheckIsRobotInPos">
+            <summary>
+            Verifica se il punto corrente corrisponde ai punti di pick e/o place
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.RMLib_AlarmsCleared(System.Object,System.EventArgs)">
+            <summary>
+            Gestore dell'evento allarmi cancellati presente nella libreria RMLib.Alarms
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetRobotMovementCode(System.Int32)">
+            <summary>
+            Esegue get del codice di movimento del robot
+            </summary>
+            <param name="result">Codice risultato del movimento del robot</param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetRobotProperties">
+            <summary>
+            Imposta le proprietà del robot prelevandole dal database.
+            </summary>
+            <returns>True se l'operazione ha successo, altrimenti False.</returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.OnAllarmeGenerato(System.EventArgs)">
+            <summary>
+            Generazione evento da allarme ricevuto
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.OnAllarmeResettato(System.EventArgs)">
+            <summary>
+            Generazione evento da allarmi resettati
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.TriggerAllarmeGenerato">
+            <summary>
+            Generazione eventi
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.TriggerAllarmeResettato">
+            <summary>
+            Trigger attivato quando vengono cancellati gli allarmi
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.NormalizeAngle(System.Single)">
+            <summary>
+            Normalizza angolo robot
+            </summary>
+            <param name="angle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.CheckRobotPosition(fairino.JointPos)">
+            <summary>
+            Invia posizioni al PLC in formato cartesiano e joint
+            </summary>
+            <param name="jPos">Posizione in joint ottenuta dal calcolo di cinematica inversa partendo dalla posizione TCP</param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.RoundPositionDecimals(fairino.DescPose@,System.Int32)">
+            <summary>
+            Approssima i valori delle posizioni a n cifre decimali
+            </summary>
+            <param name="dp">Contiene il riferimento allo struct che contiene i valori da approssimare</param>
+            <param name="digits">Numero di cifre decimali desiderate</param>
         </member>
         <member name="T:RM.src.RM250714.RobotProperties">
             <summary>

@@ -1,4 +1,4 @@
-﻿using fairino;
+﻿
 using RMLib.DataAccess;
 using RMLib.Logger;
 using System;
@@ -25,21 +25,17 @@ namespace RM.src.RM250714.Classes.FR20.Properties
         /// </summary>
         private static readonly log4net.ILog log = LogHelper.GetLogger();
 
-        #region Proprietà connessione database
-
         private static readonly RobotDAOSqlite RobotDAO = new RobotDAOSqlite();
         private static readonly SqliteConnectionConfiguration DatabaseConnection = new SqliteConnectionConfiguration();
         private static readonly string ConnectionString = DatabaseConnection.GetConnectionString();
 
-        #endregion
+        private readonly List<CollisionStruct> _collisions;
 
-        List<CollisionStruct> _collisions;
-        Robot _robot;
-        int currentCollisionLevel = -1;
-
-        public Collisions(Robot robot)
+        /// <summary>
+        /// Costruisce il manager dei livelli di collisione
+        /// </summary>
+        public Collisions()
         {
-            _robot = robot;
             _collisions = new List<CollisionStruct>();
 
             InitList();
@@ -71,78 +67,6 @@ namespace RM.src.RM250714.Classes.FR20.Properties
                     _collisions.Add(_collisionLevel);
                 }
             }
-
-            CollisionStruct collision1 = new CollisionStruct
-            {
-                index = 1,
-                mode = 0,
-                levels = new double[] { 1, 1, 1, 1, 1, 1 },
-                config = 0
-            };
-            _collisions.Add(collision1);
-
-            CollisionStruct collision2 = new CollisionStruct
-            {
-                index = 1,
-                mode = 0,
-                levels = new double[] { 2, 2, 2, 2, 2, 2 },
-                config = 0
-            };
-            _collisions.Add(collision2);
-
-            CollisionStruct collision3 = new CollisionStruct
-            {
-                index = 1,
-                mode = 0,
-                levels = new double[] {3, 3, 3, 3, 3, 3 },
-                config = 0
-            };
-            _collisions.Add(collision3);
-
-            CollisionStruct collision4 = new CollisionStruct
-            {
-                index = 1,
-                mode = 0,
-                levels = new double[] { 4, 4, 4, 4, 4, 4 },
-                config = 0
-            };
-            _collisions.Add(collision4);
-
-            CollisionStruct collision5 = new CollisionStruct
-            {
-                index = 1,
-                mode = 0,
-                levels = new double[] { 5, 5, 5, 5, 5, 5 },
-                config = 0
-            };
-            _collisions.Add(collision5);
-
-            CollisionStruct collision6 = new CollisionStruct
-            {
-                index = 1,
-                mode = 0,
-                levels = new double[] { 6, 6, 6, 6, 6, 6 },
-                config = 0
-            };
-            _collisions.Add(collision6);
-
-            CollisionStruct collision7 = new CollisionStruct
-            {
-                index = 1,
-                mode = 0,
-                levels = new double[] { 7, 7, 7, 7, 7, 7 },
-                config = 0
-            };
-            _collisions.Add(collision7);
-
-            CollisionStruct collision8 = new CollisionStruct
-            {
-                index = 1,
-                mode = 0,
-                levels = new double[] { 8, 8, 8, 8, 8, 8 },
-                config = 0
-            };
-            _collisions.Add(collision8);
         }
 
         private CollisionStruct? ReadCollisionData(int collisionIndex)
@@ -184,7 +108,7 @@ namespace RM.src.RM250714.Classes.FR20.Properties
                     errNum = 1;
                 else
                 {
-                    int err = _robot.SetAnticollision(_data.Value.mode, _data.Value.levels, _data.Value.config);
+                    int err = RobotManager.SetAntiCollision(_data.Value.mode, _data.Value.levels, _data.Value.config);
                     if (err != 0)
                     {
                         errNum = 3;
@@ -192,7 +116,8 @@ namespace RM.src.RM250714.Classes.FR20.Properties
                     else
                     {
                         RobotManager.currentCollisionLevel = collisionIndex;
-                    }  
+                        //currentCollisionLevel = collisionIndex;
+                    }
                 }
             }
 
@@ -207,12 +132,17 @@ namespace RM.src.RM250714.Classes.FR20.Properties
 
         }
 
+        /// <summary>
+        /// In base all'errNum dice se l'errore è bloccante o meno
+        /// </summary>
+        /// <param name="errNum"></param>
+        /// <returns></returns>
         public bool IsErrorBlocking(int errNum)
         {
             switch (errNum)
             {
                 case 0:
-                    return true;
+                    return false;
                 case 1:
                     return true;
                 case 2:
@@ -226,26 +156,31 @@ namespace RM.src.RM250714.Classes.FR20.Properties
             }
         }
 
+        /// <summary>
+        /// In base all'errNum restituisce un messaggio di errore
+        /// </summary>
+        /// <param name="errNum"></param>
+        /// <returns></returns>
         public string GetErrorCode(int errNum)
         {
-            string errCode = "";
+            string errCode;
 
             switch (errNum)
             {
                 case 0:
-                    errCode = "Tool ID minore di 0";
+                    errCode = "Id numerico non valido";
                     break;
                 case 1:
-                    errCode = "Tool ID o nome Tool non trovato";
+                    errCode = "Id non trovato nella lista";
                     break;
                 case 2:
-                    errCode = "Tool già impostato";
+                    errCode = "Livello di collisioni già impostato";
                     break;
                 case 3:
-                    errCode = "Tool impostato diverso dal frame desiderato";
+                    errCode = "Errore durante il cambio di livello di collisioni";
                     break;
                 case 10:
-                    errCode = "Tool modificato correttamente";
+                    errCode = "Livello di collisioni modificato correttamente";
                     break;
                 default:
                     errCode = "Error number non trovato";

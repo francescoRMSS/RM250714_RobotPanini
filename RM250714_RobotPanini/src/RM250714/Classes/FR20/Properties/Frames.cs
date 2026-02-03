@@ -22,34 +22,22 @@ namespace RM.src.RM250714.Classes.FR20
     /// </summary>
     public class Frames
     {
-
         /// <summary>
         /// Logger
         /// </summary>
         private static readonly log4net.ILog log = LogHelper.GetLogger();
 
-        #region Proprietà connessione database
-
         private static readonly RobotDAOSqlite RobotDAO = new RobotDAOSqlite();
         private static readonly SqliteConnectionConfiguration DatabaseConnection = new SqliteConnectionConfiguration();
         private static readonly string ConnectionString = DatabaseConnection.GetConnectionString();
 
-        #endregion
-
-        private List<FrameStruct> _frames;
-        private Robot _robot;
-        /// <summary>
-        /// Frame corrente
-        /// </summary>
-        public int currentFrame = -1;
+        private readonly List<FrameStruct> _frames;
 
         /// <summary>
         /// Costruisce il frame manager
         /// </summary>
-        /// <param name="robot"></param>
-        public Frames(Robot robot)
+        public Frames()
         {
-            _robot = robot;
             _frames = new List<FrameStruct>();
 
             InitList();
@@ -60,7 +48,7 @@ namespace RM.src.RM250714.Classes.FR20
             DataTable _table = RobotDAO.GetRobotFrames(ConnectionString);
             FrameStruct _frame;
 
-            if(_table != null)
+            if (_table != null)
             {
                 foreach (DataRow row in _table.Rows)
                 {
@@ -69,11 +57,11 @@ namespace RM.src.RM250714.Classes.FR20
                         id = Convert.ToInt32(row[RobotDAOSqlite.ROBOT_FRAMES_ID_COLUMN_NAME]),
                         name = row[RobotDAOSqlite.ROBOT_FRAMES_NAME_COLUMN_NAME].ToString(),
                         pose = new DescPose(
-                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_FRAMES_X_COLUMN_NAME]), 
-                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_FRAMES_Y_COLUMN_NAME]), 
+                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_FRAMES_X_COLUMN_NAME]),
+                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_FRAMES_Y_COLUMN_NAME]),
                             Convert.ToDouble(row[RobotDAOSqlite.ROBOT_FRAMES_Z_COLUMN_NAME]),
-                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_FRAMES_RX_COLUMN_NAME]), 
-                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_FRAMES_RY_COLUMN_NAME]), 
+                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_FRAMES_RX_COLUMN_NAME]),
+                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_FRAMES_RY_COLUMN_NAME]),
                             Convert.ToDouble(row[RobotDAOSqlite.ROBOT_FRAMES_RZ_COLUMN_NAME])
                             )
                     };
@@ -86,9 +74,9 @@ namespace RM.src.RM250714.Classes.FR20
         {
             FrameStruct _data = new FrameStruct();
 
-            foreach(FrameStruct _struct in _frames)
+            foreach (FrameStruct _struct in _frames)
             {
-                if(_struct.id == frameId)
+                if (_struct.id == frameId)
                 {
                     _data.id = _struct.id;
                     _data.name = _struct.name;
@@ -140,20 +128,14 @@ namespace RM.src.RM250714.Classes.FR20
                     errNum = 1;
                 else
                 {
-                    if (_data.Value.id == RobotManager.user)
-                        errNum = 2;
+                    RobotManager.SetWObjCoord(frameId, _data.Value.pose, 0);
+                    RobotManager.GetActualWobjCoord(ref _checkNewFrame);
+
+                    if (_checkNewFrame != frameId)    // ID di risposta diverso da ID settato
+                        errNum = 3;
                     else
                     {
-                        _robot.SetWObjCoord(frameId, _data.Value.pose, 0);
-                        _robot.GetActualWObjNum(0, ref _checkNewFrame);
-
-                        if (_checkNewFrame != frameId)    // ID di risposta diverso da ID settato
-                            errNum = 3;
-                        else
-                        {
-                            RobotManager.user = frameId;
-                            //currentFrame = frameId;
-                        }
+                        RobotManager.user = frameId;
                     }
                 }
             }
@@ -166,37 +148,48 @@ namespace RM.src.RM250714.Classes.FR20
             log.Info("[Frames] Cambio di frame a " + frameId);
             return true;
         }
+
         /// <summary>
         /// Modifica il frame in uso del robot e controlla che sia stato cambiato effettivamente
         /// </summary>
         /// <param name="frameName"></param>
         /// <returns></returns>
-        public int ChangeRobotFrame(string frameName)
+        public bool ChangeRobotFrame(string frameName)
         {
             int _checkNewFrame = -1;
             FrameStruct? _data;
+            int errNum = 10;
 
             if (frameName.Length == 0 || frameName == null) // Frame non valido
-                return 0;
+                errNum = 0;
+            else
+            {
+                _data = ReadFrameData(frameName);
+                if (_data == null) // ID Frame non trovato nella lista
+                    errNum = 1;
+                else
+                {
+                    RobotManager.SetWObjCoord(_data.Value.id, _data.Value.pose, 0);
+                    RobotManager.GetActualWobjCoord(ref _checkNewFrame);
 
-            _data = ReadFrameData(frameName);
-            if (_data == null) // ID Frame non trovato nella lista
-                return 1;
-
-            if(_data.Value.id == currentFrame)
-                return 2;
-
-            _robot.SetWObjCoord(_data.Value.id, _data.Value.pose, 0);
-            _robot.GetActualWObjNum(0, ref _checkNewFrame);
-
-            if (_checkNewFrame != _data.Value.id)    // ID di risposta diverso da ID settato
-                return 3;
-
-            RobotManager.user = _data.Value.id;
-            currentFrame = _data.Value.id;
-            return 10;
+                    if (_checkNewFrame != _data.Value.id)    // ID di risposta diverso da ID settato
+                        errNum = 3;
+                    else
+                    {
+                        RobotManager.user = _data.Value.id;
+                    }
+                }
+            }
+            if (IsErrorBlocking(errNum))
+            {
+                log.Error("[Frames] Errore durante cambio frame: " + GetErrorCode(errNum));
+                RobotManager.GenerateAlarm(0, 1);
+                return false;
+            }
+            log.Info("[Frames] Cambio di frame a " + frameName);
+            return true;
         }
-        
+
         /// <summary>
         /// In base all'errNum restituisce se l'errore è bloccante o meno
         /// </summary>
@@ -207,7 +200,7 @@ namespace RM.src.RM250714.Classes.FR20
             switch (errNum)
             {
                 case 0:
-                    return true;
+                    return false;
                 case 1:
                     return true;
                 case 2:
@@ -230,7 +223,7 @@ namespace RM.src.RM250714.Classes.FR20
         {
             string errCode = "";
 
-            switch(errNum)
+            switch (errNum)
             {
                 case 0:
                     errCode = "Frame ID minore di 0";

@@ -29,28 +29,17 @@ namespace RM.src.RM250714.Classes.FR20
         /// </summary>
         private static readonly log4net.ILog log = LogHelper.GetLogger();
 
-        #region Proprietà connessione database
-
         private static readonly RobotDAOSqlite RobotDAO = new RobotDAOSqlite();
         private static readonly SqliteConnectionConfiguration DatabaseConnection = new SqliteConnectionConfiguration();
         private static readonly string ConnectionString = DatabaseConnection.GetConnectionString();
 
-        #endregion
-
-        private List<ToolStruct> _tools;
-        private Robot _robot;
-        /// <summary>
-        /// Tool corrente
-        /// </summary>
-        public int currentTool = -1;
+        private readonly List<ToolStruct> _tools;
 
         /// <summary>
         /// Costruisce il tool manager
         /// </summary>
-        /// <param name="robot"></param>
-        public Tools(Robot robot)
+        public Tools()
         {
-            _robot = robot;
             _tools = new List<ToolStruct>();
 
             InitList();
@@ -70,11 +59,11 @@ namespace RM.src.RM250714.Classes.FR20
                         id = Convert.ToInt32(row[RobotDAOSqlite.ROBOT_TOOLS_ID_COLUMN_NAME]),
                         name = row[RobotDAOSqlite.ROBOT_TOOLS_NAME_COLUMN_NAME].ToString(),
                         pose = new DescPose(
-                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_TOOLS_X_COLUMN_NAME]), 
-                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_TOOLS_Y_COLUMN_NAME]), 
+                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_TOOLS_X_COLUMN_NAME]),
+                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_TOOLS_Y_COLUMN_NAME]),
                             Convert.ToDouble(row[RobotDAOSqlite.ROBOT_TOOLS_Z_COLUMN_NAME]),
-                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_TOOLS_RX_COLUMN_NAME]), 
-                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_TOOLS_RY_COLUMN_NAME]), 
+                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_TOOLS_RX_COLUMN_NAME]),
+                            Convert.ToDouble(row[RobotDAOSqlite.ROBOT_TOOLS_RY_COLUMN_NAME]),
                             Convert.ToDouble(row[RobotDAOSqlite.ROBOT_TOOLS_RZ_COLUMN_NAME])
                             ),
                         type = Convert.ToInt32(row[RobotDAOSqlite.ROBOT_TOOLS_TYPE_COLUMN_NAME]),
@@ -144,18 +133,14 @@ namespace RM.src.RM250714.Classes.FR20
                     errNum = 1;
                 else
                 {
-                    
-                    {
-                        _robot.SetToolCoord(toolId, _data.Value.pose, _data.Value.type, _data.Value.install, 0, 0);
-                        _robot.GetActualTCPNum(0, ref _checkNewTool);
+                    RobotManager.SetToolCoord(toolId, _data.Value.pose, _data.Value.type, _data.Value.install);
+                    RobotManager.GetActualTCPNum(ref _checkNewTool);
 
-                        if (_checkNewTool != toolId)    // ID di risposta diverso da ID settato
-                            errNum = 3;
-                        else
-                        {
-                            RobotManager.tool = toolId;
-                            //currentTool = toolId;
-                        }
+                    if (_checkNewTool != toolId)    // ID di risposta diverso da ID settato
+                        errNum = 3;
+                    else
+                    {
+                        RobotManager.tool = toolId;
                     }
                 }
             }
@@ -174,30 +159,41 @@ namespace RM.src.RM250714.Classes.FR20
         /// </summary>
         /// <param name="toolName"></param>
         /// <returns></returns>
-        public int ChangeRobotTool(string toolName)
+        public bool ChangeRobotTool(string toolName)
         {
             int _checkNewTool = -1;
             ToolStruct? _data;
+            int errNum = 10;
 
             if (toolName.Length == 0 || toolName == null) // Frame non valido
-                return 0;
+                errNum = 0;
+            else
+            {
+                _data = ReadToolData(toolName);
+                if (_data == null) // ID Frame non trovato nella lista
+                    errNum = 1;
+                else
+                {
+                    RobotManager.SetToolCoord(_data.Value.id, _data.Value.pose, _data.Value.type, _data.Value.install);
+                    RobotManager.GetActualTCPNum(ref _checkNewTool);
 
-            _data = ReadToolData(toolName);
-            if (_data == null) // ID Frame non trovato nella lista
-                return 1;
-
-            if (_data.Value.id == currentTool)
-                return 2;
-
-            _robot.SetToolCoord(_data.Value.id, _data.Value.pose, _data.Value.type, _data.Value.install, 0, 0);
-            _robot.GetActualTCPNum(0, ref _checkNewTool);
-
-            if (_checkNewTool != _data.Value.id)    // ID di risposta diverso da ID settato
-                return 3;
-
-            RobotManager.user = _data.Value.id;
-            currentTool = _data.Value.id;
-            return 10;
+                    if (_checkNewTool != _data.Value.id)    // ID di risposta diverso da ID settato
+                        errNum = 3;
+                    else
+                    {
+                        RobotManager.tool = _data.Value.id;
+                        //currentTool = _data.Value.id;
+                    }
+                }
+            }
+            if (IsErrorBlocking(errNum))
+            {
+                log.Error("[Tools] Errore durante cambio tool: " + GetErrorCode(errNum));
+                RobotManager.GenerateAlarm(0, 2);
+                return false;
+            }
+            log.Info("[Tools] Cambio di tool a " + toolName);
+            return true;
         }
 
         /// <summary>
@@ -210,7 +206,7 @@ namespace RM.src.RM250714.Classes.FR20
             switch (errNum)
             {
                 case 0:
-                    return true;
+                    return false;
                 case 1:
                     return true;
                 case 2:
