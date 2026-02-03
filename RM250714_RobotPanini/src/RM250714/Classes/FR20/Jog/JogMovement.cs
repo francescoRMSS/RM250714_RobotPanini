@@ -274,19 +274,19 @@ namespace RM.src.RM250714.Classes.FR20.Jog
                                     break;
 
                                 case 10:
-                                    RobotManager.robot.StartJOG(jog.JogRefType, 1, 1, jog.JogSpeed, jog.JogAcceleration, jog.JogX_treshold);
+                                    RobotManager.StartJOG(jog.JogRefType, 1, 1, jog.JogSpeed, jog.JogAcceleration, jog.JogX_treshold);
                                     stepXpos = 20;
                                     break;
 
                                 case 20:
-                                    RobotManager.robot.GetRobotMotionDone(ref motionDone);
+                                    RobotManager.GetRobotMotionDone(ref motionDone);
                                     if (motionDone == 0)
                                     {
                                         stepXpos = 30;
                                     }
                                     else if (!jog.jogXpos && jog.prevJogXpos)
                                     {
-                                        RobotManager.robot.ImmStopJOG();
+                                        RobotManager.ImmStopJOG();
                                         jog.prevJogXpos = false;
                                         stepXpos = 0;
                                     }
@@ -311,19 +311,19 @@ namespace RM.src.RM250714.Classes.FR20.Jog
                                     break;
 
                                 case 10:
-                                    RobotManager.robot.StartJOG(jog.JogRefType, 1, 0, jog.JogSpeed, jog.JogAcceleration, jog.JogX_treshold);
+                                    RobotManager.StartJOG(jog.JogRefType, 1, 0, jog.JogSpeed, jog.JogAcceleration, jog.JogX_treshold);
                                     stepXneg = 20;
                                     break;
 
                                 case 20:
-                                    RobotManager.robot.GetRobotMotionDone(ref motionDone);
+                                    RobotManager.GetRobotMotionDone(ref motionDone);
                                     if (motionDone == 0)
                                     {
                                         stepXneg = 30;
                                     }
                                     else if (!jog.jogXneg && jog.prevJogXneg)
                                     {
-                                        RobotManager.robot.ImmStopJOG();
+                                        RobotManager.ImmStopJOG();
                                         jog.prevJogXneg = false;
                                         stepXneg = 0;
                                     }
@@ -359,19 +359,19 @@ namespace RM.src.RM250714.Classes.FR20.Jog
                                     break;
 
                                 case 10:
-                                    RobotManager.robot.StartJOG(jog.JogRefType, 2, 1, jog.JogSpeed, jog.JogAcceleration, jog.JogY_treshold);
+                                    RobotManager.StartJOG(jog.JogRefType, 2, 1, jog.JogSpeed, jog.JogAcceleration, jog.JogY_treshold);
                                     stepYpos = 20;
                                     break;
 
                                 case 20:
-                                    RobotManager.robot.GetRobotMotionDone(ref motionDone);
+                                    RobotManager.GetRobotMotionDone(ref motionDone);
                                     if (motionDone == 0)
                                     {
                                         stepYpos = 30;
                                     }
                                     else if (!jog.jogYpos && jog.prevJogYpos)
                                     {
-                                        RobotManager.robot.ImmStopJOG();
+                                        RobotManager.ImmStopJOG();
                                         jog.prevJogYpos = false;
                                         stepYpos = 0;
                                     }
@@ -396,19 +396,19 @@ namespace RM.src.RM250714.Classes.FR20.Jog
                                     break;
 
                                 case 10:
-                                    RobotManager.robot.StartJOG(jog.JogRefType, 2, 0, jog.JogSpeed, jog.JogAcceleration, jog.JogY_treshold);
+                                    RobotManager.StartJOG(jog.JogRefType, 2, 0, jog.JogSpeed, jog.JogAcceleration, jog.JogY_treshold);
                                     stepYneg = 20;
                                     break;
 
                                 case 20:
-                                    RobotManager.robot.GetRobotMotionDone(ref motionDone);
+                                    RobotManager.GetRobotMotionDone(ref motionDone);
                                     if (motionDone == 0)
                                     {
                                         stepYneg = 30;
                                     }
                                     else if (!jog.jogYneg && jog.prevJogYneg)
                                     {
-                                        RobotManager.robot.ImmStopJOG();
+                                        RobotManager.ImmStopJOG();
                                         jog.prevJogYneg = false;
                                         stepYneg = 0;
                                     }
@@ -443,19 +443,19 @@ namespace RM.src.RM250714.Classes.FR20.Jog
                                     break;
 
                                 case 10:
-                                    RobotManager.robot.StartJOG(jog.JogRefType, 3, 1, jog.JogSpeed, jog.JogAcceleration, jog.JogZ_treshold);
+                                    RobotManager.StartJOG(jog.JogRefType, 3, 1, jog.JogSpeed, jog.JogAcceleration, jog.JogZ_treshold);
                                     stepZpos = 20;
                                     break;
 
                                 case 20:
-                                    RobotManager.robot.GetRobotMotionDone(ref motionDone);
+                                    RobotManager.GetRobotMotionDone(ref motionDone);
                                     if (motionDone == 0)
                                     {
                                         stepZpos = 30;
                                     }
                                     else if (!jog.jogZpos && jog.prevJogZpos)
                                     {
-                                        RobotManager.robot.ImmStopJOG();
+                                        RobotManager.ImmStopJOG();
                                         jog.prevJogZpos = false;
                                         stepZpos = 0;
                                     }
@@ -480,19 +480,19 @@ namespace RM.src.RM250714.Classes.FR20.Jog
                                     break;
 
                                 case 10:
-                                    RobotManager.robot.StartJOG(jog.JogRefType, 3, 0, jog.JogSpeed, jog.JogAcceleration, jog.JogZ_treshold);
+                                    RobotManager.StartJOG(jog.JogRefType, 3, 0, jog.JogSpeed, jog.JogAcceleration, jog.JogZ_treshold);
                                     stepZneg = 20;
                                     break;
 
                                 case 20:
-                                    RobotManager.robot.GetRobotMotionDone(ref motionDone);
+                                    RobotManager.GetRobotMotionDone(ref motionDone);
                                     if (motionDone == 0)
                                     {
                                         stepZneg = 30;
                                     }
                                     else if (!jog.jogZneg && jog.prevJogZneg)
                                     {
-                                        RobotManager.robot.ImmStopJOG();
+                                        RobotManager.ImmStopJOG();
                                         jog.prevJogZneg = false;
                                         stepZneg = 0;
                                     }
@@ -527,19 +527,19 @@ namespace RM.src.RM250714.Classes.FR20.Jog
                                     break;
 
                                 case 10:
-                                    RobotManager.robot.StartJOG(jog.JogRefType, 4, 1, jog.JogSpeed, jog.JogAcceleration, jog.JogRX_treshold);
+                                    RobotManager.StartJOG(jog.JogRefType, 4, 1, jog.JogSpeed, jog.JogAcceleration, jog.JogRX_treshold);
                                     stepRXpos = 20;
                                     break;
 
                                 case 20:
-                                    RobotManager.robot.GetRobotMotionDone(ref motionDone);
+                                    RobotManager.GetRobotMotionDone(ref motionDone);
                                     if (motionDone == 0)
                                     {
                                         stepRXpos = 30;
                                     }
                                     else if (!jog.jogRXpos && jog.prevJogRXpos)
                                     {
-                                        RobotManager.robot.ImmStopJOG();
+                                        RobotManager.ImmStopJOG();
                                         jog.prevJogRXpos = false;
                                         stepRXpos = 0;
                                     }
@@ -564,19 +564,19 @@ namespace RM.src.RM250714.Classes.FR20.Jog
                                     break;
 
                                 case 10:
-                                    RobotManager.robot.StartJOG(jog.JogRefType, 4, 0, jog.JogSpeed, jog.JogAcceleration, jog.JogRX_treshold);
+                                    RobotManager.StartJOG(jog.JogRefType, 4, 0, jog.JogSpeed, jog.JogAcceleration, jog.JogRX_treshold);
                                     stepRXneg = 20;
                                     break;
 
                                 case 20:
-                                    RobotManager.robot.GetRobotMotionDone(ref motionDone);
+                                    RobotManager.GetRobotMotionDone(ref motionDone);
                                     if (motionDone == 0)
                                     {
                                         stepRXneg = 30;
                                     }
                                     else if (!jog.jogRXneg && jog.prevJogRXneg)
                                     {
-                                        RobotManager.robot.ImmStopJOG();
+                                        RobotManager.ImmStopJOG();
                                         jog.prevJogRXneg = false;
                                         stepRXneg = 0;
                                     }
@@ -611,19 +611,19 @@ namespace RM.src.RM250714.Classes.FR20.Jog
                                     break;
 
                                 case 10:
-                                    RobotManager.robot.StartJOG(jog.JogRefType, 5, 1, jog.JogSpeed, jog.JogAcceleration, jog.JogRY_treshold);
+                                    RobotManager.StartJOG(jog.JogRefType, 5, 1, jog.JogSpeed, jog.JogAcceleration, jog.JogRY_treshold);
                                     stepRYpos = 20;
                                     break;
 
                                 case 20:
-                                    RobotManager.robot.GetRobotMotionDone(ref motionDone);
+                                    RobotManager.GetRobotMotionDone(ref motionDone);
                                     if (motionDone == 0)
                                     {
                                         stepRYpos = 30;
                                     }
                                     else if (!jog.jogRYpos && jog.prevJogRYpos)
                                     {
-                                        RobotManager.robot.ImmStopJOG();
+                                        RobotManager.ImmStopJOG();
                                         jog.prevJogRYpos = false;
                                         stepRYpos = 0;
                                     }
@@ -648,19 +648,19 @@ namespace RM.src.RM250714.Classes.FR20.Jog
                                     break;
 
                                 case 10:
-                                    RobotManager.robot.StartJOG(jog.JogRefType, 5, 0, jog.JogSpeed, jog.JogAcceleration, jog.JogRY_treshold);
+                                    RobotManager.StartJOG(jog.JogRefType, 5, 0, jog.JogSpeed, jog.JogAcceleration, jog.JogRY_treshold);
                                     stepRYneg = 20;
                                     break;
 
                                 case 20:
-                                    RobotManager.robot.GetRobotMotionDone(ref motionDone);
+                                    RobotManager.GetRobotMotionDone(ref motionDone);
                                     if (motionDone == 0)
                                     {
                                         stepRYneg = 30;
                                     }
                                     else if (!jog.jogRYneg && jog.prevJogRYneg)
                                     {
-                                        RobotManager.robot.ImmStopJOG();
+                                        RobotManager.ImmStopJOG();
                                         jog.prevJogRYneg = false;
                                         stepRYneg = 0;
                                     }
@@ -695,19 +695,19 @@ namespace RM.src.RM250714.Classes.FR20.Jog
                                     break;
 
                                 case 10:
-                                    RobotManager.robot.StartJOG(jog.JogRefType, 6, 1, jog.JogSpeed, jog.JogAcceleration, jog.JogRZ_treshold);
+                                    RobotManager.StartJOG(jog.JogRefType, 6, 1, jog.JogSpeed, jog.JogAcceleration, jog.JogRZ_treshold);
                                     stepRZpos = 20;
                                     break;
 
                                 case 20:
-                                    RobotManager.robot.GetRobotMotionDone(ref motionDone);
+                                    RobotManager.GetRobotMotionDone(ref motionDone);
                                     if (motionDone == 0)
                                     {
                                         stepRZpos = 30;
                                     }
                                     else if (!jog.jogRZpos && jog.prevJogRZpos)
                                     {
-                                        RobotManager.robot.ImmStopJOG();
+                                        RobotManager.ImmStopJOG();
                                         jog.prevJogRZpos = false;
                                         stepRZpos = 0;
                                     }
@@ -732,19 +732,19 @@ namespace RM.src.RM250714.Classes.FR20.Jog
                                     break;
 
                                 case 10:
-                                    RobotManager.robot.StartJOG(jog.JogRefType, 6, 0, jog.JogSpeed, jog.JogAcceleration, jog.JogRZ_treshold);
+                                    RobotManager.StartJOG(jog.JogRefType, 6, 0, jog.JogSpeed, jog.JogAcceleration, jog.JogRZ_treshold);
                                     stepRZneg = 20;
                                     break;
 
                                 case 20:
-                                    RobotManager.robot.GetRobotMotionDone(ref motionDone);
+                                    RobotManager.GetRobotMotionDone(ref motionDone);
                                     if (motionDone == 0)
                                     {
                                         stepRZneg = 30;
                                     }
                                     else if (!jog.jogRZneg && jog.prevJogRZneg)
                                     {
-                                        RobotManager.robot.ImmStopJOG();
+                                        RobotManager.ImmStopJOG();
                                         jog.prevJogRZneg = false;
                                         stepRZneg = 0;
                                     }

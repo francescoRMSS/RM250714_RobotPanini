@@ -913,7 +913,7 @@ namespace RM.src.RM250714
 
                         // Modifico proprietà speed dell'oggetto robotProperties
                         RobotManager.robotProperties.Speed = currentSpeed;
-                        RobotManager.robot.SetSpeed(currentSpeed);
+                        RobotManager.SetRobotSpeed(currentSpeed);
                     }
                 }
             }

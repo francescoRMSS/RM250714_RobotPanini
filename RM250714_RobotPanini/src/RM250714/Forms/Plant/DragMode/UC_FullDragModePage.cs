@@ -560,7 +560,7 @@ namespace RM.src.RM250714.Forms.DragMode
                 return;
             }
 
-            RobotManager.robot.RobotEnable(1);
+            RobotManager.EnableRobot(1);
             Thread.Sleep(1000);
             log.Info("Richiesta di start drag mode");
 
@@ -570,7 +570,7 @@ namespace RM.src.RM250714.Forms.DragMode
             EnableScreenElements();
 
             // Impostazione del carico del robot
-            RobotManager.robot.SetLoadWeight(0, RobotManager.robotProperties.Weight);
+            RobotManager.SetRobotPayload(0, RobotManager.robotProperties.Weight);
 
             if (dragMode == 0) // PTP
             {
@@ -642,7 +642,7 @@ namespace RM.src.RM250714.Forms.DragMode
                 }
             }
             Thread.Sleep(1000);
-            RobotManager.robot.RobotEnable(0);
+            RobotManager.EnableRobot(0);
 
             isDragStart = false;
             EnableScreenElements(); // ri-abilito i tasti
@@ -1626,7 +1626,7 @@ namespace RM.src.RM250714.Forms.DragMode
                 // Richiesta di conferma all'utente
                 if (CustomMessageBox.Show(MessageBoxTypeEnum.WARNING, $"Modificare il punto {selectedIndex + 1}?") == DialogResult.OK)
                 {
-                    RobotManager.robot.RobotEnable(1);
+                    RobotManager.EnableRobot(1);
                     Thread.Sleep(1000);
                     positionUpdateRequested = true;
                     isDragStart = true;
@@ -1695,7 +1695,7 @@ namespace RM.src.RM250714.Forms.DragMode
                 if (CustomMessageBox.Show(MessageBoxTypeEnum.WARNING,
                     $"Sovrascrivere il programma a partire dal punto {selectedIndex + 1}?") == DialogResult.OK)
                 {
-                    RobotManager.robot.RobotEnable(1);
+                    RobotManager.EnableRobot(1);
                     Thread.Sleep(1000);
 
                     robotDAO.DeletePointsStartingFromId(ConnectionString, selectedIndex + 1, applicationName);
@@ -2022,7 +2022,7 @@ namespace RM.src.RM250714.Forms.DragMode
                             {
                                 RobotManager.PauseMotion(); // Metto in pausa il Robot
                                 await Task.Delay(DelayMonitoringStopPause); // Leggero delay per evitare che il robot "tremi"
-                                RobotManager.robot.StopMotion(); // Stop del robot con conseguente cancellazione della coda di punti
+                                RobotManager.StopMotion(); // Stop del robot con conseguente cancellazione della coda di punti
 
                                 stopMonitoring = true; // Richiesta di termine del metodo eseguito dal thread di monitoring
                                 monitoringThreadStarted = false; // Reset della variabile che segnala che il thread di monitoring è partito
@@ -2108,7 +2108,7 @@ namespace RM.src.RM250714.Forms.DragMode
                                             RobotManager.endingPoint = targetPos;
 
                                         // Invio delle posizione al robot
-                                        int err = RobotManager.robot.MoveCart(targetPos, 0, RobotManager.user, RobotManager.vel, RobotManager.acc, RobotManager.ovl, RobotManager.blendT, RobotManager.config);
+                                        int err = RobotManager.MoveCart(targetPos, 0, RobotManager.user, RobotManager.vel, RobotManager.acc, RobotManager.ovl, RobotManager.blendT, RobotManager.config);
                                        
                                         if (err != 0) // Se il movimento ha generato un errore
                                             log.Error("Errore durante il movimento del robot: " + err.ToString());

@@ -66,7 +66,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// Proprietà pubblica e thread-safe per accedere all'istanza del Robot.
         /// </summary>
-        public static Robot robot
+        protected static Robot robot
         {
             get { lock (_robotInstanceLock) { return _robot; } }
             private set { lock (_robotInstanceLock) { _robot = value; } }
@@ -5391,7 +5391,7 @@ namespace RM.src.RM250714
         /// Abilita o disabilita il Robot
         /// </summary>
         /// <param name="enableFlag"></param>
-        private static int EnableRobot(byte enableFlag)
+        public static int EnableRobot(byte enableFlag)
         {
             int err = robot.RobotEnable(enableFlag);
             if (err != 0)
@@ -5449,6 +5449,21 @@ namespace RM.src.RM250714
             else
             {
                 log.Info("reset robot alarms err: " + err);
+            }
+            return err;
+        }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public static int GetRobotMotionDone(ref byte state)
+        {
+            int err = robot.GetRobotMotionDone(ref state);
+            if(err != 0)
+            {
+                log.Error("Errore durante get robot motion done: " + err);
             }
             return err;
         }
@@ -5742,6 +5757,28 @@ namespace RM.src.RM250714
         }
 
         /// <summary>
+        /// Movimento in assi cartesiani, simile al moveJ
+        /// </summary>
+        /// <param name="pose"></param>
+        /// <param name="tool"></param>
+        /// <param name="user"></param>
+        /// <param name="vel"></param>
+        /// <param name="acc"></param>
+        /// <param name="ovl"></param>
+        /// <param name="blendT"></param>
+        /// <param name="config"></param>
+        /// <returns></returns>
+        public static int MoveCart(DescPose pose, int tool, int user, float vel, float acc, float ovl, float blendT, int config)
+        {
+            int err = robot.MoveCart(pose, tool, user, vel, acc, ovl, blendT, config);
+            if(err != 0)
+            {
+                log.Error("Errore durante moveCart: " + err);
+            }
+            return err;
+        }
+
+        /// <summary>
         /// Movimento lineare al punto target.
         /// </summary>
         /// <param name="jPos">Configurazione dei giunti</param>
@@ -5998,6 +6035,23 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 log.Error("Errore durante get DO: " + err);
+            }
+            return err;
+        }
+
+        /// <summary>
+        /// Get dello stato dell'uscita id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="block"></param>
+        /// <param name="level"></param>
+        /// <returns></returns>
+        public static int GetDI(int id, byte block, ref byte level)
+        {
+            int err = robot.GetDI(id, block, ref level);
+            if(err != 0)
+            {
+                log.Error("Errore durante get DI: " + err);
             }
             return err;
         }

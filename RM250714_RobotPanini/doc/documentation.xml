@@ -3849,6 +3849,13 @@
             Metodo per reset errori Robot
             </summary>
         </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetRobotMotionDone(System.Byte@)">
+            <summary>
+            TODO
+            </summary>
+            <param name="state"></param>
+            <returns></returns>
+        </member>
         <member name="M:RM.src.RM250714.RobotManager.SetRobotSpeed(System.Int32)">
             <summary>
             Imposta la velocità di movimento del robot in percentuale
@@ -3978,6 +3985,20 @@
             <param name="jPos"></param>
             <param name="pose"></param>
             <param name="pointName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.MoveCart(fairino.DescPose,System.Int32,System.Int32,System.Single,System.Single,System.Single,System.Single,System.Int32)">
+            <summary>
+            Movimento in assi cartesiani, simile al moveJ
+            </summary>
+            <param name="pose"></param>
+            <param name="tool"></param>
+            <param name="user"></param>
+            <param name="vel"></param>
+            <param name="acc"></param>
+            <param name="ovl"></param>
+            <param name="blendT"></param>
+            <param name="config"></param>
             <returns></returns>
         </member>
         <member name="M:RM.src.RM250714.RobotManager.MoveL(fairino.JointPos,fairino.DescPose,System.Int32,System.Int32,System.Single,System.Single,System.Single,System.Single,fairino.ExaxisPos,System.Byte,System.Byte,fairino.DescPose,System.Int32,System.Int32,System.Int32)">
@@ -4141,6 +4162,15 @@
             </summary>
             <param name="state_high"></param>
             <param name="state_low"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.GetDI(System.Int32,System.Byte,System.Byte@)">
+            <summary>
+            Get dello stato dell'uscita id
+            </summary>
+            <param name="id"></param>
+            <param name="block"></param>
+            <param name="level"></param>
             <returns></returns>
         </member>
         <member name="M:RM.src.RM250714.RobotManager.SetToolDO(System.Int32,System.Byte,System.Byte,System.Byte)">

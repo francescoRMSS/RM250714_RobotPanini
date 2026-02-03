@@ -820,7 +820,7 @@ namespace RM.src.RM250714
 
             // Get input digitale (pinza)
             byte ris = 0;
-            RobotManager.robot.GetDI(0, 1, ref ris);
+            RobotManager.GetDI(0, 1, ref ris);
 
             if (!RobotManager.isInSafeZone) // Se il robot non si trova in safeZone
             {
@@ -893,7 +893,7 @@ namespace RM.src.RM250714
         private void ClickEvent_openGripper(object sender, EventArgs e)
         {
             // scrittura su uscite digitali robot
-            RobotManager.robot.SetDO(0, 0, 0, 0);
+            RobotManager.SetDO(0, 0, 0, 0);
         }
 
         /// <summary>
@@ -910,17 +910,17 @@ namespace RM.src.RM250714
 
         private void button1_Click(object sender, EventArgs e)
         {
-            RobotManager.robot.RobotEnable(1);
+            RobotManager.EnableRobot(1);
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            RobotManager.robot.SetDO(0, 1, 0, 0);
+            RobotManager.SetDO(0, 1, 0, 0);
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-          RobotManager.robot.SetDO(0, 1, 0, 0);
+          RobotManager.SetDO(0, 1, 0, 0);
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -942,7 +942,7 @@ namespace RM.src.RM250714
         {
             // Get apertura pinza
             byte isGripperClose = 0;
-            RobotManager.robot.GetDI(3, 1, ref isGripperClose);
+            RobotManager.GetDI(3, 1, ref isGripperClose);
             MessageBox.Show(isGripperClose.ToString());
         }
 
@@ -950,19 +950,19 @@ namespace RM.src.RM250714
         {
             // Get apertura pinza
             byte isGripperClose = 0;
-            RobotManager.robot.GetDI(5, 1, ref isGripperClose);
+            RobotManager.GetDI(5, 1, ref isGripperClose);
             MessageBox.Show(isGripperClose.ToString());
         }
 
         private void button8_Click(object sender, EventArgs e)
         {
-            RobotManager.robot.SetDO(0, 0, 0, 0);
+            RobotManager.SetDO(0, 0, 0, 0);
         }
 
         private void button9_Click(object sender, EventArgs e)
         {
             byte isGripperClose = 0;
-            RobotManager.robot.GetDI(2, 1, ref isGripperClose);
+            RobotManager.GetDI(2, 1, ref isGripperClose);
             MessageBox.Show(isGripperClose.ToString());
         }
 
@@ -970,18 +970,18 @@ namespace RM.src.RM250714
         {
             // Get apertura pinza
             byte isGripperClose = 0;
-            RobotManager.robot.GetDI(5, 1, ref isGripperClose);
+            RobotManager.GetDI(5, 1, ref isGripperClose);
             MessageBox.Show(isGripperClose.ToString());
         }
 
         private void button11_Click(object sender, EventArgs e)
         {
-            RobotManager.robot.SetDO(1, 0, 0, 0);
+            RobotManager.SetDO(1, 0, 0, 0);
         }
 
         private void button12_Click(object sender, EventArgs e)
         {
-            RobotManager.robot.SetDO(1, 1, 0, 0);
+            RobotManager.SetDO(1, 1, 0, 0);
         }
     } 
 }
