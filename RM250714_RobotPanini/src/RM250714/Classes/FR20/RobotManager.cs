@@ -86,6 +86,10 @@ namespace RM.src.RM250714
         #region Stato e Parametri del Robot
 
         /// <summary>
+        /// Indica se è possibile avere più zone attive allo stesso tempo
+        /// </summary>
+        public static bool useOverlappingZones = false;
+        /// <summary>
         /// Errore che restituisce il Robot.
         /// </summary>
         public static int err = 0;
@@ -216,42 +220,40 @@ namespace RM.src.RM250714
 
         #endregion
 
-        #region Allarmi PLC
+        #region Allarmi pr il PLC
 
+        /// <summary>
+        /// Positivo in caso di allarme
+        /// </summary>
+        public static int robotGeneralError = 0; //bit 0
         /// <summary>
         /// Positivo quando il robot è in allarme 
         /// </summary>
-        public static int robotError = 0;
-
-        /// <summary>
-        /// Positivo quando alcuni dati nel ciclo sono mancanti o errati
-        /// </summary>
-        public static int dataError = 0;
-
-        /// <summary>
-        /// Positivo quando il ciclo va in eccezione generica durante l'esecuzione
-        /// </summary>
-        public static int runTimeError = 0;
-
+        public static int robotError = 0; //bit 1
         /// <summary>
         /// Positivo quando il robot non riesce a calcolare una cinematica inversa o diretta
         /// </summary>
-        public static int robotKinError = 0;
-
+        public static int robotKinError = 0; //bit 2
         /// <summary>
         /// Positivo quando il robot restituisce un allarme da un movimento
         /// </summary>
-        public static int robotMovementError = 0;
-
+        public static int robotMovementError = 0; //bit 3
         /// <summary>
         /// Positivo quando il robot restituisce un allarme da un metodo che cambia alcune sue proprietà
         /// </summary>
-        public static int robotPropertiesError = 0;
-
+        public static int robotPropertiesError = 0; //bit 4
         /// <summary>
         /// Positivo quando il robot restituisce -2 n volte o il task segnala una disconnessione
         /// </summary>
-        public static int robotDisconnectedError = 0;
+        public static int robotDisconnectedError = 0; //bit 5
+        /// <summary>
+        /// Positivo quando alcuni dati nel ciclo sono mancanti o errati
+        /// </summary>
+        public static int dataError = 0; //bit 6
+        /// <summary>
+        /// Positivo quando il ciclo va in eccezione generica durante l'esecuzione
+        /// </summary>
+        public static int runTimeError = 0; //bit 7
 
         #endregion
 
@@ -1493,7 +1495,7 @@ namespace RM.src.RM250714
             float zOffsetAvvicinamentoPick = 10; // Offset su asse Z in cui mi abbasso leggermente prima di andare in pick
             float zOffsetPostPick = 20; // Offset applicato dopo chiusura pinza (mantengo questo offset anche durante movimento di allontanamento dal pick)
             float zOffsetAllontanamentoPick = 20; // Offset applicato per punto di allontanamento pick
-            float offsetAllontamentoPick = 770; // Offset  di allontamento post pick
+            float offsetAllontanamentoPick = 750; // Offset  di allontamento post pick
             float zOffsetPick = 3; // Offset del punto di pick su asse z
             float offsetAllontamentoPreSlittaIndietro = 0; // Offset utilizzato per sapere quanto dopo aver eseguito il pick inviare il comando di slitta indietro
             float yOffsetPick = 5; // Offset del punto di pick su asse y
@@ -1504,7 +1506,7 @@ namespace RM.src.RM250714
 
             #region Offset place
 
-            float offsetAvvicinamentoPlace = 770; // Offset per eseguire punto di avvicinamento place
+            float offsetAvvicinamentoPlace = offsetAllontanamentoPick; // Offset per eseguire punto di avvicinamento place
             float zOffsetAvvicinamentoPlace = 40; // Offset su asse Z in cui mi alzo leggermente prima di andare in place
             float zOffsetPostPlace = 5; // Offset su asse Z in cui mi abbasso leggermente dopo essere andato in place
             float offsetAllontamentoPostPlace = 130; // Offset di allontanamento dal carrello dopo aver eseguito il place
@@ -1896,7 +1898,7 @@ namespace RM.src.RM250714
                                         // Creazione oggetto descPose
                                         descPosAllontanamentoPick = new DescPose(
                                             pick.x,
-                                            pick.y - offsetAllontamentoPick,
+                                            pick.y - offsetAllontanamentoPick,
                                             pick.z + zOffsetPostPick + zOffsetAllontanamentoPick + zOffsetPick,
                                             NormalizeAngle(pick.rx + rxRotationPick),
                                             pick.ry,
@@ -2039,7 +2041,6 @@ namespace RM.src.RM250714
 
                                         #endregion
 
-                                        log.Info("STEP 0 - Comunicazione avvio ciclo a PLC, check dei consensi e calcolo punto di pick e place.");
                                         // Passaggio allo step 10
                                         step = 10;
 
@@ -2054,12 +2055,11 @@ namespace RM.src.RM250714
                         case 10:
                             #region Check richiesta routine e consensi
 
-                            if (stopCycleRequested) // Se è stata richiesto uno stop ciclo, vado allo step per mandare in home il robot
+                            if (stopCycleRequested && !homeRequested) // Se è stata richiesto uno stop ciclo, vado allo step per mandare in home il robot
                             {
                                 homeRequested = true;
                             }
-
-                            if (homeRequested && !homeInProgress)
+                            else if (homeRequested && !homeInProgress)
                             {
                                 step = 220;   // step dedicato alla home
                             }
@@ -2104,7 +2104,7 @@ namespace RM.src.RM250714
                                     }
                                     else
                                     {
-                                        stopCycleRoutine = true;
+
                                         step = 0;
                                     }
                                 }
@@ -2225,7 +2225,7 @@ namespace RM.src.RM250714
                                 // Creazione oggetto descPose
                                 descPosAllontanamentoPick = new DescPose(
                                     pick.x,
-                                    pick.y - offsetAllontamentoPick,
+                                    pick.y - offsetAllontanamentoPick,
                                     pick.z + zOffsetPostPick + zOffsetAllontanamentoPick + zOffsetPick,
                                     NormalizeAngle(pick.rx + rxRotationPick),
                                     pick.ry,
@@ -3046,7 +3046,7 @@ namespace RM.src.RM250714
                                     // Creazione oggetto descPose
                                     descPosAllontanamentoPick = new DescPose(
                                         pick.x,
-                                        pick.y - offsetAllontamentoPick,
+                                        pick.y - offsetAllontanamentoPick,
                                         pick.z + zOffsetPostPick + zOffsetAllontanamentoPick + zOffsetPick,
                                         NormalizeAngle(pick.rx + rxRotationPick),
                                         pick.ry,
@@ -3189,7 +3189,7 @@ namespace RM.src.RM250714
 
                                     #endregion
 
-                                    if (selectedFormat == 1015 || selectedFormat == 1015)
+                                    if (selectedFormat == 1015 || selectedFormat == 2015)
                                         carrelloTerminato = true;
 
                                     step = 10;
@@ -3204,6 +3204,8 @@ namespace RM.src.RM250714
                             #region HomeRoutine
 
                             #region Movimento a punto avvicinamento home
+
+                            homeInProgress = true;
 
                             DescPose descPoseApproachHome = new DescPose(
                                            TCPCurrentPosition.tran.x,
@@ -3244,7 +3246,8 @@ namespace RM.src.RM250714
                                 homeRequested = false;
                                 homeInProgress = false;
                                 carrelloTerminato = false;
-                                step = 0;
+                                //step = 0;
+                                stopCycleRoutine = true;
                             }
 
                             break;
@@ -5818,15 +5821,15 @@ namespace RM.src.RM250714
             {
                 prevIsInSafeZone = false;
                 FormHomePage.Instance.RobotSafeZone.BackgroundImage = Resources.safeZone_yellow32;
+                RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Safe, 0, "INT16");
 
             }
             else if (isInSafeZone && prevIsInSafeZone != true) // Se il robot è nella safe zone
             {
                 prevIsInSafeZone = true;
                 FormHomePage.Instance.RobotSafeZone.BackgroundImage = Resources.safeZone_green32;
-
+                RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Safe, 1, "INT16");
             }
-
         }
 
         /// <summary>

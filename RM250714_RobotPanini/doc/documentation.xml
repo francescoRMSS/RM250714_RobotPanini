@@ -1105,6 +1105,11 @@
             A 1 quando il Robot si trova in zona di home
             </summary>
         </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.ACT_Zone_Safe">
+            <summary>
+            A q quando il robot si trova in zona di safezone
+            </summary>
+        </member>
         <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.ACT_Zone_Carrello1">
             <summary>
             A 1 quando il Robot si trova in zona carrello 1
@@ -2806,6 +2811,11 @@
             IP statico assegnato al robot. Per modificarlo si deve usare il pannello dedicato.
             </summary>
         </member>
+        <member name="F:RM.src.RM250714.RobotManager.useOverlappingZones">
+            <summary>
+            Indica se è possibile avere più zone attive allo stesso tempo
+            </summary>
+        </member>
         <member name="F:RM.src.RM250714.RobotManager.err">
             <summary>
             Errore che restituisce il Robot.
@@ -2966,19 +2976,14 @@
             Numero massimo accettato di errori di connessione -2
             </summary>
         </member>
+        <member name="F:RM.src.RM250714.RobotManager.robotGeneralError">
+            <summary>
+            Positivo in caso di allarme
+            </summary>
+        </member>
         <member name="F:RM.src.RM250714.RobotManager.robotError">
             <summary>
             Positivo quando il robot è in allarme 
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.dataError">
-            <summary>
-            Positivo quando alcuni dati nel ciclo sono mancanti o errati
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.runTimeError">
-            <summary>
-            Positivo quando il ciclo va in eccezione generica durante l'esecuzione
             </summary>
         </member>
         <member name="F:RM.src.RM250714.RobotManager.robotKinError">
@@ -2999,6 +3004,16 @@
         <member name="F:RM.src.RM250714.RobotManager.robotDisconnectedError">
             <summary>
             Positivo quando il robot restituisce -2 n volte o il task segnala una disconnessione
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.dataError">
+            <summary>
+            Positivo quando alcuni dati nel ciclo sono mancanti o errati
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.runTimeError">
+            <summary>
+            Positivo quando il ciclo va in eccezione generica durante l'esecuzione
             </summary>
         </member>
         <member name="F:RM.src.RM250714.RobotManager.formAlarmPage">

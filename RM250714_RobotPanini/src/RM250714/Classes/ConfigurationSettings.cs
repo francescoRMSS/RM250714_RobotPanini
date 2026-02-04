@@ -10,6 +10,7 @@ using RMLib.Security;
 using RMLib.Translations;
 using RMLib.Utils;
 using RMLib.View;
+using System;
 using System.Data;
 using System.Linq;
 using System.Reflection;
@@ -69,9 +70,9 @@ namespace RM.src.RM250714
             SqliteConnectionConfiguration databaseConnection = new SqliteConnectionConfiguration();
             log.Info("Il percorso del database è: " + databaseConnection.GetConnectionString());
 
-            Environment.SettingUpFromConsoleParam(args);
+            RMLib.Environment.Environment.SettingUpFromConsoleParam(args);
 
-            log.Info("ENVIRONMENT SETTING: " + Environment.GetEnvironment());
+            log.Info("ENVIRONMENT SETTING: " + RMLib.Environment.Environment.GetEnvironment());
             log.Info("********** Application is starting... **********");
 
             if (!Configuration.basicConfigurationFromFile())
@@ -186,14 +187,25 @@ namespace RM.src.RM250714
             }
 
             string robotIp = string.Empty;
+            bool useOverlappingZones = false;
             foreach (DataRow row in configurationProperties.Rows)
             {
-                // Controlla il valore nella colonna "key" 
+                // Controlla il valore di robot ip
                 if (row["key"] != null && row["key"].ToString() == "ROBOT_IP")
                 {
-                    robotIp = row[Environment.GetEnvironment().ToString().ToLower()].ToString();
+                    robotIp = row[RMLib.Environment.Environment.GetEnvironment().ToString().ToLower()].ToString();
                     break;
                 }
+                if (row["key"] != null && row["key"].ToString() == "USE_OVERLAPPING_ZONES")
+                {
+                    if(bool.TryParse(row[RMLib.Environment.Environment.GetEnvironment().ToString().ToLower()].ToString(), out useOverlappingZones))
+                    {
+                       
+                    }
+                    RobotManager.useOverlappingZones = useOverlappingZones;
+                    break;
+                }
+                // Controlla il valore di useOverlappingZones
             }
 
             if ((string.IsNullOrEmpty(robotIp)) || !RobotManager.InitRobot(robotIp))

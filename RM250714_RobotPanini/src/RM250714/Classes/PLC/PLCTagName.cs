@@ -102,6 +102,11 @@ namespace RM.src.RM250714.Classes.PLC
         public const string ACT_Zone_Home_inPos = "PLC1_" + "ACT_Zone_Home_inPos";
 
         /// <summary>
+        /// A q quando il robot si trova in zona di safezone
+        /// </summary>
+        public const string ACT_Zone_Safe = "PLC1_" + "ACT_Zone_Safe";
+
+        /// <summary>
         /// A 1 quando il Robot si trova in zona carrello 1
         /// </summary>
         public const string ACT_Zone_Carrello1 = "PLC1_" + "ACT_Zone_Carrello1";
