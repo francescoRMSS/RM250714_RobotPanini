@@ -309,6 +309,17 @@
             </summary>
             <param name="message"></param>
         </member>
+        <member name="T:RM.src.RM250714.Classes.FR20.Exceptions.RobotConnectionException">
+            <summary>
+            Eccezioni per disconnesione del robot
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.Classes.FR20.Exceptions.RobotConnectionException.#ctor(System.String)">
+            <summary>
+            Istanzia l'eccezione
+            </summary>
+            <param name="message"></param>
+        </member>
         <member name="T:RM.src.RM250714.Classes.FR20.Exceptions.RobotKinException">
             <summary>
             Eccezioni per i calcoli di cinametica inversa o cinematica diretta da parte del robot
@@ -2915,6 +2926,11 @@
             Modalità operativa corrente.
             </summary>
         </member>
+        <member name="F:RM.src.RM250714.RobotManager.collisionLevel">
+            <summary>
+            Livello di collisioni da db
+            </summary>
+        </member>
         <member name="F:RM.src.RM250714.RobotManager.currentCollisionLevel">
             <summary>
             Livello di collisione corrente.
@@ -2948,6 +2964,41 @@
         <member name="F:RM.src.RM250714.RobotManager.connectionErrorMaxTries">
             <summary>
             Numero massimo accettato di errori di connessione -2
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.robotError">
+            <summary>
+            Positivo quando il robot è in allarme 
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.dataError">
+            <summary>
+            Positivo quando alcuni dati nel ciclo sono mancanti o errati
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.runTimeError">
+            <summary>
+            Positivo quando il ciclo va in eccezione generica durante l'esecuzione
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.robotKinError">
+            <summary>
+            Positivo quando il robot non riesce a calcolare una cinematica inversa o diretta
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.robotMovementError">
+            <summary>
+            Positivo quando il robot restituisce un allarme da un movimento
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.robotPropertiesError">
+            <summary>
+            Positivo quando il robot restituisce un allarme da un metodo che cambia alcune sue proprietà
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.robotDisconnectedError">
+            <summary>
+            Positivo quando il robot restituisce -2 n volte o il task segnala una disconnessione
             </summary>
         </member>
         <member name="F:RM.src.RM250714.RobotManager.formAlarmPage">
@@ -3108,11 +3159,6 @@
         <member name="F:RM.src.RM250714.RobotManager.stableMode">
             <summary>
             Modalità stabile da impostare dopo il debounce.
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.robotError">
-            <summary>
-            Ultimo errore del robot
             </summary>
         </member>
         <member name="F:RM.src.RM250714.RobotManager.robotStatus">
@@ -3708,11 +3754,6 @@
             </summary>
             <param name="token"></param>
             <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.PickAndPlaceTegliaIperalDemo(System.Threading.CancellationToken)">
-            <summary>
-            Esegue ciclo teglie iperal
-            </summary>
         </member>
         <member name="M:RM.src.RM250714.RobotManager.PickAndPlaceTegliaIperal(System.Threading.CancellationToken)">
             <summary>
