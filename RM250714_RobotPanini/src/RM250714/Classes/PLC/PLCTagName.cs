@@ -908,6 +908,11 @@ namespace RM.src.RM250714.Classes.PLC
         /// </summary>
         public static string RET_Zone_Beor = "PLC1_" + "com_robot_107";
 
+        /// <summary>
+        /// Zona di ingombro beor
+        /// </summary>
+        public static string RET_Zone_Safe = "PLC1_" + "com_robot_108";
+
         #endregion
 
         #endregion

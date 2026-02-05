@@ -125,6 +125,7 @@ namespace RM.src.RM250714.Classes.FR20.Properties
             {
                 log.Error("[Collision levels] Errore durante cambio livello di collisioni: " + GetErrorCode(errNum));
                 RobotManager.GenerateAlarm(0, 3);
+                RobotManager.robotPropertiesError = 1;
                 return false;
             }
             log.Info("[Collision levels] Cambio di livello collisioni a " + collisionIndex);

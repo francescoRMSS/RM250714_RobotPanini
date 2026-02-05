@@ -903,7 +903,7 @@ namespace RM.src.RM250714
             RefresherTask.AddUpdate(PLCTagName.Automatic_Start, 0, "INT16");
             RefresherTask.AddUpdate(PLCTagName.VersionYear, 2026, "INT16");
             RefresherTask.AddUpdate(PLCTagName.VersionMonth, 02, "INT16");
-            RefresherTask.AddUpdate(PLCTagName.VersionDay, 03, "INT16");
+            RefresherTask.AddUpdate(PLCTagName.VersionDay, 05, "INT16");
 
             // Faccio partire i manager
             frameManager = new Frames();
@@ -1006,6 +1006,21 @@ namespace RM.src.RM250714
 
             #endregion
 
+            #region Safe zone
+
+            // Dichiarazione del punto di safe
+            var pSafeZone = ApplicationConfig.applicationsManager.GetPosition("pSafeZone", "RM");
+
+            DescPose pointSafeZone = new DescPose(pSafeZone.x, pSafeZone.y, pSafeZone.z, pSafeZone.rx, pSafeZone.ry, pSafeZone.rz);
+
+            // Oggetto che rileva ingombro safe zone [parallelepipedo]
+            double lenght_safeZone = 2000.0;
+            double width_safeZone = 1200.0;
+            double height_safeZone = 2000.0;
+            checker_safeZone = new PositionChecker(lenght_safeZone, width_safeZone, height_safeZone);
+
+            #endregion
+
             try
             {
                 while (!token.IsCancellationRequested)
@@ -1018,6 +1033,7 @@ namespace RM.src.RM250714
                         CheckLevelCollision();
                         //CheckGripperStatus();
                         CheckIsRobotInObstructionArea(startPoints);
+                        CheckIsRobotInSafeZone(pointSafeZone);
                     }
 
                     await Task.Delay(auxiliaryThreadRefreshPeriod, token);
@@ -1032,6 +1048,7 @@ namespace RM.src.RM250714
             catch (Exception ex)
             {
                 log.Error($"[TASK] {TaskAuxiliaryWorkerName}: {ex}");
+                runTimeError = 1;
                 throw;
             }
             finally
@@ -1046,22 +1063,7 @@ namespace RM.src.RM250714
         /// </summary>
         private async static Task CheckHighPriority(CancellationToken token)
         {
-            #region Safe zone
-
-            // Dichiarazione del punto di safe
-            var pSafeZone = ApplicationConfig.applicationsManager.GetPosition("pSafeZone", "RM");
-
-            DescPose pointSafeZone = new DescPose(pSafeZone.x, pSafeZone.y, pSafeZone.z, pSafeZone.rx, pSafeZone.ry, pSafeZone.rz);
-
-            // Oggetto che rileva ingombro safe zone [parallelepipedo]
-            double lenght_safeZone = 2000.0;
-            double width_safeZone = 750.0;
-            double height_safeZone = 2000.0;
-            checker_safeZone = new PositionChecker(lenght_safeZone, width_safeZone, height_safeZone);
-
-            #endregion
-
-            checker_pos = new PositionChecker(5.0);
+           checker_pos = new PositionChecker(5.0);
 
             try
             {
@@ -1073,7 +1075,6 @@ namespace RM.src.RM250714
                         {
                             GetActualTcpPose(flag, ref TCPCurrentPosition); // Leggo posizione robot TCP corrente
                             CheckIsRobotMoving();
-                            CheckIsRobotInSafeZone(pointSafeZone);
                             CheckIsRobotInPos();
                             CheckStatusRobot();
                         }
@@ -1094,6 +1095,7 @@ namespace RM.src.RM250714
             catch (Exception ex)
             {
                 log.Error($"[TASK] {TaskHighPriorityName}: {ex}");
+                runTimeError = 1;
                 throw;
             }
             finally
@@ -1165,6 +1167,7 @@ namespace RM.src.RM250714
             catch (Exception ex)
             {
                 log.Error($"[TASK] {TaskPlcComHandlerName}: {ex}");
+                runTimeError = 1;
                 throw;
             }
             finally
@@ -1196,6 +1199,7 @@ namespace RM.src.RM250714
             catch (Exception ex)
             {
                 log.Error($"[TASK] {TaskLowPriorityName}: {ex}");
+                runTimeError = 1;
                 throw;
             }
             finally
@@ -1305,7 +1309,6 @@ namespace RM.src.RM250714
                             {
                                 CreateRobotAlarm(id, description, formattedDate, device, state);
                                 MarkAlarmAsSignaled(id);
-                                robotError = 1;
                                 robotDisconnectedError = 1;
                             }
 
@@ -1325,6 +1328,7 @@ namespace RM.src.RM250714
             catch (Exception ex)
             {
                 log.Error($"[TASK] {TaskCheckRobotConneciton}: {ex}");
+                runTimeError = 1;
                 throw;
             }
             finally
@@ -1367,6 +1371,7 @@ namespace RM.src.RM250714
             catch (Exception ex)
             {
                 log.Error($"[TASK] {TaskApplicationManager}: {ex}");
+                runTimeError = 1;
                 throw;
             }
             finally
@@ -1402,6 +1407,7 @@ namespace RM.src.RM250714
             catch (Exception ex)
             {
                 log.Error($"[TASK] {TaskSafetyManager}: {ex}");
+                runTimeError = 1;
                 throw;
             }
             finally
@@ -1727,7 +1733,7 @@ namespace RM.src.RM250714
             #endregion
 
             #region Ciclo
-            
+
             try
             {
                 GetInverseKin(descPosHome, ref jHome, "Home");
@@ -2480,28 +2486,28 @@ namespace RM.src.RM250714
                         #endregion
                           
                         case 70:
-                            /*
+                            
                             #region Check slitta avanti e presenza teglia
-
+                            /*
                             // Get slitta avanti
-                            robot.GetDI(4, 1, ref isGripperExtended);
+                            GetDI(4, 1, ref isGripperExtended);
 
                             // Get presenza teglia
-                            robot.GetDI(7, 1, ref isTrayPresent);
+                            GetDI(7, 1, ref isTrayPresent);
 
                             // Se slitta avanti e teglia presente chiudo la pinza
                             if (isGripperExtended == 1 && isTrayPresent == 1)
                             {
-                                log.Info("STEP 38 - Invio comando chiusura pinza");
+                                log.Info("STEP 70 - Invio comando chiusura pinza");
                                 // Chiusura pinza
-                                robot.SetDO(0, 0, 0, 0);
+                                //SetDO(0, 0, 0, 0);
                                 step = 80;
                             }
 
-                            break;
+                            break;*/
 
                         #endregion
-                            */
+                            
 
                         case 80:
                             #region Check chiusura pinza
@@ -2523,12 +2529,12 @@ namespace RM.src.RM250714
 
                         #endregion
 
-                            /*
+                            
                         case 90:
                             #region Check slitta indietro
-
+                            /*
                             // Get slitta indietro
-                            robot.GetDI(5, 1, ref isGripperRetracted);
+                            GetDI(5, 1, ref isGripperRetracted);
 
                             // Se la slitta è indietro
                             if (isGripperRetracted == 1)
@@ -2537,10 +2543,10 @@ namespace RM.src.RM250714
                                 step = 100;
                             }
 
-                            break;
+                            break;*/
 
                         #endregion
-                            */
+                            
 
                         case 100:
                             #region Movimento di allontanamento post chiusura pinza
@@ -2614,9 +2620,7 @@ namespace RM.src.RM250714
                         #endregion
 
                         case 120:
-                            #region Attesa inPosition punto di allontanamento pick
-                            // Get presenza teglia
-                            GetDI(7, 1, ref isTrayPresent);
+                            #region Attesa inPosition punto di allontanamento pick                           
 
                             // Get apertura pinza
                             GetDI(2, 1, ref isGripperOpen);
@@ -2624,15 +2628,30 @@ namespace RM.src.RM250714
                             // Get valore slitta indietro e presenza teglia e pinza non aperta
                             GetDI(5, 1, ref isGripperRetracted);
 
-                            if (inPosition && isGripperRetracted == 1 && isGripperOpen == 0) //&& isTrayPresent == 1) // Se arrivato in posizione e la slitta è indietro
+                            if (inPosition && isGripperRetracted == 1 && isGripperOpen == 0 ) // Se arrivato in posizione e la slitta è indietro
                             {
                                 log.Info("STEP 120 - Robot arrivato in posizione di allontanamento pick");
-                                step = 130;
+                                step = 125;
                             }
                             
                             break;
 
                         #endregion
+
+                        case 125:
+
+                            // Get presenza teglia
+                            GetDI(7, 1, ref isTrayPresent);
+
+                            if (isTrayPresent == 1)
+                            {
+                                step = 130;
+                            }
+                            else
+                            {
+                                robotError = 1;
+                            }
+                            break;
 
                         case 130:
                             #region Movimento a beor
@@ -3246,8 +3265,15 @@ namespace RM.src.RM250714
                                 homeRequested = false;
                                 homeInProgress = false;
                                 carrelloTerminato = false;
-                                //step = 0;
-                                stopCycleRoutine = true;
+
+                                if (stopCycleRequested)
+                                {
+                                    step = 999;
+                                }
+                                else
+                                {
+                                    step = 0;
+                                }
                             }
 
                             break;
@@ -3525,32 +3551,32 @@ namespace RM.src.RM250714
                 }
                 catch (RobotConnectionException ex)
                 {
-                    log.Error($"[TASK] : {TaskPickAndPlaceTegliaIperal} - robot disconnesso: {ex}");
+                    log.Error($"[TASK] : {TaskHomeRoutine} - robot disconnesso: {ex}");
                 }
                 catch (RobotPropertiesChangeException ex)
                 {
-                    log.Error($"[TASK] : {TaskPickAndPlaceTegliaIperal} - eccezione durante il cambio delle proprietà del robot: {ex}");
+                    log.Error($"[TASK] : {TaskHomeRoutine} - eccezione durante il cambio delle proprietà del robot: {ex}");
                 }
                 catch (RobotKinException ex)
                 {
-                    log.Error($"[TASK] : {TaskPickAndPlaceTegliaIperal} - eccezione durante il calcolo cinematica inversa/diretta: {ex}");
+                    log.Error($"[TASK] : {TaskHomeRoutine} - eccezione durante il calcolo cinematica inversa/diretta: {ex}");
                 }
                 catch (RobotMovementException ex)
                 {
-                    log.Error($"[TASK] : {TaskPickAndPlaceTegliaIperal} - eccezione durante il movimento del robot: {ex}");
+                    log.Error($"[TASK] : {TaskHomeRoutine} - eccezione durante il movimento del robot: {ex}");
                 }
                 catch (RunTimeException ex)
                 {
-                    log.Error($"[TASK] : {TaskPickAndPlaceTegliaIperal} - eccezione durante l'esecuzione del ciclo: {ex}");
+                    log.Error($"[TASK] : {TaskHomeRoutine} - eccezione durante l'esecuzione del ciclo: {ex}");
                 }
                 catch (DataErrorException ex)
                 {
-                    log.Error($"[TASK] : {TaskPickAndPlaceTegliaIperal} - eccezione generata da dei dati mancanti o errati: {ex}");
+                    log.Error($"[TASK] : {TaskHomeRoutine} - eccezione generata da dei dati mancanti o errati: {ex}");
                 }
                 catch (Exception ex)
                 {
                     // Azioni da eseguire quando il task va in una eccezione generica
-                    log.Error($"[TASK] : {TaskPickAndPlaceTegliaIperal} - generic exception: {ex}");
+                    log.Error($"[TASK] : {TaskHomeRoutine} - generic exception: {ex}");
                     throw;
                 }
                 finally
@@ -3650,6 +3676,7 @@ namespace RM.src.RM250714
 
                 RobotDAO.SetRobotVelocity(ConnectionString, Convert.ToInt16(velocity));
                 RobotDAO.SetRobotAcceleration(ConnectionString, Convert.ToInt16(velocity));
+                //ovl = velocity;
 
                 //Invoco metodo per cambiare etichetta velocità in homePage
                 RobotVelocityChanged?.Invoke(velocity, EventArgs.Empty);
@@ -3906,6 +3933,17 @@ namespace RM.src.RM250714
                     formAlarmPage.ClearActiveAlarms();
                     // Reset valore
                     RefresherTask.AddUpdate(PLCTagName.CMD_ResetAlarms, 0, "INT16");
+
+                    //Reset allarmi interni
+                    robotGeneralError = 0;
+                    robotError = 0;
+                    robotKinError = 0;
+                    robotMovementError = 0;
+                    robotDisconnectedError = 0;
+                    robotPropertiesError = 0;
+                    dataError = 0;
+                    runTimeError = 0;
+
                     log.Warn("Comando RESET completato");
                 }
                 catch (Exception)
@@ -4009,13 +4047,7 @@ namespace RM.src.RM250714
         private static void SendHighPriorityUpdatesToPLC()
         {
             RefresherTask.AddUpdate(PLCTagName.ApplicationComRobot_active, Convert.ToInt16(AlarmManager.isRobotConnected), "INT16"); // Scrittura comunicazione con robot attiva
-            RefresherTask.AddUpdate(PLCTagName.Robot_error, robotError, "INT16"); // Scrittura stato errore del robot
-            //RefresherTask.AddUpdate(PLCTagName.RobotDisconnectedError, robotDisconnectedError, "INT16"); // Scrittura stato connessione robot
-            //RefresherTask.AddUpdate(PLCTagName.RobotMovementError, robotMovementError, "INT16"); // Scrittura errore di moviemnto robot
-            //RefresherTask.AddUpdate(PLCTagName.RobotKinError, robotKinError, "INT16"); // Scrittura errore calcolo cinematica
-            //RefresherTask.AddUpdate(PLCTagName.RobotPropertiesError, robotPropertiesError, "INT16"); // Scrittura errore cambio proprietà del robot
-            //RefresherTask.AddUpdate(PLCTagName.DataError, dataError, "INT16"); // Scrittura errore nei dati
-            //RefresherTask.AddUpdate(PLCTagName.runtimeError, runtimeError, "INT16"); // Scrittura errore a runtime
+            RefresherTask.AddUpdate(PLCTagName.Robot_error, BuildRobotAlarm(), "INT16"); // Scrittura stato errore del robot
             RefresherTask.AddUpdate(PLCTagName.Robot_enable, robotEnableStatus, "INT16"); // Scrittura stato enable del robot
             RefresherTask.AddUpdate(PLCTagName.Robot_status, robotStatus, "INT16"); // Scrittura stato del robot
             RefresherTask.AddUpdate(PLCTagName.ACT_Step_MainCycle, step, "INT16"); // Scrittura fase ciclo main a PLC
@@ -4477,6 +4509,7 @@ namespace RM.src.RM250714
             {
                 log.Error("Errore durante update robot speed : " + errSpeed);
                 GenerateAlarm(0, 4);
+                robotPropertiesError = 1;
                 return false;
             }
             log.Info("[Speed] velocita robot impostata a : " + speedPerc);
@@ -4496,6 +4529,7 @@ namespace RM.src.RM250714
             {
                 log.Error("Errore durante update robot payload : " + errPayload);
                 GenerateAlarm(0, 4);
+                robotPropertiesError = 1;
                 return false;
             }
             log.Info("[Payload] Peso robot impostato a : " + payload);
@@ -4541,6 +4575,7 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 log.Error("Errore durante cambio frame a " + id + " : Codice errore " + err);
+                robotPropertiesError = 1;
             }
             return err;
         }
@@ -4563,6 +4598,7 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 log.Error("Errore durante cambio tool a " + id + " : Codice errore " + err);
+                robotPropertiesError = 1;
             }
             return err;
         }
@@ -4580,6 +4616,7 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 log.Error("Errore durante calcolo cinematica inversa : " + err);
+                robotPropertiesError = 1;
             }
 
             return err;
@@ -4662,6 +4699,7 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 log.Error("Errore durante calcolo cinematica inversa : " + err);
+                robotKinError = 1;
             }
 
             return err;
@@ -4691,6 +4729,7 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 log.Error("Errore durante calcolo cinematica inversa : " + err);
+                robotKinError = 1;
                 if (!string.IsNullOrEmpty(pointName))
                 {
                     throw new RobotKinException("Errore durante calcolo cinematica inversa per il punto " + pointName + " : Codice errore " + err);
@@ -4715,6 +4754,7 @@ namespace RM.src.RM250714
 
             if (err != 0)
             {
+                robotKinError = 1;
                 log.Error("Errore durante calcolo cinematica diretta : " + err);
             }
 
@@ -4736,6 +4776,7 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 log.Error("Errore durante calcolo cinematica diretta : " + err);
+                robotKinError = 1;
                 if (!string.IsNullOrEmpty(pointName))
                 {
                     throw new Exception("Errore durante calcolo cinematica diretta per il punto " + pointName + " : Codice errore " + err);
@@ -4767,6 +4808,7 @@ namespace RM.src.RM250714
             if(err != 0)
             {
                 log.Error("Errore durante moveCart: " + err);
+                robotMovementError = 1;
             }
             return err;
         }
@@ -4797,6 +4839,7 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 GetRobotMovementCode(err);
+                robotMovementError = 1;
             }
             return err;
         }
@@ -4827,6 +4870,7 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 GetRobotMovementCode(err);
+                robotMovementError = 1;
             }
             return err;
         }
@@ -4858,6 +4902,7 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 GetRobotMovementCode(err);
+                robotMovementError = 1;
             }
             return err;
         }
@@ -4889,6 +4934,7 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 GetRobotMovementCode(err);
+                robotMovementError = 1;
             }
             return err;
         }
@@ -4915,6 +4961,7 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 GetRobotMovementCode(err);
+                robotMovementError = 1;
             }
             return err;
         }
@@ -4940,6 +4987,7 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 GetRobotMovementCode(err);
+                robotMovementError = 1;
             }
             return err;
         }
@@ -4960,6 +5008,7 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 GetRobotMovementCode(err);
+                robotMovementError = 1;
             }
             return err;
         }
@@ -5186,6 +5235,34 @@ namespace RM.src.RM250714
         #endregion
 
         #region Metodi helper
+
+        /// <summary>
+        /// Impacchetta gli allarmi in un unico intero da scrivere al plc
+        /// </summary>
+        /// <returns></returns>
+        private static int BuildRobotAlarm()
+        {
+            robotGeneralError = (robotError > 0 |
+                                robotKinError > 0 |
+                                robotMovementError > 0 |
+                                robotPropertiesError > 0 |
+                                robotDisconnectedError > 0 |
+                                dataError > 0 |
+                                runTimeError > 0
+                                ) ? 1 : 0;
+
+            int errorWord = robotGeneralError;
+
+            errorWord |= robotError > 0 ? 1 << 1 : 0;
+            errorWord |= robotKinError > 0 ? 1 << 2 : 0;
+            errorWord |= robotMovementError > 0 ? 1 << 3 : 0;
+            errorWord |= robotPropertiesError > 0 ? 1 << 4 : 0;
+            errorWord |= robotDisconnectedError > 0 ? 1 << 5 : 0;
+            errorWord |= dataError > 0 ? 1 << 6 : 0;
+            errorWord |= runTimeError > 0 ? 1 << 7 : 0;
+
+            return errorWord;
+        }
 
         /// <summary>
         /// Legge lo stato di una singola Uscita Digitale (DO) del controllore.
@@ -5489,10 +5566,10 @@ namespace RM.src.RM250714
                     AlarmManager.blockingAlarm = true;
                     robotError = 1;
                 }
-                else if (maincode == 0)
-                {
-                    robotError = 0;
-                }
+                //else if (maincode == 0)
+                //{
+                //    robotError = 0;
+                //}
             }
         }
 
@@ -5812,23 +5889,22 @@ namespace RM.src.RM250714
         /// </summary>
         private static void CheckIsRobotInSafeZone(DescPose pSafeZone)
         {
-            isInSafeZone = checker_safeZone.IsInParallelepipedObstruction(pSafeZone, TCPCurrentPosition);
-
             if (!AlarmManager.isFormReady)
                 return;
 
-            if (!isInSafeZone && prevIsInSafeZone != false) // Se il robot non è nella safe zone
-            {
-                prevIsInSafeZone = false;
-                FormHomePage.Instance.RobotSafeZone.BackgroundImage = Resources.safeZone_yellow32;
-                RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Safe, 0, "INT16");
+            isInSafeZone = checker_safeZone.IsInParallelepipedObstruction(pSafeZone, TCPCurrentPosition);
 
-            }
-            else if (isInSafeZone && prevIsInSafeZone != true) // Se il robot è nella safe zone
+            bool plcIsInSafeZone = Convert.ToBoolean(PLCConfig.appVariables.getValue(PLCTagName.RET_Zone_Safe));
+
+            if (isInSafeZone && !plcIsInSafeZone) // Se il robot è nella safe zone
             {
-                prevIsInSafeZone = true;
                 FormHomePage.Instance.RobotSafeZone.BackgroundImage = Resources.safeZone_green32;
                 RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Safe, 1, "INT16");
+            }
+            else if (!isInSafeZone && plcIsInSafeZone) // Se il robot non è nella safe zone
+            {
+                FormHomePage.Instance.RobotSafeZone.BackgroundImage = Resources.safeZone_yellow32;
+                RefresherTask.AddUpdate(PLCTagName.ACT_Zone_Safe, 0, "INT16");
             }
         }
 

@@ -143,6 +143,7 @@ namespace RM.src.RM250714.Classes.FR20
             {
                 log.Error("[Frames] Errore durante cambio frame: " + GetErrorCode(errNum));
                 RobotManager.GenerateAlarm(0, 1);
+                RobotManager.robotPropertiesError = 1;
                 return false;
             }
             log.Info("[Frames] Cambio di frame a " + frameId);
@@ -184,6 +185,7 @@ namespace RM.src.RM250714.Classes.FR20
             {
                 log.Error("[Frames] Errore durante cambio frame: " + GetErrorCode(errNum));
                 RobotManager.GenerateAlarm(0, 1);
+                RobotManager.robotPropertiesError = 1;
                 return false;
             }
             log.Info("[Frames] Cambio di frame a " + frameName);

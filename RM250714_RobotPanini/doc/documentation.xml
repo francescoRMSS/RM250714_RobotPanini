@@ -1895,6 +1895,11 @@
             Zona di ingombro beor
             </summary>
         </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.RET_Zone_Safe">
+            <summary>
+            Zona di ingombro beor
+            </summary>
+        </member>
         <member name="T:RM.src.RM250714.RobotApplication">
             <summary>
             Contiene la struttura di un'applicazione Robot
@@ -4363,6 +4368,12 @@
             <param name="hwDriver5Ver"></param>
             <param name="hwDriver6Ver"></param>
             <param name="hwEndBoardVer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.BuildRobotAlarm">
+            <summary>
+            Impacchetta gli allarmi in un unico intero da scrivere al plc
+            </summary>
             <returns></returns>
         </member>
         <member name="M:RM.src.RM250714.RobotManager.TryGetSingleDOState(System.Int32,System.Boolean@,System.Int32,System.Int32)">

@@ -16,6 +16,7 @@ using RM.src.RM250714.Classes.PLC;
 using RM.src.RM250714.Forms.ScreenSaver;
 using RM.src.RM250714.Classes.FR20;
 using fairino;
+using System.Drawing.Drawing2D;
 
 namespace RM.src.RM250714
 {
@@ -982,6 +983,45 @@ namespace RM.src.RM250714
         private void button12_Click(object sender, EventArgs e)
         {
             RobotManager.SetDO(1, 1, 0, 0);
+        }
+
+        private void button13_Click(object sender, EventArgs e)
+        {
+            // Punto finale Beor
+
+            JointPos jointPosBeor = new JointPos();
+            var beor = ApplicationConfig.applicationsManager.GetPosition("pBeor", "RM");
+
+            // Creazione oggetto descPose
+            DescPose descPosBeor = new DescPose(beor.x, beor.y, beor.z, beor.rx, beor.ry, beor.rz);
+
+            // Oggetto jointPos
+            jointPosBeor = new JointPos(0, 0, 0, 0, 0, 0);
+
+            RobotManager.GetInverseKin(descPosBeor, ref jointPosBeor);
+
+            ExaxisPos epos = new ExaxisPos(0,0,0,0);
+            DescPose offset = new DescPose(0, 0, 0, 0, 0, 0);
+
+            int err3 = RobotManager.MoveL(jointPosBeor, descPosBeor,
+                               1, 2, 1000, 2000, RobotManager.ovl, 20, epos, 0, 0, offset, 0, 0, 0);
+        }
+
+        private void button14_Click(object sender, EventArgs e)
+        {
+            // home
+            JointPos jHome = new JointPos(0, 0, 0, 0, 0, 0);
+            var home = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
+
+            DescPose descPosHome = new DescPose(home.x, home.y, home.z, home.rx, home.ry, home.rz);
+
+            RobotManager.GetInverseKin(descPosHome, ref jHome);
+
+            ExaxisPos epos = new ExaxisPos(0, 0, 0, 0);
+            DescPose offset = new DescPose(0, 0, 0, 0, 0, 0);
+
+            int err3 = RobotManager.MoveL(jHome, descPosHome,
+                               1, 2, 1000, 2000, RobotManager.ovl, 20, epos, 0, 0, offset, 0, 0, 0);
         }
     } 
 }
