@@ -80,19 +80,6 @@
             this.button12 = new System.Windows.Forms.Button();
             this.button13 = new System.Windows.Forms.Button();
             this.button14 = new System.Windows.Forms.Button();
-            this.button15 = new System.Windows.Forms.Button();
-            this.button16 = new System.Windows.Forms.Button();
-            this.button17 = new System.Windows.Forms.Button();
-            this.button18 = new System.Windows.Forms.Button();
-            this.button19 = new System.Windows.Forms.Button();
-            this.button20 = new System.Windows.Forms.Button();
-            this.button22 = new System.Windows.Forms.Button();
-            this.button23 = new System.Windows.Forms.Button();
-            this.button24 = new System.Windows.Forms.Button();
-            this.button25 = new System.Windows.Forms.Button();
-            this.button26 = new System.Windows.Forms.Button();
-            this.button27 = new System.Windows.Forms.Button();
-            this.button28 = new System.Windows.Forms.Button();
             this.pnl_status.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -578,6 +565,7 @@
             this.button1.TabIndex = 308;
             this.button1.Text = "enable";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Visible = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // button2
@@ -588,6 +576,7 @@
             this.button2.TabIndex = 309;
             this.button2.Text = "Chiudi pinze";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Visible = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button3
@@ -598,6 +587,7 @@
             this.button3.TabIndex = 310;
             this.button3.Text = "Apri pinze";
             this.button3.UseVisualStyleBackColor = true;
+            this.button3.Visible = false;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // button4
@@ -622,6 +612,7 @@
             this.button5.TabIndex = 312;
             this.button5.Text = "STOP";
             this.button5.UseVisualStyleBackColor = true;
+            this.button5.Visible = false;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // button6
@@ -632,6 +623,7 @@
             this.button6.TabIndex = 313;
             this.button6.Text = "Get pinza chiusa";
             this.button6.UseVisualStyleBackColor = true;
+            this.button6.Visible = false;
             this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
             // button7
@@ -642,6 +634,7 @@
             this.button7.TabIndex = 314;
             this.button7.Text = "Get slitta indietro";
             this.button7.UseVisualStyleBackColor = true;
+            this.button7.Visible = false;
             this.button7.Click += new System.EventHandler(this.button7_Click);
             // 
             // button8
@@ -652,6 +645,7 @@
             this.button8.TabIndex = 315;
             this.button8.Text = "Chiudi pinze";
             this.button8.UseVisualStyleBackColor = true;
+            this.button8.Visible = false;
             this.button8.Click += new System.EventHandler(this.button8_Click);
             // 
             // button9
@@ -662,6 +656,7 @@
             this.button9.TabIndex = 316;
             this.button9.Text = "Get pinza aperta";
             this.button9.UseVisualStyleBackColor = true;
+            this.button9.Visible = false;
             this.button9.Click += new System.EventHandler(this.button9_Click);
             // 
             // button10
@@ -672,6 +667,7 @@
             this.button10.TabIndex = 317;
             this.button10.Text = "Get slitta avanti";
             this.button10.UseVisualStyleBackColor = true;
+            this.button10.Visible = false;
             this.button10.Click += new System.EventHandler(this.button10_Click);
             // 
             // button11
@@ -682,6 +678,7 @@
             this.button11.TabIndex = 319;
             this.button11.Text = "Indietro";
             this.button11.UseVisualStyleBackColor = true;
+            this.button11.Visible = false;
             this.button11.Click += new System.EventHandler(this.button11_Click);
             // 
             // button12
@@ -692,6 +689,7 @@
             this.button12.TabIndex = 318;
             this.button12.Text = "Avanti";
             this.button12.UseVisualStyleBackColor = true;
+            this.button12.Visible = false;
             this.button12.Click += new System.EventHandler(this.button12_Click);
             // 
             // button13
@@ -716,136 +714,6 @@
             this.button14.Visible = false;
             this.button14.Click += new System.EventHandler(this.button14_Click);
             // 
-            // button15
-            // 
-            this.button15.Location = new System.Drawing.Point(29, 350);
-            this.button15.Name = "button15";
-            this.button15.Size = new System.Drawing.Size(98, 23);
-            this.button15.TabIndex = 322;
-            this.button15.Text = "Torna in home";
-            this.button15.UseVisualStyleBackColor = true;
-            this.button15.Click += new System.EventHandler(this.button15_Click);
-            // 
-            // button16
-            // 
-            this.button16.Location = new System.Drawing.Point(29, 379);
-            this.button16.Name = "button16";
-            this.button16.Size = new System.Drawing.Size(98, 23);
-            this.button16.TabIndex = 323;
-            this.button16.Text = "Torna in home";
-            this.button16.UseVisualStyleBackColor = true;
-            this.button16.Click += new System.EventHandler(this.button16_Click);
-            // 
-            // button17
-            // 
-            this.button17.Location = new System.Drawing.Point(29, 408);
-            this.button17.Name = "button17";
-            this.button17.Size = new System.Drawing.Size(98, 23);
-            this.button17.TabIndex = 324;
-            this.button17.Text = "Torna in home";
-            this.button17.UseVisualStyleBackColor = true;
-            this.button17.Click += new System.EventHandler(this.button17_Click);
-            // 
-            // button18
-            // 
-            this.button18.Location = new System.Drawing.Point(29, 437);
-            this.button18.Name = "button18";
-            this.button18.Size = new System.Drawing.Size(98, 23);
-            this.button18.TabIndex = 325;
-            this.button18.Text = "Torna in home";
-            this.button18.UseVisualStyleBackColor = true;
-            this.button18.Click += new System.EventHandler(this.button18_Click);
-            // 
-            // button19
-            // 
-            this.button19.Location = new System.Drawing.Point(29, 466);
-            this.button19.Name = "button19";
-            this.button19.Size = new System.Drawing.Size(98, 23);
-            this.button19.TabIndex = 326;
-            this.button19.Text = "Torna in home";
-            this.button19.UseVisualStyleBackColor = true;
-            this.button19.Click += new System.EventHandler(this.button19_Click);
-            // 
-            // button20
-            // 
-            this.button20.Location = new System.Drawing.Point(29, 495);
-            this.button20.Name = "button20";
-            this.button20.Size = new System.Drawing.Size(98, 23);
-            this.button20.TabIndex = 327;
-            this.button20.Text = "Torna in home";
-            this.button20.UseVisualStyleBackColor = true;
-            this.button20.Click += new System.EventHandler(this.button20_Click);
-            // 
-            // button22
-            // 
-            this.button22.Location = new System.Drawing.Point(133, 524);
-            this.button22.Name = "button22";
-            this.button22.Size = new System.Drawing.Size(98, 23);
-            this.button22.TabIndex = 335;
-            this.button22.Text = "Torna in home";
-            this.button22.UseVisualStyleBackColor = true;
-            this.button22.Click += new System.EventHandler(this.button22_Click);
-            // 
-            // button23
-            // 
-            this.button23.Location = new System.Drawing.Point(133, 495);
-            this.button23.Name = "button23";
-            this.button23.Size = new System.Drawing.Size(98, 23);
-            this.button23.TabIndex = 334;
-            this.button23.Text = "Torna in home";
-            this.button23.UseVisualStyleBackColor = true;
-            this.button23.Click += new System.EventHandler(this.button23_Click);
-            // 
-            // button24
-            // 
-            this.button24.Location = new System.Drawing.Point(133, 466);
-            this.button24.Name = "button24";
-            this.button24.Size = new System.Drawing.Size(98, 23);
-            this.button24.TabIndex = 333;
-            this.button24.Text = "Torna in home";
-            this.button24.UseVisualStyleBackColor = true;
-            this.button24.Click += new System.EventHandler(this.button24_Click);
-            // 
-            // button25
-            // 
-            this.button25.Location = new System.Drawing.Point(133, 437);
-            this.button25.Name = "button25";
-            this.button25.Size = new System.Drawing.Size(98, 23);
-            this.button25.TabIndex = 332;
-            this.button25.Text = "Torna in home";
-            this.button25.UseVisualStyleBackColor = true;
-            this.button25.Click += new System.EventHandler(this.button25_Click);
-            // 
-            // button26
-            // 
-            this.button26.Location = new System.Drawing.Point(133, 408);
-            this.button26.Name = "button26";
-            this.button26.Size = new System.Drawing.Size(98, 23);
-            this.button26.TabIndex = 331;
-            this.button26.Text = "Torna in home";
-            this.button26.UseVisualStyleBackColor = true;
-            this.button26.Click += new System.EventHandler(this.button26_Click);
-            // 
-            // button27
-            // 
-            this.button27.Location = new System.Drawing.Point(133, 379);
-            this.button27.Name = "button27";
-            this.button27.Size = new System.Drawing.Size(98, 23);
-            this.button27.TabIndex = 330;
-            this.button27.Text = "Torna in home";
-            this.button27.UseVisualStyleBackColor = true;
-            this.button27.Click += new System.EventHandler(this.button27_Click);
-            // 
-            // button28
-            // 
-            this.button28.Location = new System.Drawing.Point(133, 350);
-            this.button28.Name = "button28";
-            this.button28.Size = new System.Drawing.Size(98, 23);
-            this.button28.TabIndex = 329;
-            this.button28.Text = "Torna in home";
-            this.button28.UseVisualStyleBackColor = true;
-            this.button28.Click += new System.EventHandler(this.button28_Click);
-            // 
             // UC_HomePage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -853,19 +721,6 @@
             this.BackColor = System.Drawing.Color.Black;
             this.BackgroundImage = global::RM.Properties.Resources.pane_cotto_al_forno_e_focacce_tenuti_scaffale;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.Controls.Add(this.button22);
-            this.Controls.Add(this.button23);
-            this.Controls.Add(this.button24);
-            this.Controls.Add(this.button25);
-            this.Controls.Add(this.button26);
-            this.Controls.Add(this.button27);
-            this.Controls.Add(this.button28);
-            this.Controls.Add(this.button20);
-            this.Controls.Add(this.button19);
-            this.Controls.Add(this.button18);
-            this.Controls.Add(this.button17);
-            this.Controls.Add(this.button16);
-            this.Controls.Add(this.button15);
             this.Controls.Add(this.button14);
             this.Controls.Add(this.button13);
             this.Controls.Add(this.button11);
@@ -979,18 +834,5 @@
         private System.Windows.Forms.Button button12;
         private System.Windows.Forms.Button button13;
         private System.Windows.Forms.Button button14;
-        private System.Windows.Forms.Button button15;
-        private System.Windows.Forms.Button button16;
-        private System.Windows.Forms.Button button17;
-        private System.Windows.Forms.Button button18;
-        private System.Windows.Forms.Button button19;
-        private System.Windows.Forms.Button button20;
-        private System.Windows.Forms.Button button22;
-        private System.Windows.Forms.Button button23;
-        private System.Windows.Forms.Button button24;
-        private System.Windows.Forms.Button button25;
-        private System.Windows.Forms.Button button26;
-        private System.Windows.Forms.Button button27;
-        private System.Windows.Forms.Button button28;
     }
 }

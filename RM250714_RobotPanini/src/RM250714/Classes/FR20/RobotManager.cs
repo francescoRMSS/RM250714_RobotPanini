@@ -234,7 +234,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// 1 in caso di allarme del robot
         /// </summary>
-        public static bool RobotGeneralError
+        private static bool RobotGeneralError
         {
             get { lock (_robotGeneralErrorLock) { return _robotGeneralError; } }
             set { lock (_robotGeneralErrorLock) { _robotGeneralError = value; } }
@@ -243,7 +243,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// 1 quando il robot è in allarme 
         /// </summary>
-        public static bool RobotError
+        private static bool RobotError
         {
             get { lock (_robotErrorLock) { return _robotError; } }
             set { lock (_robotErrorLock) { _robotError = value; } }
@@ -252,7 +252,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// 1 quando il robot non riesce a calcolare una cinematica inversa o diretta
         /// </summary>
-        public static bool RobotKinError
+        private static bool RobotKinError
         {
             get { lock (_robotKinErrorLock) { return _robotKinError; } }
             set { lock (_robotKinErrorLock) { _robotKinError = value; } }
@@ -261,7 +261,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// 1 quando il robot restituisce un allarme da un movimento
         /// </summary>
-        public static bool RobotMovementError
+        private static bool RobotMovementError
         {
             get { lock (_robotMovementErrorLock) { return _robotMovementError; } }
             set { lock (_robotMovementErrorLock) { _robotMovementError = value; } }
@@ -279,7 +279,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// 0 quando il robot restituisce -2 n volte o il task segnala una disconnessione
         /// </summary>
-        public static bool RobotConnected
+        private static bool RobotConnected
         {
             get { lock (_robotConnectedLock) { return _robotConnected; } }
             set { lock (_robotConnectedLock) { _robotConnected = value; } }
@@ -325,7 +325,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// 1 quando un ciclo va in eccezione durante l'esecuzione
         /// </summary>
-        public static bool RunTimeError
+        private static bool RunTimeError
         {
             get { lock (_runTimeErrorLock) { return _runTimeError; } }
             set { lock (_runTimeErrorLock) { _runTimeError = value; } }
@@ -334,7 +334,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// 1 quando alcuni dati nel ciclo sono mancanti o errati
         /// </summary>
-        public static bool DataError
+        private static bool DataError
         {
             get { lock (_dataErrorLock) { return _dataError; } }
             set { lock (_dataErrorLock) { _dataError = value; } }
@@ -343,7 +343,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// 1 quando mancano i consensi per la home routine o sono avvenuti degli errori nel ciclo
         /// </summary>
-        public static bool HomeRoutineError
+        private static bool HomeRoutineError
         {
             get { lock (_homeRoutineErrorLock) { return _homeRoutineError; } }
             set { lock (_homeRoutineErrorLock) { _homeRoutineError = value; } }
@@ -352,7 +352,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// 1 quando dopo aver fatto il pick della teglia, la fotocellula non rileva la teglia
         /// </summary>
-        public static bool TrayNotPresentError
+        private static bool TrayNotPresentError
         {
             get { lock (_trayNotPresentErrorLock) { return _trayNotPresentError; } }
             set { lock (_trayNotPresentErrorLock) { _trayNotPresentError = value; } }
@@ -361,7 +361,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// 1 quando dopo aver fatto il pick della teglia la pinza non ha raggiunto il fine corsa
         /// </summary>
-        public static bool GripperNotClosedError
+        private static bool GripperNotClosedError
         {
             get { lock (_gripperNotClosedErrorLock) { return _gripperNotClosedError; } }
             set { lock (_gripperNotClosedErrorLock) { _gripperNotClosedError = value; } }
@@ -370,7 +370,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// 1 quando dopo aver tirato fuori la slitta, il sensore rileva che la slitta non è fuori
         /// </summary>
-        public static bool SlideNotOutError
+        private static bool SlideNotOutError
         {
             get { lock (_slideNotOutErrorLock) { return _slideNotOutError; } }
             set { lock (_slideNotOutErrorLock) { _slideNotOutError = value; } }
@@ -379,7 +379,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// 1 quando dopo aver tirato dentro la slitta, il sensore rileva che la slitta non è dentro
         /// </summary>
-        public static bool SlideNotInError
+        private static bool SlideNotInError
         {
             get { lock (_slideNotInErrorLock) { return _slideNotInError; } }
             set { lock (_slideNotInErrorLock) { _slideNotInError = value; } }
