@@ -766,24 +766,6 @@ namespace RM.src.RM250714
                 return;
             }
 
-           /* if (ris == 0) // Se la pinza è chiusa
-            {
-                CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Pinza chiusa. Impossibile avviare il ciclo.");
-                return;
-            }*/
-
-            // Se l'avvio dell'applicazione parte dal primo punto
-            if (RobotManager.currentIndex < 0)
-            {
-                 if (CustomMessageBox.Show(MessageBoxTypeEnum.WARNING, "Procedere con l'avvio dell'applicazione?") != DialogResult.OK)
-                     return;
-            }
-            else // Se l'applicazione riprende da un punto precedente
-            {
-                 if (CustomMessageBox.Show(MessageBoxTypeEnum.WARNING, "Riprendere la riproduzione dell'applicazione?") != DialogResult.OK)
-                     return;
-            }
-
             // Avvio ciclo di teglie
             RobotManager.taskManager.AddAndStartTask(
                 RobotManager.TaskPickAndPlaceTegliaIperal, 

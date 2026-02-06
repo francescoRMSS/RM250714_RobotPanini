@@ -31,34 +31,6 @@ namespace RM.src.RM250714.Forms.Plant
         #region Metodi di FormDiagnostics
 
         /// <summary>
-        /// Inizializzazione parametri
-        /// </summary>
-        /// <returns></returns>
-        private async Task InitParameters()
-        {
-            object fasePLC;
-
-            lock (PLCConfig.appVariables)
-            {
-                fasePLC = PLCConfig.appVariables.getValue("PLC1_" + "fasePLC");
-            }
-
-            // Aggiorna la UI nel thread della UI
-            if (InvokeRequired)
-            {
-                Invoke(new Action(() =>
-                {
-                    UpdateUI(fasePLC);
-                }));
-            }
-            else
-            {
-                UpdateUI(fasePLC);
-            }
-
-        }
-
-        /// <summary>
         /// Aggiornamento dell'UI
         /// </summary>
         /// <param name="fasePLC"></param>

@@ -342,17 +342,9 @@ namespace RM.src.RM250714
         /// </summary>
         public static bool stopCycleRequested = false;
         /// <summary>
-        /// A true quando viene richiesta una pausa del ciclo.
-        /// </summary>
-        public static bool pauseCycleRequested = false;
-        /// <summary>
         /// A true quando il ciclo deve riprendere da un punto precedente.
         /// </summary>
         public static bool riprendiCiclo = false;
-        /// <summary>
-        /// Indica l'indice del punto corrente nel ciclo.
-        /// </summary>
-        public static int currentIndex = -1;
 
         // --- Stato catena ---
         /// <summary>
@@ -370,22 +362,6 @@ namespace RM.src.RM250714
         /// </summary>
         public static bool isEnabledNow = false;
         /// <summary>
-        /// Stato precedente isEnable.
-        /// </summary>
-        private static bool prevIsEnable = false;
-        /// <summary>
-        /// Stato precedente isNotEnable.
-        /// </summary>
-        private static bool prevIsNotEnable = false;
-        /// <summary>
-        /// Rappresenta il valore della modalità automatica nello step precedente.
-        /// </summary>
-        private static bool prevIsAuto = false;
-        /// <summary>
-        /// Rappresenta il valore della modalità manuale nello step precedente.
-        /// </summary>
-        private static bool prevIsManual = false;
-        /// <summary>
         /// Rappresenta il valore della modalità Off nello step precedente.
         /// </summary>
         private static bool prevIsOff = false;
@@ -393,10 +369,6 @@ namespace RM.src.RM250714
         /// Modalità precedente letta dal PLC.
         /// </summary>
         private static int lastMode = -1;
-        /// <summary>
-        /// Timestamp dell'ultima modifica di modalità.
-        /// </summary>
-        private static DateTime lastModeChangeTime;
         /// <summary>
         /// Modalità stabile da impostare dopo il debounce.
         /// </summary>
@@ -914,6 +886,7 @@ namespace RM.src.RM250714
             ROBOT_STATE_PKG robot_state_pkg = new ROBOT_STATE_PKG();
             GetRobotRealTimeState(ref robot_state_pkg);
             currentRobotMode = robot_state_pkg.robot_mode;
+            currentRobotEnableStatus = robot_state_pkg.rbtEnableState;
             isAutomaticMode = currentRobotMode == 0;
 
             // Se fallisce setting della proprietà del Robot
@@ -1023,13 +996,27 @@ namespace RM.src.RM250714
 
             try
             {
+                if (carrello1 == null)
+                    throw new DataErrorException("Il punto di ingombro carrello 1 non esiste");
+
+                if (carrello2 == null)
+                    throw new DataErrorException("Il punto di ingombro carrello 2 non esiste");
+
+                if (homePose == null)
+                    throw new DataErrorException("Il punto di ingombro home non esiste");
+
+                if (IngombroBeorPose == null)
+                    throw new DataErrorException("Il punto di ingombro beor non esiste");
+
+                if (pSafeZone == null)
+                    throw new DataErrorException("Il punto di safe zone non esiste");
+
                 while (!token.IsCancellationRequested)
                 {
                     if (AlarmManager.isRobotConnected)
                     {
                         await CheckIsRobotEnable();
-                        CheckRobotMode();
-                        CheckCurrentToolAndUser();
+                        await CheckRobotMode();
                         CheckLevelCollision();
                         //CheckGripperStatus();
                         CheckIsRobotInObstructionArea(startPoints);
@@ -1044,6 +1031,11 @@ namespace RM.src.RM250714
             catch (OperationCanceledException)
             {
                 throw;
+            }
+            catch (DataErrorException ex)
+            {
+                log.Error($"[TASK] {TaskAuxiliaryWorkerName} Data error: {ex}");
+                dataError = 1;
             }
             catch (Exception ex)
             {
@@ -1162,6 +1154,7 @@ namespace RM.src.RM250714
                 {
                     CheckPLCConnection();
                     GetRobotErrorCode();
+                    CheckCurrentToolAndUser();
 
                     await Task.Delay(lowPriorityRefreshPeriod, token);
                 }
@@ -1706,6 +1699,12 @@ namespace RM.src.RM250714
 
             try
             {
+                if (home == null)
+                    throw new DataErrorException("Il punto di home position non esiste");
+
+                if (beor == null)
+                    throw new DataErrorException("Il punto di beor non esiste");
+
                 GetInverseKin(descPosHome, ref jHome, "Home");
                 GetInverseKin(descPosBeor, ref jointPosBeor, "Beor");
                 GetInverseKin(descPosRotationPreBeor, ref jointPosRotationPreBeor, "Rotazione pre Beor");
@@ -3269,31 +3268,39 @@ namespace RM.src.RM250714
             catch (RobotConnectionException ex)
             {
                 log.Error($"[TASK] : {TaskPickAndPlaceTegliaIperal} - robot disconnesso: {ex}");
+                robotDisconnectedError = 1;
+
             }
             catch (RobotPropertiesChangeException ex)
             {
                 log.Error($"[TASK] : {TaskPickAndPlaceTegliaIperal} - eccezione durante il cambio delle proprietà del robot: {ex}");
+                robotPropertiesError = 1;
             }
             catch (RobotKinException ex)
             {
                 log.Error($"[TASK] : {TaskPickAndPlaceTegliaIperal} - eccezione durante il calcolo cinematica inversa/diretta: {ex}");
+                robotKinError = 1;
             }
             catch (RobotMovementException ex)
             {
                 log.Error($"[TASK] : {TaskPickAndPlaceTegliaIperal} - eccezione durante il movimento del robot: {ex}");
+                robotMovementError = 1;
             }
             catch (RunTimeException ex)
             {
                 log.Error($"[TASK] : {TaskPickAndPlaceTegliaIperal} - eccezione durante l'esecuzione del ciclo: {ex}");
+                runTimeError = 1;
             }
             catch (DataErrorException ex)
             {
                 log.Error($"[TASK] : {TaskPickAndPlaceTegliaIperal} - eccezione generata da dei dati mancanti o errati: {ex}");
+                dataError = 1;
             }
             catch (Exception ex)
             {
                 // Azioni da eseguire quando il task va in una eccezione generica
                 log.Error($"[TASK] : {TaskPickAndPlaceTegliaIperal} - generic exception: {ex}");
+                runTimeError = 1;
                 throw;
             }
             finally
@@ -3384,6 +3391,15 @@ namespace RM.src.RM250714
 
                 try
                 {
+                    if (restPose == null)
+                        throw new DataErrorException("Il punto di home position non esiste");
+
+                    if (beor == null)
+                        throw new DataErrorException("Il punto di beor non esiste");
+
+                    if (safeZone == null)
+                        throw new DataErrorException("Il punto di safeZone non esiste");
+
                     while (!stopHomeRoutine && !token.IsCancellationRequested) // Fino a quando non termino la home routine
                     {
                         switch (stepHomeRoutine)
@@ -3405,48 +3421,40 @@ namespace RM.src.RM250714
                             case 5:
                                 #region Check zone di ingmboro e movimento a punto di approach home
 
-                                try
+                                if (robotDangerousPoseCarrello)
                                 {
-                                    if (robotDangerousPoseCarrello)
-                                    {
-                                        DescPose pApproach = new DescPose(
-                                            TCPCurrentPosition.tran.x,
-                                            pHome.tran.y,
-                                            TCPCurrentPosition.tran.z,
-                                            TCPCurrentPosition.rpy.rx,
-                                            TCPCurrentPosition.rpy.ry,
-                                            TCPCurrentPosition.rpy.rz);
+                                    DescPose pApproach = new DescPose(
+                                        TCPCurrentPosition.tran.x,
+                                        pHome.tran.y,
+                                        TCPCurrentPosition.tran.z,
+                                        TCPCurrentPosition.rpy.rx,
+                                        TCPCurrentPosition.rpy.ry,
+                                        TCPCurrentPosition.rpy.rz);
 
-                                        GoToApproachHomePosition(pApproach);
-                                        endingPoint = pApproach;
-                                        stepHomeRoutine = 6;
-                                    }
-                                    else
+                                    GoToApproachHomePosition(pApproach);
+                                    endingPoint = pApproach;
+                                    stepHomeRoutine = 6;
+                                }
+                                else
                                     if (robotDangerousPoseBeor)
-                                    {
-                                        DescPose pApproach = new DescPose(
-                                            pBeor.tran.x - offsetBeor,
-                                            TCPCurrentPosition.tran.y,
-                                            TCPCurrentPosition.tran.z,
-                                            TCPCurrentPosition.rpy.rx,
-                                            TCPCurrentPosition.rpy.ry,
-                                            TCPCurrentPosition.rpy.rz);
-
-                                        GoToApproachHomePosition(pApproach);
-                                        endingPoint = pApproach;
-                                        stepHomeRoutine = 6;
-                                    }
-                                    else
-                                    {
-                                        stepHomeRoutine = 10;
-                                    }
-
-                                }
-                                catch (Exception e)
                                 {
-                                    log.Error("Errore durante movimento robot : " + e.Message);
-                                    throw;
+                                    DescPose pApproach = new DescPose(
+                                        pBeor.tran.x - offsetBeor,
+                                        TCPCurrentPosition.tran.y,
+                                        TCPCurrentPosition.tran.z,
+                                        TCPCurrentPosition.rpy.rx,
+                                        TCPCurrentPosition.rpy.ry,
+                                        TCPCurrentPosition.rpy.rz);
+
+                                    GoToApproachHomePosition(pApproach);
+                                    endingPoint = pApproach;
+                                    stepHomeRoutine = 6;
                                 }
+                                else
+                                {
+                                    stepHomeRoutine = 10;
+                                }
+
                                 break;
 
                             #endregion
@@ -3463,19 +3471,11 @@ namespace RM.src.RM250714
                             case 10:
                                 #region Movimento a punto di home
 
-                                try
-                                {
-                                    //MoveRobotToSafePosition();
-                                    GoToHomePosition();
-                                    endingPoint = pHome;
+                                //MoveRobotToSafePosition();
+                                GoToHomePosition();
+                                endingPoint = pHome;
 
-                                    stepHomeRoutine = 20;
-                                }
-                                catch (Exception e)
-                                {
-                                    log.Error("Errore durante movimento robot : " + e.Message);
-                                    throw;
-                                }
+                                stepHomeRoutine = 20;
 
                                 break;
 
@@ -3522,31 +3522,38 @@ namespace RM.src.RM250714
                 catch (RobotConnectionException ex)
                 {
                     log.Error($"[TASK] : {TaskHomeRoutine} - robot disconnesso: {ex}");
+                    robotDisconnectedError = 1;
                 }
                 catch (RobotPropertiesChangeException ex)
                 {
                     log.Error($"[TASK] : {TaskHomeRoutine} - eccezione durante il cambio delle proprietà del robot: {ex}");
+                    robotPropertiesError = 1;
                 }
                 catch (RobotKinException ex)
                 {
                     log.Error($"[TASK] : {TaskHomeRoutine} - eccezione durante il calcolo cinematica inversa/diretta: {ex}");
+                    robotKinError = 1;
                 }
                 catch (RobotMovementException ex)
                 {
                     log.Error($"[TASK] : {TaskHomeRoutine} - eccezione durante il movimento del robot: {ex}");
+                    robotMovementError = 1;
                 }
                 catch (RunTimeException ex)
                 {
                     log.Error($"[TASK] : {TaskHomeRoutine} - eccezione durante l'esecuzione del ciclo: {ex}");
+                    runTimeError = 1;
                 }
                 catch (DataErrorException ex)
                 {
                     log.Error($"[TASK] : {TaskHomeRoutine} - eccezione generata da dei dati mancanti o errati: {ex}");
+                    dataError = 1;
                 }
                 catch (Exception ex)
                 {
                     // Azioni da eseguire quando il task va in una eccezione generica
                     log.Error($"[TASK] : {TaskHomeRoutine} - generic exception: {ex}");
+                    runTimeError = 1;
                     throw;
                 }
                 finally
@@ -3810,54 +3817,6 @@ namespace RM.src.RM250714
         }
 
         /// <summary>
-        /// Check su comando di registrazione punto derivante da plc
-        /// </summary>
-        private static async Task CheckCommandRecordPoint()
-        {
-            // int recordPointCommand = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.SelectedPointRecordCommandIn));
-
-            int recordPointCommand = 0;
-
-            if (recordPointCommand > 0 && previousRecordPointRequest != recordPointCommand)
-            {
-                log.Warn("Richiesto comando RECORD su punto: " + recordPointCommand);
-
-                // Registrazione punto 
-
-                DescPose newPoint = await Task.Run(() => RecPoint());
-                RecordPoint?.Invoke(null, new RobotPointRecordingEventArgs(recordPointCommand, newPoint));
-
-                //Scrivo sul PLC i nuovi valori
-                switch (recordPointCommand)
-                {
-                    // Punto 1
-                    case 1:
-                        break;
-                    // Punto 2
-                    case 2:
-                        break;
-                    // Punto 3
-                    case 3:
-                        break;
-                    // Punto 4
-                    case 4:
-                        break;
-                    // Altrimenti
-                    default:
-                        log.Warn($"Tentativo di sovrascrivere il punto: {recordPointCommand}, operazione annullata.");
-                        break;
-                }
-
-                log.Warn("Comando record point completato");
-                previousRecordPointRequest = recordPointCommand;
-            }
-            else if(recordPointCommand == 0)
-            {
-                previousRecordPointRequest = 0;
-            }
-        }
-
-        /// <summary>
         /// Esegue check apertura/chiusura pinza
         /// </summary>
         /// <returns></returns>
@@ -3934,9 +3893,7 @@ namespace RM.src.RM250714
 
         private static void AbortTasks()
         {
-            taskManager.StopTask(nameof(CheckHighPriority));
-            taskManager.StopTask(nameof(CheckLowPriority));
-            taskManager.StopTask(TaskHomeRoutine);
+
         }
 
         private static void ReStartTasks()
@@ -4081,19 +4038,15 @@ namespace RM.src.RM250714
             // Controllo se il robot è abilitato tramite PLC
             isEnabledNow = Convert.ToBoolean(PLCConfig.appVariables.getValue(PLCTagName.Enable));
 
-            if (isEnabledNow && !prevIsEnable)
+            if (isEnabledNow && currentRobotEnableStatus != 1)
             {
                 // Abilitazione del robot
                 log.Warn("[ENABLE] Richiesta abilitazione robot");
                 EnableRobot(1);
-                prevIsEnable = true;
-                prevIsNotEnable = false; // Resetta lo stato "non abilitato"
-                AlarmManager.blockingAlarm = false;
+                //AlarmManager.blockingAlarm = false;
                 robotEnableStatus = 1;
-                currentIndex = -1;
-                log.Warn("[ENABLE] Abilitazione robot completata");
             }
-            else if (!isEnabledNow && !prevIsNotEnable)
+            else if (!isEnabledNow && currentRobotEnableStatus != 0)
             {
                 // Disabilitazione del robot
                 log.Warn("[ENABLE] Richiesta disabilitazione robot");
@@ -4102,15 +4055,10 @@ namespace RM.src.RM250714
                 JogMovement.StopJogRobotTask(); // Ferma il task di Jog
                 await Task.Delay(10);
                 EnableRobot(0);
-                prevIsNotEnable = true;
-                prevIsEnable = false; // Resetta lo stato "abilitato"
-                prevIsManual = false;
-                pauseCycleRequested = false;
-                currentIndex = -1;
                 robotEnableStatus = 0;
-                log.Warn("[ENABLE] Disabilitazione robot completata");
             }
         }
+
         /// <summary>
         /// Metodo che ferma il robot e cancella la coda di punti
         /// </summary>
@@ -4151,10 +4099,6 @@ namespace RM.src.RM250714
 
         }
 
-        /// <summary>
-        /// Check su movimento del Robot
-        /// </summary>
-        /// <param name="updates"></param>
         /// <summary>
         /// Check su movimento del Robot
         /// </summary>
@@ -4255,7 +4199,7 @@ namespace RM.src.RM250714
             GetInverseKin(pHome, ref jointTarget, "Go To Home position");
 
             int result = MoveL(jointTarget, pHome,
-                tool, user, homeRoutineVel, homeRoutineAcc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+                tool, user, homeRoutineVel, homeRoutineAcc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
             if (result != 0)
                 throw new RobotMovementException("Err code: " + result);
@@ -4280,7 +4224,7 @@ namespace RM.src.RM250714
             GetInverseKin(target, ref jointTarget, "Go to approach home position");
 
             int result = MoveL(jointTarget, target,
-                tool, user, homeRoutineVel, homeRoutineAcc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+                tool, user, homeRoutineVel, homeRoutineAcc, ovl, blendR, epos, search, offsetFlag, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
             if (result != 0)
                 throw new RobotMovementException("Err code: " + result);
@@ -4363,13 +4307,6 @@ namespace RM.src.RM250714
                 else
                     log.Error("disable robot err: " + err);
             }
-            else
-            {
-                if (enableFlag == 1)
-                    log.Info("enable robot err: " + err);
-                else
-                    log.Info("disable robot err: " + err);
-            }
             return err;
         }
 
@@ -4389,11 +4326,7 @@ namespace RM.src.RM250714
 
             if (err != 0)
             {
-                log.Error("Errore durante cambio modalità robot a " + mode + " : Codice errore " + err);
-            }
-            else
-            {
-                log.Info("Cambio modalità robot a " + mode + " completato");
+                log.Error("Errore durante cambio modalita robot a " + mode + " : Codice errore " + err);
             }
             return err;
         }
@@ -4407,10 +4340,6 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 log.Error("reset robot alarms err: " + err);
-            }
-            else
-            {
-                log.Info("reset robot alarms err: " + err);
             }
             return err;
         }
@@ -5488,80 +5417,23 @@ namespace RM.src.RM250714
         /// <summary>
         /// Esegue check su modalità Robot
         /// </summary>
-        private static void CheckRobotMode()
+        private static async Task CheckRobotMode()
         {
             // Ottieni la modalità operativa dal PLC
             mode = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Operating_Mode));
 
-            // Controlla se la modalità è cambiata rispetto all'ultima lettura
-            if (mode != lastMode)
-            {
-                // Aggiorna l'ultima modalità letta e il timestamp
-                lastMode = mode;
-                lastModeChangeTime = DateTime.Now;
-                return; // Aspettiamo che il valore si stabilizzi
-            }
-            /*
-            // Verifica se la modalità è rimasta invariata per almeno 1 secondo
-            if (DateTime.Now - lastModeChangeTime < TimeSpan.FromSeconds(1) && mode != stableMode)
-            {
-                // Modalità confermata stabile: aggiorniamo lo stato
-                stableMode = mode;
-
-                // Cambia la modalità del robot in base alla modalità stabile
-                if (stableMode == 1 && !prevIsAuto) // Passaggio alla modalità automatica
-                { 
-                    log.Warn("[Mode] Cambio modalità in AUTO");
-                    isAutomaticMode = true;
-                    SetRobotMode(0); // Imposta il robot in modalità automatica
-                    JogMovement.StopJogRobotTask(); // Ferma il thread di movimento manuale
-                    prevIsAuto = true;
-                    prevIsManual = false;
-                    prevIsOff = false;
-                    TriggerRobotModeChangedEvent(1);  // Evento: modalità automatica
-                }
-                else if (stableMode == 2 && !prevIsManual) // Passaggio alla modalità manuale
-                {
-                    log.Warn("[Mode] Cambio modalità in MANUAL");
-                    isAutomaticMode = false;
-                    SetRobotMode(1); // Imposta il robot in modalità manuale
-                    prevIsManual = true;
-                    prevIsAuto = false;
-                    prevIsOff = false;
-                    TriggerRobotModeChangedEvent(0);  // Evento: modalità manuale
-                }
-                else if (stableMode == 0 && !prevIsOff) // Passaggio alla modalità Off
-                {
-                    log.Warn("[Mode] Cambio modalità in OFF");
-                    prevIsOff = true;
-                    prevIsAuto = false;
-                    prevIsManual = false;
-                    TriggerRobotModeChangedEvent(3);  // Evento: modalità Off
-                }
-            }
-
-            // Esegui logiche aggiuntive come il movimento manuale (Jog)
-            if (isEnabledNow && stableMode == 2)
-            {
-                JogMovement.StartJogRobotTask(); // Avvia il thread di movimento manuale (Jog)
-            }*/
-            if (DateTime.Now - lastModeChangeTime < TimeSpan.FromSeconds(1))
-            {
-                return; // Aspetta che il valore del PLC sia stabile
-            }
             // CASO A: Il PLC vuole la modalità AUTOMATICA
             if (mode == 1) // 1 = AUTO secondo la tua logica PLC
             {
                 // Se il robot NON è GIA' in automatico...
                 if (currentRobotMode != 0) // 0 = AUTOMATICO secondo la libreria robot
                 {
-                    log.Warn("[Mode] Cambio modalità in AUTO");
+                    await Task.Delay(1000);
+                    log.Warn("[Mode] Cambio modalita in AUTO");
                     isAutomaticMode = true;
+                    prevIsOff = false;
                     SetRobotMode(0); // Imposta il robot in modalità automatica
                     JogMovement.StopJogRobotTask(); // Ferma il thread di movimento manuale
-                    prevIsAuto = true;
-                    prevIsManual = false;
-                    prevIsOff = false;
                     TriggerRobotModeChangedEvent(1);  // Evento: modalità automatica
                 }
             }
@@ -5571,12 +5443,11 @@ namespace RM.src.RM250714
                 // Se il robot NON è GIA' in manuale...
                 if (currentRobotMode != 1) // 1 = MANUALE secondo la libreria robot
                 {
-                    log.Warn("[Mode] Cambio modalità in MANUAL");
+                    await Task.Delay(1000);
+                    log.Warn("[Mode] Cambio modalita in MANUAL");
                     isAutomaticMode = false;
-                    SetRobotMode(1); // Imposta il robot in modalità manuale
-                    prevIsManual = true;
-                    prevIsAuto = false;
                     prevIsOff = false;
+                    SetRobotMode(1); // Imposta il robot in modalità manuale
                     TriggerRobotModeChangedEvent(0);  // Evento: modalità manuale
                 }
 
@@ -5593,11 +5464,10 @@ namespace RM.src.RM250714
             {
                 if (!prevIsOff)
                 {
-                    log.Warn("[Mode] Cambio modalità in OFF");
+                    //await Task.Delay(100);
+                    log.Warn("[Mode] Cambio modalita in OFF");
                     isAutomaticMode = false;
                     prevIsOff = true;
-                    prevIsAuto = false;
-                    prevIsManual = false;
                     TriggerRobotModeChangedEvent(3);  // Evento: modalità Off
                 }
             }
@@ -5609,14 +5479,11 @@ namespace RM.src.RM250714
         private static void CheckStatusRobot()
         {
             ROBOT_STATE_PKG robot_state_pkg = new ROBOT_STATE_PKG();
-            byte mov_robot_state;
 
-            //robot.GetRobotRealTimeState(ref robot_state_pkg);
             int err = GetRobotRealTimeState(ref robot_state_pkg);
             if (err == 0)
             {
-                mov_robot_state = robot_state_pkg.robot_state;
-                robotStatus = mov_robot_state;
+                robotStatus = robot_state_pkg.robot_state;
                 currentRobotMode = robot_state_pkg.robot_mode;
                 currentRobotEnableStatus = robot_state_pkg.rbtEnableState;
 
@@ -5707,9 +5574,9 @@ namespace RM.src.RM250714
 
                     robotCycleStopRequested = false;
 
-                    ClearRobotAlarm();
-                    ClearRobotQueue();
-                    ResetRobotSteps();
+                    //ClearRobotAlarm();
+                    //ClearRobotQueue();
+                    //ResetRobotSteps();
 
                     prevIsPlcConnected = true;
                 }

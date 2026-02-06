@@ -2632,19 +2632,9 @@
             A true quando si richiede lo stop del ciclo del Robot.
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.pauseCycleRequested">
-            <summary>
-            A true quando viene richiesta una pausa del ciclo.
-            </summary>
-        </member>
         <member name="F:RM.src.RM250714.RobotManager.riprendiCiclo">
             <summary>
             A true quando il ciclo deve riprendere da un punto precedente.
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.currentIndex">
-            <summary>
-            Indica l'indice del punto corrente nel ciclo.
             </summary>
         </member>
         <member name="F:RM.src.RM250714.RobotManager.chainPos">
@@ -2662,26 +2652,6 @@
             Stato attuale isEnabled del robot.
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.prevIsEnable">
-            <summary>
-            Stato precedente isEnable.
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.prevIsNotEnable">
-            <summary>
-            Stato precedente isNotEnable.
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.prevIsAuto">
-            <summary>
-            Rappresenta il valore della modalità automatica nello step precedente.
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.prevIsManual">
-            <summary>
-            Rappresenta il valore della modalità manuale nello step precedente.
-            </summary>
-        </member>
         <member name="F:RM.src.RM250714.RobotManager.prevIsOff">
             <summary>
             Rappresenta il valore della modalità Off nello step precedente.
@@ -2690,11 +2660,6 @@
         <member name="F:RM.src.RM250714.RobotManager.lastMode">
             <summary>
             Modalità precedente letta dal PLC.
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.lastModeChangeTime">
-            <summary>
-            Timestamp dell'ultima modifica di modalità.
             </summary>
         </member>
         <member name="F:RM.src.RM250714.RobotManager.stableMode">
@@ -3342,11 +3307,6 @@
             Check su accesso barriere
             </summary>
         </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckCommandRecordPoint">
-            <summary>
-            Check su comando di registrazione punto derivante da plc
-            </summary>
-        </member>
         <member name="M:RM.src.RM250714.RobotManager.CheckGripperStatus">
             <summary>
             Esegue check apertura/chiusura pinza
@@ -3429,10 +3389,6 @@
             <param name="e"></param>
         </member>
         <member name="M:RM.src.RM250714.RobotManager.CheckIsRobotMoving">
-            <summary>
-            Check su movimento del Robot
-            </summary>
-            <param name="updates"></param>
             <summary>
             Check su movimento del Robot
             </summary>
@@ -4138,12 +4094,6 @@
             <summary>
             Comunica diagnostica del programma
             </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.FormDiagnostics.InitParameters">
-            <summary>
-            Inizializzazione parametri
-            </summary>
-            <returns></returns>
         </member>
         <member name="M:RM.src.RM250714.Forms.Plant.FormDiagnostics.UpdateUI(System.Object)">
             <summary>
