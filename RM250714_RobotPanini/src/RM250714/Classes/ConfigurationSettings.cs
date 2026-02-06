@@ -2,7 +2,6 @@
 using RM.src.RM250714.Classes.PLC;
 using RMLib.Alarms;
 using RMLib.DataAccess;
-using RMLib.Environment;
 using RMLib.Logger;
 using RMLib.MessageBox;
 using RMLib.PLC;
@@ -10,7 +9,6 @@ using RMLib.Security;
 using RMLib.Translations;
 using RMLib.Utils;
 using RMLib.View;
-using System;
 using System.Data;
 using System.Linq;
 using System.Reflection;
@@ -26,6 +24,7 @@ namespace RM.src.RM250714
     public class ConfigurationSettings
     {
         #region Proprietà della classe ConfigurationSettings
+
         /// <summary>
         /// Logger
         /// </summary>
@@ -36,12 +35,6 @@ namespace RM.src.RM250714
         /// </summary>
         public static DataTable configurationProperties;
 
-
-        /// <summary>
-        /// Metodo attuale in esecuzione
-        /// </summary>
-        readonly string className;
-
         #endregion
 
         /// <summary>
@@ -49,7 +42,7 @@ namespace RM.src.RM250714
         /// </summary>
         public ConfigurationSettings()
         {
-            className = MethodBase.GetCurrentMethod().DeclaringType.Name;
+           
         }
 
         #region Metodi della classe ConfigurationSettings
@@ -75,10 +68,9 @@ namespace RM.src.RM250714
             log.Info("ENVIRONMENT SETTING: " + RMLib.Environment.Environment.GetEnvironment());
             log.Info("********** Application is starting... **********");
 
-            if (!Configuration.basicConfigurationFromFile())
+            if (!Configuration.BasicConfigurationFromFile())
             {
                 CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Error during get basic info from file");
-                //MessageBox.Show("Error during get basic info from file", "Error configuration file", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 log.Error("Error during get basic info from file");
                 Application.Exit();
             }
@@ -92,7 +84,6 @@ namespace RM.src.RM250714
             {
                 log.Error("Error during configuration_properties configuration");
                 CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Error during configuration_properties configuration");
-                //MessageBox.Show("Error during configuration_properties configuration", "Error configuration_properties configuration", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             // ProgressBar a 30%
@@ -103,7 +94,6 @@ namespace RM.src.RM250714
             if (ExisistingInstanceProgram())
             {
                 CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Error during configuration_properties configuration");
-                //MessageBox.Show("Another instance is in execution!", "Error lock file", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 log.Error("Another instance is in execution!");
                 Application.Exit();
             }
@@ -126,7 +116,6 @@ namespace RM.src.RM250714
             {
                 log.Error("Error during plc configuration loading");
                 CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Error during plc configuration loading");
-                //MessageBox.Show("Error during plc configuration loading", "Error plc configuration", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Application.Exit();
             }
 
@@ -134,7 +123,6 @@ namespace RM.src.RM250714
             {
                 log.Error("Error during plc configuration loading");
                 CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Error during plc configuration loading");
-                //MessageBox.Show("Error during plc configuration loading", "Error plc configuration", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Application.Exit();
             }
 
@@ -146,7 +134,6 @@ namespace RM.src.RM250714
             {
                 log.Error("Error during plc configuration loading");
                 CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Error during plc configuration loading");
-                //MessageBox.Show("Error during plc configuration loading", "Error plc configuration", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Application.Exit();
             }
 
@@ -159,7 +146,6 @@ namespace RM.src.RM250714
             {
                 log.Error("Error during security loading");
                 CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Error during security loading");
-                //MessageBox.Show("Error during security loading", "Error during security loading", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             //ProgressBar a 60%
@@ -182,7 +168,6 @@ namespace RM.src.RM250714
                 {
                     log.Error("Error during applications loading");
                     CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Error during applications loading");
-                    //MessageBox.Show("Error during applications loading", "Error applications loading", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
 
@@ -233,11 +218,7 @@ namespace RM.src.RM250714
             {
                 log.Error("Error during load translations");
                 CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Error during load translations");
-                //MessageBox.Show("Error during load translations", "Error load translations", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
-            //Configurazione screen saver manager - 60s
-            //ScreenSaverManager screenSaverManager = new ScreenSaverManager(5000, "screenSaver.mp4");
 
             //ProgressBar a 100%
             progressBar1.Increment(10);

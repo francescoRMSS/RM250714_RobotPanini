@@ -13,10 +13,8 @@ using RM.Properties;
 using System.Drawing;
 using RMLib.VATView;
 using RM.src.RM250714.Classes.PLC;
-using RM.src.RM250714.Forms.ScreenSaver;
 using RM.src.RM250714.Classes.FR20;
 using fairino;
-using System.Drawing.Drawing2D;
 
 namespace RM.src.RM250714
 {
@@ -32,23 +30,6 @@ namespace RM.src.RM250714
         #endregion
 
         #region Proprietà di UC_HomePage
-
-        #region Colori
-
-        /// <summary>
-        /// Colore associato alle righe lw per gli spostamenti verso un punto
-        /// </summary>
-        private readonly Color MoveToPointColor = Color.Orange;
-        /// <summary>
-        /// Colore associato alle righe lw per i punti presi e salvati
-        /// </summary>
-        private readonly Color GenericPointColor = Color.White;
-        /// <summary>
-        /// Colore associato alle righe lw per il punto corrente in cui ci si trova
-        /// </summary>
-        private readonly Color CurrentPointColor = Color.Silver;
-
-        #endregion
 
         /// <summary>
         /// Logger
@@ -147,8 +128,6 @@ namespace RM.src.RM250714
             continuousRemoveSpeedTimer.Tick += ContinuousRemoveVelocityTimer_Tick;
 
             InitRobotModeButtons();
-
-            ScreenSaverManager.AutoAddClickEvents(this);
         }
 
         #region Metodi di UC_HomePage
@@ -420,35 +399,6 @@ namespace RM.src.RM250714
         }
 
         /// <summary>
-        /// Abilita e disabilita i tasti di start, stop e pausa
-        /// </summary>
-        /// <param name="status">//0: Disattiva stop, disattiva pause, attiva start - 1: Attiva stop, attiva pause, disattiva start</param>
-        public void EnableCycleButton(int status)
-        {
-            if (status == 0) // Disattiva stop, disattiva pause, attiva start
-            {
-                btn_stopApp.Enabled = false;
-                btn_stopApp.BackColor = SystemColors.ControlDark;
-                btn_stopApp.BackgroundImage = null;
-
-                btn_startApp.Enabled = true;
-                btn_startApp.BackColor = SystemColors.Control;
-                btn_startApp.BackgroundImage = Resources.play32;
-            }
-            else if (status == 1) // Attiva stop, attiva pause, disattiva start
-            {
-                btn_startApp.Enabled = false;
-                btn_startApp.BackColor = SystemColors.ControlDark;
-                btn_startApp.BackgroundImage = null;
-
-                btn_stopApp.Enabled = true;
-                btn_stopApp.BackColor = SystemColors.Control;
-                btn_stopApp.BackgroundImage = Resources.stop;
-            }
-
-        }
-
-        /// <summary>
         /// Inizializza il timer che salva la velocità del Robot
         /// </summary>
         private void InitVelocitySaverTimer()
@@ -533,15 +483,6 @@ namespace RM.src.RM250714
             });
         }
 
-        /// <summary>
-        /// Imposta il valore della label dell'applicazione da eseguire
-        /// </summary>
-        /// <param name="application"></param>
-        public void SetApplicationToExecute(string application)
-        {
-            lb_applicationToExecute.Text = application;
-        }
-
         #endregion
 
         #region Eventi di UC_HomePage
@@ -602,11 +543,6 @@ namespace RM.src.RM250714
             {
                 btn_VAT.Visible = true;
                 lbl_buttonVAT.Visible = true;
-            }
-            if(!ScreenSaverManager.useScreenSaver)
-            {
-                btn_restoreSCreenSaverManager.Visible = false;
-                lbl_restoreScreenSaverManager.Visible = false;
             }
         }
 
@@ -895,16 +831,6 @@ namespace RM.src.RM250714
         {
             // scrittura su uscite digitali robot
             RobotManager.SetDO(0, 0, 0, 0);
-        }
-
-        /// <summary>
-        /// Restore dello screen saver
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ClickEvent_restoreScreenSaverManager(object sender, EventArgs e)
-        {
-            FormHomePage.Instance.ScreenSaverManagerForm.RestoreLocation();
         }
 
         #endregion

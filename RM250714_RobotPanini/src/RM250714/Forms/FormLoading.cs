@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using RMLib.MessageBox;
-using RMLib.VATView;
 
 namespace RM.src.RM250714
 {
@@ -27,8 +26,6 @@ namespace RM.src.RM250714
         /// </summary>
         public FormLoading(string[] args)
         {
-            // Rimuovo bordi della form
-            //FormBorderStyle = FormBorderStyle.None;
             InitializeComponent();
             SetLabelPosition();   
             this.args = args;
@@ -66,15 +63,6 @@ namespace RM.src.RM250714
                 closeToken = false;
             }
             Close();
-        }
-
-        /// <summary>
-        /// Apre form VATView
-        /// </summary>
-        public void OpenVATView()
-        {
-            FormVATView vatView = new FormVATView();
-            vatView.Show();
         }
 
         /// <summary>

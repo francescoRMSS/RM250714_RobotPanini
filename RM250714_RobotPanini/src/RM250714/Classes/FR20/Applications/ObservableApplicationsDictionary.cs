@@ -1,5 +1,4 @@
 ﻿using fairino;
-using RM.src.RM250714.Classes.FR20.Applications.Application;
 using RMLib.Logger;
 using System;
 using System.Collections.Generic;
@@ -282,7 +281,7 @@ namespace RM.src.RM250714
         /// <param name="pos"></param>
         /// <param name="applicationName"></param>
         /// <param name="id"></param>
-        public void AddApplicationRobotPosition(string guid_pos, DescPose pos, string applicationName, int id, string positionName, GunSettings gunSettings)
+        public void AddApplicationRobotPosition(string guid_pos, DescPose pos, string applicationName, int id, string positionName)
         {
             applicationsDictionary[applicationName].positions.Add(
                 new ApplicationPositions(
@@ -294,8 +293,7 @@ namespace RM.src.RM250714
                     float.Parse(pos.rpy.rx.ToString()),
                     float.Parse(pos.rpy.ry.ToString()),
                     float.Parse(pos.rpy.rz.ToString()),
-                    positionName,
-                    gunSettings
+                    positionName
                     ));
         }
 

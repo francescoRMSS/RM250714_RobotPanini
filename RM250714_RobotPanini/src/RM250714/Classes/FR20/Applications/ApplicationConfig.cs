@@ -1,5 +1,4 @@
-﻿using RM.src.RM250714.Classes.FR20.Applications.Application;
-using RMLib.DataAccess;
+﻿using RMLib.DataAccess;
 using RMLib.Logger;
 using System;
 using System.Collections.Generic;
@@ -101,47 +100,9 @@ namespace RM.src.RM250714
                 DataTable applicationPositions = DAO.GetPointsPosition(connectionString, applicationName);
                 List<ApplicationPositions> positions = new List<ApplicationPositions>();
 
-                // Variabili necessarie alla creazione dell'oggeto GunSettings
-                string guid_gun_settings;
-                string guid_pos;
-                int? id_gun_settings;
-                int? feed_air;
-                int? dosage_air;
-                int? gun_air;
-                int? kV;
-                int? microampere;
-                int? status;
-                string application;
-
                 // Riempio ogni componente della ricetta che sto ciclando
                 foreach (DataRow pos in applicationPositions.Rows)
                 {
-                    guid_gun_settings = pos["guid_gun_settings"].ToString();
-                    guid_pos = pos["guid_pos"].ToString();
-                    id_gun_settings = pos["id_gun_settings"].ToString() != "" ? Convert.ToInt32(pos["id_gun_settings"]) : (int?)null;
-                    feed_air = pos["feed_air"].ToString() != "" ? Convert.ToInt32(pos["feed_air"]) : (int?)null;
-                    dosage_air = pos["dosage_air"].ToString() != "" ? Convert.ToInt32(pos["dosage_air"]) : (int?)null;
-                    gun_air = pos["gun_air"].ToString() != "" ? Convert.ToInt32(pos["gun_air"]) : (int?)null;
-                    kV = pos["kV"].ToString() != "" ? Convert.ToInt32(pos["kV"]) : (int?)null;
-                    microampere = pos["microampere"].ToString() != "" ? Convert.ToInt32(pos["microampere"]) : (int?)null;
-                    status = pos["status"].ToString() != "" ? Convert.ToInt32(pos["status"]) : (int?)null;
-                    application = pos["application"].ToString();
-
-                    // Costruisco oggetto gunSettings da inserire nelle posizioni
-                    GunSettings gunSettings = new GunSettings
-                        (
-                            guid_gun_settings,
-                            guid_pos,
-                            id_gun_settings,
-                            feed_air,
-                            dosage_air,
-                            gun_air,
-                            kV,
-                            microampere,
-                            status,
-                            application
-                        );
-
                     positions.Add(new ApplicationPositions(
                         pos["guid_pos"].ToString(),
                         Convert.ToInt16(pos["id_pos"]),
@@ -151,8 +112,7 @@ namespace RM.src.RM250714
                         float.Parse(pos["rx"].ToString()),
                         float.Parse(pos["ry"].ToString()),
                         float.Parse(pos["rz"].ToString()),
-                        pos["positionName"].ToString(),
-                        gunSettings
+                        pos["positionName"].ToString()
                         ));
                 }
 

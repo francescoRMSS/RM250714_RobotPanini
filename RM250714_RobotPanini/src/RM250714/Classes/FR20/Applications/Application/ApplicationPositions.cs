@@ -1,6 +1,4 @@
-﻿using RM.src.RM250714.Classes.FR20.Applications.Application;
-
-namespace RM.src.RM250714
+﻿namespace RM.src.RM250714
 {
     /// <summary>
     /// Contiene la struttura di una posizione all'interno di un'applicazione robot
@@ -54,11 +52,6 @@ namespace RM.src.RM250714
         /// </summary>
         public string name { get; set; }
 
-        /// <summary>
-        /// Impostazioni della pistola per una determinata posizione
-        /// </summary>
-        public GunSettings gunSettings { get; set; }
-
         #endregion
 
         /// <summary>
@@ -73,8 +66,7 @@ namespace RM.src.RM250714
         /// <param name="ry">ry posizione</param>
         /// <param name="rz">rz posizione</param>
         /// <param name="name">name posizione</param>
-        /// <param name="gunSettings">gunSettings</param>
-        public ApplicationPositions(string guid, int id, float x, float y, float z, float rx, float ry, float rz, string name, GunSettings gunSettings)
+        public ApplicationPositions(string guid, int id, float x, float y, float z, float rx, float ry, float rz, string name)
         {
             this.guid = guid;
             this.id = id;
@@ -85,7 +77,6 @@ namespace RM.src.RM250714
             this.ry = ry;
             this.rz = rz;
             this.name = name;
-            this.gunSettings = gunSettings;
         }
 
         /// <summary>
@@ -102,7 +93,6 @@ namespace RM.src.RM250714
             ry = 0;
             rz = 0;
             name = "";
-            gunSettings = null;
         }
     }
 }

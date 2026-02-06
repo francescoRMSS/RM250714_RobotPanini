@@ -20,32 +20,32 @@ namespace RM.src.RM250714
         /// <summary>
         /// Stringa di connessione per comunicare con il database
         /// </summary>
-        public static String DB_CONN_STRING = "";
+        public static string DB_CONN_STRING = "";
 
         /// <summary>
         /// Driver per la comunicazione
         /// </summary>
-        public static String DB_DRIVER_CLASS = "org.sqlite.JDBC";
+        public static string DB_DRIVER_CLASS = "org.sqlite.JDBC";
 
         /// <summary>
         /// Username del db
         /// </summary>
-        public static String DB_USR = "";
+        public static string DB_USR = "";
 
         /// <summary>
         /// Password per il db
         /// </summary>
-        public static String DB_PSW = "";
+        public static string DB_PSW = "";
 
         /// <summary>
         /// IP del database
         /// </summary>
-        public static String DB_HOST_IP = "";
+        public static string DB_HOST_IP = "";
 
         /// <summary>
         /// Nome identificativo del database
         /// </summary>
-        public static String DB_DB_NAME = "";
+        public static string DB_DB_NAME = "";
 
         /// <summary>
         /// Porta del database
@@ -58,9 +58,9 @@ namespace RM.src.RM250714
         /// Funzione generica per get dei parametri dai file config
         /// </summary>
         /// <returns></returns>
-        public static bool basicConfigurationFromFile()
+        public static bool BasicConfigurationFromFile()
         {
-            String line;
+            string line;
             try
             {
                 // Passaggio del percorso del file

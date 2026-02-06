@@ -50,7 +50,7 @@
             Porta del database
             </summary>
         </member>
-        <member name="M:RM.src.RM250714.Configuration.basicConfigurationFromFile">
+        <member name="M:RM.src.RM250714.Configuration.BasicConfigurationFromFile">
             <summary>
             Funzione generica per get dei parametri dai file config
             </summary>
@@ -70,11 +70,6 @@
         <member name="F:RM.src.RM250714.ConfigurationSettings.configurationProperties">
             <summary>
             Data table che conterrà la tabella omonima del database con le configurazioni di base del progetto
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.ConfigurationSettings.className">
-            <summary>
-            Metodo attuale in esecuzione
             </summary>
         </member>
         <member name="M:RM.src.RM250714.ConfigurationSettings.#ctor">
@@ -198,12 +193,7 @@
             Nome della posizione
             </summary>
         </member>
-        <member name="P:RM.src.RM250714.ApplicationPositions.gunSettings">
-            <summary>
-            Impostazioni della pistola per una determinata posizione
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.ApplicationPositions.#ctor(System.String,System.Int32,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.String,RM.src.RM250714.Classes.FR20.Applications.Application.GunSettings)">
+        <member name="M:RM.src.RM250714.ApplicationPositions.#ctor(System.String,System.Int32,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.String)">
             <summary>
             Costruttore parametrizzato di una posizione all'interno di un'applicazione robot
             </summary>
@@ -216,87 +206,430 @@
             <param name="ry">ry posizione</param>
             <param name="rz">rz posizione</param>
             <param name="name">name posizione</param>
-            <param name="gunSettings">gunSettings</param>
         </member>
         <member name="M:RM.src.RM250714.ApplicationPositions.#ctor">
             <summary>
             Costruttore vuoto
             </summary>
         </member>
-        <member name="T:RM.src.RM250714.Classes.FR20.Applications.Application.GunSettings">
+        <member name="T:RM.src.RM250714.RobotApplication">
             <summary>
-            Contiene la struttura delle impostazioni della pistola relative ad ogni posizione di un'applicazione Robot
+            Contiene la struttura di un'applicazione Robot
             </summary>
         </member>
-        <member name="P:RM.src.RM250714.Classes.FR20.Applications.Application.GunSettings.guid">
+        <member name="P:RM.src.RM250714.RobotApplication.id">
             <summary>
-            Identificativo univoco delle impostazioni della pistola 
+            Id dell'applicazione
             </summary>
         </member>
-        <member name="P:RM.src.RM250714.Classes.FR20.Applications.Application.GunSettings.guid_ele">
+        <member name="P:RM.src.RM250714.RobotApplication.creation">
             <summary>
-            Identificativo univoco della posizione a cui fanno riferimento le impostazioni della pistola
+            Timestamp di creazione dell'applicazione
             </summary>
         </member>
-        <member name="P:RM.src.RM250714.Classes.FR20.Applications.Application.GunSettings.id">
+        <member name="P:RM.src.RM250714.RobotApplication.lastUpdate">
             <summary>
-            Numero intero progressivo che identifica le impostazioni della pistola di una determinata applicazione Robot
+            Timestamp dell'ultima modifica dell'applicazione
             </summary>
         </member>
-        <member name="P:RM.src.RM250714.Classes.FR20.Applications.Application.GunSettings.feed_air">
+        <member name="P:RM.src.RM250714.RobotApplication.note">
             <summary>
-            Polvere pistola
+            Note applicazione
             </summary>
         </member>
-        <member name="P:RM.src.RM250714.Classes.FR20.Applications.Application.GunSettings.dosage_air">
+        <member name="P:RM.src.RM250714.RobotApplication.positions">
             <summary>
-            Dosaggio pistola
+            Lista di posizioni che contiene l'applicazione
             </summary>
         </member>
-        <member name="P:RM.src.RM250714.Classes.FR20.Applications.Application.GunSettings.gun_air">
+        <member name="M:RM.src.RM250714.RobotApplication.#ctor(System.Int32,System.Collections.Generic.List{RM.src.RM250714.ApplicationPositions})">
             <summary>
-            Aria pistola
+            Costruttore parametrizzato con id e posizioni relative
+            </summary>
+            <param name="id">Id applicazione</param>
+            <param name="positions">Posizioni applicazione</param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotApplication.#ctor(System.Int32,System.String,System.String,System.Collections.Generic.List{RM.src.RM250714.ApplicationPositions})">
+            <summary>
+            Costruttore parametrizzato con id, timestamp di creazione, timestamp di ultima modifica e posizioni relative
+            </summary>
+            <param name="id">Id applicazione</param>
+            <param name="creation">Timestamp di creazione applicazione</param>
+            <param name="lastUpdate">Timestamp di ultima modifica applicazione</param>
+            <param name="positions">Lista dei punti del'applicazione Robot</param>
+        </member>
+        <member name="T:RM.src.RM250714.ObservableApplicationsDictionary">
+            <summary>
+            Gestisce il dizionario delle applicazioni del robot e gli eventi ad esse correlati
             </summary>
         </member>
-        <member name="P:RM.src.RM250714.Classes.FR20.Applications.Application.GunSettings.kV">
+        <member name="F:RM.src.RM250714.ObservableApplicationsDictionary.log">
             <summary>
-            kV pistola
+            logger
             </summary>
         </member>
-        <member name="P:RM.src.RM250714.Classes.FR20.Applications.Application.GunSettings.microampere">
+        <member name="F:RM.src.RM250714.ObservableApplicationsDictionary.applicationsDictionary">
             <summary>
-            Microampere pistola
+            Dizionario contenente key-RobotApplication
             </summary>
         </member>
-        <member name="P:RM.src.RM250714.Classes.FR20.Applications.Application.GunSettings.status">
+        <member name="E:RM.src.RM250714.ObservableApplicationsDictionary.DataSaved">
             <summary>
-            Stato pistola (ON/OFF)
+            Evento che intercetta il salvataggio dei dati da PLC tramite listView delle ricette
             </summary>
         </member>
-        <member name="P:RM.src.RM250714.Classes.FR20.Applications.Application.GunSettings.application">
+        <member name="E:RM.src.RM250714.ObservableApplicationsDictionary.ApplicationAdded">
             <summary>
-            Identificativo univoco dell'applicazione a cui fanno riferimento le impostazioni della pistola
+            Evento che intercetta l'aggiunta di una nuova applicazione
             </summary>
         </member>
-        <member name="M:RM.src.RM250714.Classes.FR20.Applications.Application.GunSettings.#ctor(System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Int32},System.String)">
+        <member name="E:RM.src.RM250714.ObservableApplicationsDictionary.ApplicationDeleted">
             <summary>
-            Costruttore
+            Evento che intercetta l'eliminazione di un'applicazione
             </summary>
-            <param name="guid">Identificativo univoco delle impostazioni pistola</param>
-            <param name="guid_ele">Identificativo univoco della posizione a cui fanno riferimento le impostazioni della pistola</param>
-            <param name="id">Numero intero progressivo che identifica le impostazioni della pistola di una determinata applicazione Robot</param>
-            <param name="feed_air">Polvere pistola</param>
-            <param name="dosage_air">Dosaggio pistola</param>
-            <param name="gun_air">Aria pistola</param>
-            <param name="kV">kV pistola</param>
-            <param name="microampere">Microampere pistola</param>
-            <param name="status">Stato pistola (ON/OFF)</param>
-            <param name="application">Identificativo univoco dell'applicazione a cui fanno riferimento le impostazioni della pistola</param>
         </member>
-        <member name="M:RM.src.RM250714.Classes.FR20.Applications.Application.GunSettings.#ctor">
+        <member name="E:RM.src.RM250714.ObservableApplicationsDictionary.ApplicationPositionDeleted">
             <summary>
-            Costruttore vuoto
+            Evento che intercetta l'eliminazione di un punto
             </summary>
+        </member>
+        <member name="E:RM.src.RM250714.ObservableApplicationsDictionary.ApplicationPositionDeletedStartingFromId">
+            <summary>
+            Evento che intercetta l'eliminazione di un punto a partire da un id
+            </summary>
+        </member>
+        <member name="E:RM.src.RM250714.ObservableApplicationsDictionary.ApplicationPositionDeletedFromId">
+            <summary>
+            Evento che intercetta l'eliminazione di un punto
+            </summary>
+        </member>
+        <member name="E:RM.src.RM250714.ObservableApplicationsDictionary.ApplicationIdUpdated">
+            <summary>
+            Evento che intercetta l'update id di un'applicazione esistente
+            </summary>
+        </member>
+        <member name="E:RM.src.RM250714.ObservableApplicationsDictionary.ApplicationNoteUpdated">
+            <summary>
+            Evento che intercetta l'update note di un'applicazione esistente
+            </summary>
+        </member>
+        <member name="E:RM.src.RM250714.ObservableApplicationsDictionary.ApplicationNameUpdated">
+            <summary>
+            Evento che intercetta l'update name di un'applicaziozione esistente
+            </summary>
+        </member>
+        <member name="E:RM.src.RM250714.ObservableApplicationsDictionary.RobotPositionNameUpdated">
+            <summary>
+            Evento che intercetta l'update name di una posizione esistente
+            </summary>
+        </member>
+        <member name="E:RM.src.RM250714.ObservableApplicationsDictionary.RobotPositionRemoved">
+            <summary>
+            Evento che intercetta la cancellazione di una posizione esistente
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.getDictionary">
+            <summary>
+            Metodo get del dizionario
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.GetApplicationName">
+            <summary>
+            Restituisce la chiave della prima riga del dizionairo
+            </summary>
+            <param name="index"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.AddApplication(System.String,RM.src.RM250714.RobotApplication)">
+            <summary>
+            Metodo che aggiunge applicazione al dizionario delle applicazioni e invoca
+            evento ApplicationAdded così che la listview delle applicazioni lo intercetti 
+            e aggiunga la nuova applicazione
+            </summary>
+            <param name="applicationName">nome applicazione</param>
+            <param name="application">applicazione con tutti i suoi campi</param>
+        </member>
+        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.DeleteApplication(System.String)">
+            <summary>
+            Metodo che cancella applicazione e relative posizioni dal dizionario delle applicazioni
+            </summary>
+            <param name="key">Nome della ricetta</param>
+        </member>
+        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.RemovePositionFromApplication(System.Int32)">
+            <summary>
+            Cancella la posizione dalla lista e invoca metodo che aggiorna lw_positions
+            </summary>
+            <param name="positionId">Indice posizione selezionata</param>
+        </member>
+        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.RemovePositionFromApplication(System.Int32,System.String)">
+            <summary>
+            Cancella la posizione dalla lista e invoca metodo che aggiorna lw_positions
+            </summary>
+            <param name="positionId">Indice posizione selezionata</param>
+            <param name="applicationName">Applicazione in cui si trova la posizione da eliminare</param>
+        </member>
+        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.GetPosition(System.String)">
+            <summary>
+            Esegue get della posizione tramite il nome
+            </summary>
+            <param name="positionName">Nome della posizione</param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.GetPosition(System.String,System.String)">
+            <summary>
+            Esegue get della posizione tramite nome posizione e nome applicazione
+            </summary>
+            <param name="positionName">Nome posizione</param>
+            <param name="applicationName">Nome applicazione</param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.UpdateRobotApplicationId(System.String,System.Int32,System.Int64)">
+            <summary>
+            Metodo che aggiorna id del dizionario delle applicazioni
+            </summary>
+            <param name="key">Nome applicazione</param>
+            <param name="id">ID applicazione</param>
+            <param name="unixTimestamp"></param>
+        </member>
+        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.UpdateApplicationName(System.String,System.String,System.Int64)">
+            <summary>
+            Metodo che aggiorna nome del dizionario delle applicazioni
+            </summary>
+            <param name="key"></param>
+            <param name="name"></param>
+            <param name="unixTimestamp"></param>
+        </member>
+        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.UpdateApplicationNote(System.String,System.String,System.Int64)">
+            <summary>
+            Metodo che aggiorna nota e lastUdpateTime del dizionario delle applicazioni
+            </summary>
+            <param name="key">Nome applicazione</param>
+            <param name="note">Nuova nota</param>
+            <param name="unixTimestamp">timeStamp in millisecondi</param>
+        </member>
+        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.AddApplicationRobotPosition(System.String,fairino.DescPose,System.String,System.Int32,System.String)">
+            <summary>
+            Metodo che aggiunge una posizione all'applicazione del Robot
+            </summary>
+            <param name="pos"></param>
+            <param name="applicationName"></param>
+            <param name="id"></param>
+        </member>
+        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.UpdatePosition(System.String,fairino.DescPose,System.String)">
+            <summary>
+            Aggiorna la posizione specificata nell'applicazione RobotManager.applicationName con le nuove coordinate fornite.
+            </summary>
+            <param name="positionName">Il nome della posizione da aggiornare.</param>
+            <param name="pose">L'oggetto DescPose contenente le nuove coordinate della posizione.</param>
+            <remarks>
+            Questo metodo cerca una posizione con il nome specificato all'interno dell'applicazione RobotManager.applicationName nel dizionario.
+            Se trova la posizione, aggiorna le coordinate X, Y, Z, RX, RY, RZ con i valori forniti.
+            Registra le operazioni di aggiornamento e gli eventuali errori nei log.
+            </remarks>
+        </member>
+        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.UpdateRobotPositionName(System.String,System.String)">
+            <summary>
+            Aggiorna nome posizione in lw_positions
+            </summary>
+            <param name="positionName">Nome posizione</param>
+            <param name="date">Data</param>
+        </member>
+        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.DeleteApplicationPosition(System.String,System.Int32)">
+            <summary>
+            Metodo che cancella applicazione e relative posizioni dal dizionario delle applicazioni
+            </summary>
+            <param name="applicationName_Key">Nome della ricetta</param>
+            <param name="positionID"></param>
+        </member>
+        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.DeleteApplicationPositionStartingFromId(System.String,System.Int32)">
+            <summary>
+            Metodo che cancella i punti di una applicazione a partire da un indice
+            </summary>
+            <param name="applicationName_Key">Nome della ricetta</param>
+            <param name="positionID"></param>
+        </member>
+        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.DeleteApplicationPositionFromId(System.String,System.Int32)">
+            <summary>
+            Metodo che cancella il punto selezionato dal dizionario e invoca l'evento ApplicationPositionDeletedFromId
+            utile all'aggiornamento della listView dei punti in debugMode
+            </summary>
+            <param name="applicationName_Key">Nome dell'applicazione</param>
+            <param name="positionID">Punto selezionato da cancellare</param>
+        </member>
+        <member name="T:RM.src.RM250714.RobotDAOSqlite">
+            <summary>
+            Contiene procedure relative al funzionamento del Robot
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotDAOSqlite.log">
+            <summary>
+            Logger
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotDAOSqlite.GetPointsPosition(System.String,System.String)">
+            <summary>
+            Metodo che restituisce le posizioni di una determinata applicazione
+            </summary>
+            <param name="connectionString">Stringa di connessione</param>
+            <param name="application">Nome applicazione</param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotDAOSqlite.GetRobotMovementCode(System.String,System.Int32)">
+            <summary>
+            Restituisce codice movimento robot
+            </summary>
+            <param name="connectionString">Stringa di connessione al database</param>
+            <param name="id">id del movimento robot</param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotDAOSqlite.GetRobotAlarm(System.String,System.Int32,System.Int32)">
+            <summary>
+            Metodo che restituisce DataRow contenente allarme del Robot
+            </summary>
+            <param name="connectionString"></param>
+            <param name="mainCode"></param>
+            <param name="subCode"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotDAOSqlite.UpdatePositionCoord(System.String,fairino.DescPose,System.String,System.Int32,System.String,System.String)">
+            <summary>
+            Aggiorna le coordinate di un punto
+            </summary>
+            <param name="connectionString"></param>
+            <param name="pos"></param>
+            <param name="formattedTimeStamp"></param>
+            <param name="id"></param>
+            <param name="positionName"></param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotDAOSqlite.SaveRobotAlarm(System.String,System.Int32,System.String,System.String,System.String,System.String)">
+            <summary>
+            Salva sul db l'allarme del robot
+            </summary>
+            <param name="connectionString"></param>
+            <param name="id"></param>
+            <param name="description"></param>
+            <param name="timpestamp"></param>
+            <param name="device"></param>
+            <param name="state"></param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotDAOSqlite.AddNewRobotPosition(System.String,System.String,System.String,System.Int32@,System.String)">
+            <summary>
+            Metodo che aggiunge routine su database e aggiorna dizionario delle posizioni
+            </summary>
+            <param name="connectionString">Stringa di connessione</param>
+            <param name="position">Nome nuova posizione</param>
+            <param name="date">data</param>
+            <param name="pointIndex">indice del punto</param>
+            <param name="applicationName">nome dell'applicazione scelta</param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotDAOSqlite.GetRobotApplications(System.String)">
+            <summary>
+            Metodo che restituisce lista applicazioni
+            </summary>
+            <param name="connectionString"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotDAOSqlite.GetRobotProperties(System.String)">
+            <summary>
+            Get della tabella robot_properties
+            </summary>
+            <param name="connectionString">Stringa di connessione</param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotDAOSqlite.SetRobotVelRec(System.String,System.Int32)">
+            <summary>
+            Aggiorna la velocità del robot nel database.
+            </summary>
+            <param name="connectionString">La stringa di connessione al database SQLite.</param>
+            <param name="velRec">La velocità corrente del robot da impostare nel database.</param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotDAOSqlite.UpdateRobotPositionName(System.String,System.String,System.String,System.DateTime)">
+            <summary>
+            Esegue rinomina della posizione sul database
+            </summary>
+            <param name="connectionString">Stringa di connessione</param>
+            <param name="name">Nome della posizione</param>
+            <param name="newName">Nuovo nome della posizione</param>
+            <param name="date">Data modifica</param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotDAOSqlite.DeleteRobotPosition(System.String,System.String,System.Int32)">
+            <summary>
+            Cancella una posizione del Robot
+            </summary>
+            <param name="connectionString">Stringa di connessione</param>
+            <param name="positionName">Nome della posizione</param>
+            <param name="idPosition">Id del punto</param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotDAOSqlite.SetRobotBlend(System.String,System.Int32)">
+            <summary>
+            Aggiorna il blend del robot nel database.
+            </summary>
+            <param name="connectionString">La stringa di connessione al database SQLite.</param>
+            <param name="blend">Il blend corrente del robot da impostare nel database.</param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotDAOSqlite.SetRobotVelocity(System.String,System.Int32)">
+            <summary>
+            Aggiorna la velocity del robot nel database.
+            </summary>
+            <param name="connectionString">La stringa di connessione al database SQLite.</param>
+            <param name="velocity">La velocity corrente del robot da impostare nel database.</param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotDAOSqlite.SetRobotAcceleration(System.String,System.Int32)">
+            <summary>
+            Aggiorna la acceleration del robot nel database.
+            </summary>
+            <param name="connectionString">La stringa di connessione al database SQLite.</param>
+            <param name="acceleration">La acceleration corrente del robot da impostare nel database.</param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotDAOSqlite.SetRobotOvl(System.String,System.Int32)">
+            <summary>
+            Aggiorna la ovl del robot nel database.
+            </summary>
+            <param name="connectionString">La stringa di connessione al database SQLite.</param>
+            <param name="ovl">La ovl corrente del robot da impostare nel database.</param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotDAOSqlite.SetRobotTool(System.String,System.Int32)">
+            <summary>
+            Aggiorna il tool del robot nel database.
+            </summary>
+            <param name="connectionString">La stringa di connessione al database SQLite.</param>
+            <param name="tool">Il tool corrente del robot da impostare nel database.</param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotDAOSqlite.SetRobotUser(System.String,System.Int32)">
+            <summary>
+            Aggiorna lo user del robot nel database.
+            </summary>
+            <param name="connectionString">La stringa di connessione al database SQLite.</param>
+            <param name="user">User corrente del robot da impostare nel database.</param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotDAOSqlite.SetRobotWeight(System.String,System.Int32)">
+            <summary>
+            Aggiorna il carico del robot nel database.
+            </summary>
+            <param name="connectionString">La stringa di connessione al database SQLite.</param>
+            <param name="weight">Carico corrente del robot da impostare nel database.</param>
+        </member>
+        <member name="M:RM.src.RM250714.RobotDAOSqlite.GetRobotFrames(System.String)">
+            <summary>
+            Recupera dal database tutti i frame salvati
+            </summary>
+            <param name="connectionString"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotDAOSqlite.GetRobotTools(System.String)">
+            <summary>
+            Recupera dal database tutti i tool salvati
+            </summary>
+            <param name="connectionString"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotDAOSqlite.GetRobotCollisionLevels(System.String)">
+            <summary>
+            Recupera dal database tutti i livelli di collisione salvati
+            </summary>
+            <param name="connectionString"></param>
+            <returns></returns>
         </member>
         <member name="T:RM.src.RM250714.Classes.FR20.Exceptions.DataErrorException">
             <summary>
@@ -1900,590 +2233,6 @@
             Zona di ingombro beor
             </summary>
         </member>
-        <member name="T:RM.src.RM250714.RobotApplication">
-            <summary>
-            Contiene la struttura di un'applicazione Robot
-            </summary>
-        </member>
-        <member name="P:RM.src.RM250714.RobotApplication.id">
-            <summary>
-            Id dell'applicazione
-            </summary>
-        </member>
-        <member name="P:RM.src.RM250714.RobotApplication.creation">
-            <summary>
-            Timestamp di creazione dell'applicazione
-            </summary>
-        </member>
-        <member name="P:RM.src.RM250714.RobotApplication.lastUpdate">
-            <summary>
-            Timestamp dell'ultima modifica dell'applicazione
-            </summary>
-        </member>
-        <member name="P:RM.src.RM250714.RobotApplication.note">
-            <summary>
-            Note applicazione
-            </summary>
-        </member>
-        <member name="P:RM.src.RM250714.RobotApplication.positions">
-            <summary>
-            Lista di posizioni che contiene l'applicazione
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotApplication.#ctor(System.Int32,System.Collections.Generic.List{RM.src.RM250714.ApplicationPositions})">
-            <summary>
-            Costruttore parametrizzato con id e posizioni relative
-            </summary>
-            <param name="id">Id applicazione</param>
-            <param name="positions">Posizioni applicazione</param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotApplication.#ctor(System.Int32,System.String,System.String,System.Collections.Generic.List{RM.src.RM250714.ApplicationPositions})">
-            <summary>
-            Costruttore parametrizzato con id, timestamp di creazione, timestamp di ultima modifica e posizioni relative
-            </summary>
-            <param name="id">Id applicazione</param>
-            <param name="creation">Timestamp di creazione applicazione</param>
-            <param name="lastUpdate">Timestamp di ultima modifica applicazione</param>
-            <param name="positions">Lista dei punti del'applicazione Robot</param>
-        </member>
-        <member name="T:RM.src.RM250714.ObservableApplicationsDictionary">
-            <summary>
-            Gestisce il dizionario delle applicazioni del robot e gli eventi ad esse correlati
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.ObservableApplicationsDictionary.log">
-            <summary>
-            logger
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.ObservableApplicationsDictionary.applicationsDictionary">
-            <summary>
-            Dizionario contenente key-RobotApplication
-            </summary>
-        </member>
-        <member name="E:RM.src.RM250714.ObservableApplicationsDictionary.DataSaved">
-            <summary>
-            Evento che intercetta il salvataggio dei dati da PLC tramite listView delle ricette
-            </summary>
-        </member>
-        <member name="E:RM.src.RM250714.ObservableApplicationsDictionary.ApplicationAdded">
-            <summary>
-            Evento che intercetta l'aggiunta di una nuova applicazione
-            </summary>
-        </member>
-        <member name="E:RM.src.RM250714.ObservableApplicationsDictionary.ApplicationDeleted">
-            <summary>
-            Evento che intercetta l'eliminazione di un'applicazione
-            </summary>
-        </member>
-        <member name="E:RM.src.RM250714.ObservableApplicationsDictionary.ApplicationPositionDeleted">
-            <summary>
-            Evento che intercetta l'eliminazione di un punto
-            </summary>
-        </member>
-        <member name="E:RM.src.RM250714.ObservableApplicationsDictionary.ApplicationPositionDeletedStartingFromId">
-            <summary>
-            Evento che intercetta l'eliminazione di un punto a partire da un id
-            </summary>
-        </member>
-        <member name="E:RM.src.RM250714.ObservableApplicationsDictionary.ApplicationPositionDeletedFromId">
-            <summary>
-            Evento che intercetta l'eliminazione di un punto
-            </summary>
-        </member>
-        <member name="E:RM.src.RM250714.ObservableApplicationsDictionary.ApplicationIdUpdated">
-            <summary>
-            Evento che intercetta l'update id di un'applicazione esistente
-            </summary>
-        </member>
-        <member name="E:RM.src.RM250714.ObservableApplicationsDictionary.ApplicationNoteUpdated">
-            <summary>
-            Evento che intercetta l'update note di un'applicazione esistente
-            </summary>
-        </member>
-        <member name="E:RM.src.RM250714.ObservableApplicationsDictionary.ApplicationNameUpdated">
-            <summary>
-            Evento che intercetta l'update name di un'applicaziozione esistente
-            </summary>
-        </member>
-        <member name="E:RM.src.RM250714.ObservableApplicationsDictionary.RobotPositionNameUpdated">
-            <summary>
-            Evento che intercetta l'update name di una posizione esistente
-            </summary>
-        </member>
-        <member name="E:RM.src.RM250714.ObservableApplicationsDictionary.RobotPositionRemoved">
-            <summary>
-            Evento che intercetta la cancellazione di una posizione esistente
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.getDictionary">
-            <summary>
-            Metodo get del dizionario
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.GetApplicationName">
-            <summary>
-            Restituisce la chiave della prima riga del dizionairo
-            </summary>
-            <param name="index"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.AddApplication(System.String,RM.src.RM250714.RobotApplication)">
-            <summary>
-            Metodo che aggiunge applicazione al dizionario delle applicazioni e invoca
-            evento ApplicationAdded così che la listview delle applicazioni lo intercetti 
-            e aggiunga la nuova applicazione
-            </summary>
-            <param name="applicationName">nome applicazione</param>
-            <param name="application">applicazione con tutti i suoi campi</param>
-        </member>
-        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.DeleteApplication(System.String)">
-            <summary>
-            Metodo che cancella applicazione e relative posizioni dal dizionario delle applicazioni
-            </summary>
-            <param name="key">Nome della ricetta</param>
-        </member>
-        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.RemovePositionFromApplication(System.Int32)">
-            <summary>
-            Cancella la posizione dalla lista e invoca metodo che aggiorna lw_positions
-            </summary>
-            <param name="positionId">Indice posizione selezionata</param>
-        </member>
-        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.RemovePositionFromApplication(System.Int32,System.String)">
-            <summary>
-            Cancella la posizione dalla lista e invoca metodo che aggiorna lw_positions
-            </summary>
-            <param name="positionId">Indice posizione selezionata</param>
-            <param name="applicationName">Applicazione in cui si trova la posizione da eliminare</param>
-        </member>
-        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.GetPosition(System.String)">
-            <summary>
-            Esegue get della posizione tramite il nome
-            </summary>
-            <param name="positionName">Nome della posizione</param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.GetPosition(System.String,System.String)">
-            <summary>
-            Esegue get della posizione tramite nome posizione e nome applicazione
-            </summary>
-            <param name="positionName">Nome posizione</param>
-            <param name="applicationName">Nome applicazione</param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.UpdateRobotApplicationId(System.String,System.Int32,System.Int64)">
-            <summary>
-            Metodo che aggiorna id del dizionario delle applicazioni
-            </summary>
-            <param name="key">Nome applicazione</param>
-            <param name="id">ID applicazione</param>
-            <param name="unixTimestamp"></param>
-        </member>
-        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.UpdateApplicationName(System.String,System.String,System.Int64)">
-            <summary>
-            Metodo che aggiorna nome del dizionario delle applicazioni
-            </summary>
-            <param name="key"></param>
-            <param name="name"></param>
-            <param name="unixTimestamp"></param>
-        </member>
-        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.UpdateApplicationNote(System.String,System.String,System.Int64)">
-            <summary>
-            Metodo che aggiorna nota e lastUdpateTime del dizionario delle applicazioni
-            </summary>
-            <param name="key">Nome applicazione</param>
-            <param name="note">Nuova nota</param>
-            <param name="unixTimestamp">timeStamp in millisecondi</param>
-        </member>
-        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.AddApplicationRobotPosition(System.String,fairino.DescPose,System.String,System.Int32,System.String,RM.src.RM250714.Classes.FR20.Applications.Application.GunSettings)">
-            <summary>
-            Metodo che aggiunge una posizione all'applicazione del Robot
-            </summary>
-            <param name="pos"></param>
-            <param name="applicationName"></param>
-            <param name="id"></param>
-        </member>
-        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.UpdatePosition(System.String,fairino.DescPose,System.String)">
-            <summary>
-            Aggiorna la posizione specificata nell'applicazione RobotManager.applicationName con le nuove coordinate fornite.
-            </summary>
-            <param name="positionName">Il nome della posizione da aggiornare.</param>
-            <param name="pose">L'oggetto DescPose contenente le nuove coordinate della posizione.</param>
-            <remarks>
-            Questo metodo cerca una posizione con il nome specificato all'interno dell'applicazione RobotManager.applicationName nel dizionario.
-            Se trova la posizione, aggiorna le coordinate X, Y, Z, RX, RY, RZ con i valori forniti.
-            Registra le operazioni di aggiornamento e gli eventuali errori nei log.
-            </remarks>
-        </member>
-        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.UpdateRobotPositionName(System.String,System.String)">
-            <summary>
-            Aggiorna nome posizione in lw_positions
-            </summary>
-            <param name="positionName">Nome posizione</param>
-            <param name="date">Data</param>
-        </member>
-        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.DeleteApplicationPosition(System.String,System.Int32)">
-            <summary>
-            Metodo che cancella applicazione e relative posizioni dal dizionario delle applicazioni
-            </summary>
-            <param name="applicationName_Key">Nome della ricetta</param>
-            <param name="positionID"></param>
-        </member>
-        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.DeleteApplicationPositionStartingFromId(System.String,System.Int32)">
-            <summary>
-            Metodo che cancella i punti di una applicazione a partire da un indice
-            </summary>
-            <param name="applicationName_Key">Nome della ricetta</param>
-            <param name="positionID"></param>
-        </member>
-        <member name="M:RM.src.RM250714.ObservableApplicationsDictionary.DeleteApplicationPositionFromId(System.String,System.Int32)">
-            <summary>
-            Metodo che cancella il punto selezionato dal dizionario e invoca l'evento ApplicationPositionDeletedFromId
-            utile all'aggiornamento della listView dei punti in debugMode
-            </summary>
-            <param name="applicationName_Key">Nome dell'applicazione</param>
-            <param name="positionID">Punto selezionato da cancellare</param>
-        </member>
-        <member name="T:RM.src.RM250714.RobotDAOSqlite">
-            <summary>
-            Contiene procedure relative al funzionamento del Robot
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotDAOSqlite.log">
-            <summary>
-            Logger
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.GetPointsPosition(System.String,System.String)">
-            <summary>
-            Metodo che restituisce le posizioni di una determinata applicazione
-            </summary>
-            <param name="connectionString">Stringa di connessione</param>
-            <param name="application">Nome applicazione</param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.GetRobotMovementCode(System.String,System.Int32)">
-            <summary>
-            Restituisce codice movimento robot
-            </summary>
-            <param name="connectionString">Stringa di connessione al database</param>
-            <param name="id">id del movimento robot</param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.DeletePointsStartingFromId(System.String,System.Int32,System.String)">
-            <summary>
-            Cancella dal db tutti i punti successivi all'id passato come parametro, usato per fare l'overwrite di una applicazione
-            </summary>
-            <param name="connectionString"></param>
-            <param name="pointId"></param>
-            <param name="applicationName"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.DeletePointFromId(System.String,System.Int32,System.String)">
-            <summary>
-            Metodo che lancia procedura SQLite che cancella il punto selezionato dalla tabella application_positions.
-            Inoltre cancella il punto anche dal dizionario dei punti lanciando un metodo utile per scatenare l'evento che 
-            aggiorna la listView nella debugMode
-            </summary>
-            <param name="connectionString">Stringa di connessione</param>
-            <param name="pointId">Punto da cancellare</param>
-            <param name="applicationName">Applicazione che contiene punto da cancellare</param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.GetRobotAlarm(System.String,System.Int32,System.Int32)">
-            <summary>
-            Metodo che restituisce DataRow contenente allarme del Robot
-            </summary>
-            <param name="connectionString"></param>
-            <param name="mainCode"></param>
-            <param name="subCode"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.SavePositionToDatabase(System.String,System.String,fairino.DescPose,System.String,System.String,System.Int32,System.String,RM.src.RM250714.Classes.FR20.Applications.Application.GunSettings)">
-            <summary>
-            Metodo che salva sul database le posizioni registrate durante la teachingMode
-            </summary>
-            <param name="connectionString"></param>
-            <param name="guid_pos">Guid della posizione</param>
-            <param name="pos"></param>
-            <param name="applicationName"></param>
-            <param name="formattedTimeStamp"></param>
-            <param name="id"></param>
-            <param name="mode"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.UpdatePositionCoord(System.String,fairino.DescPose,System.String,System.Int32,System.String,System.String)">
-            <summary>
-            Aggiorna le coordinate di un punto
-            </summary>
-            <param name="connectionString"></param>
-            <param name="pos"></param>
-            <param name="formattedTimeStamp"></param>
-            <param name="id"></param>
-            <param name="positionName"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.SaveUpdatedPositionToDatabase(System.String,System.String,fairino.DescPose,System.String,System.String,System.String,RM.src.RM250714.Classes.FR20.Applications.Application.GunSettings)">
-            <summary>
-            Salva la posizione aggiornata nel database corrispondente.
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.SaveRobotAlarm(System.String,System.Int32,System.String,System.String,System.String,System.String)">
-            <summary>
-            Salva sul db l'allarme del robot
-            </summary>
-            <param name="connectionString"></param>
-            <param name="id"></param>
-            <param name="description"></param>
-            <param name="timpestamp"></param>
-            <param name="device"></param>
-            <param name="state"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.DeletePositions(System.String,System.String)">
-            <summary>
-            Cancella dal db i punti salvati del robot di una certa applicazione
-            </summary>
-            <param name="connectionString"></param>
-            <param name="applicationName"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.AddRobotApplication(System.String,System.String,System.Int64)">
-            <summary>
-            Metodo che aggiunge applicazione su database e aggiorna dizionario delle applicazioni
-            </summary>
-            <param name="connectionString">Stringa di connessione</param>
-            <param name="applicationName">Nome nuova applicazione</param>
-            <param name="unixTimestamp"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.AddNewRobotPosition(System.String,System.String,System.String,System.Int32@,System.String)">
-            <summary>
-            Metodo che aggiunge routine su database e aggiorna dizionario delle posizioni
-            </summary>
-            <param name="connectionString">Stringa di connessione</param>
-            <param name="position">Nome nuova posizione</param>
-            <param name="date">data</param>
-            <param name="pointIndex">indice del punto</param>
-            <param name="applicationName">nome dell'applicazione scelta</param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.GetRobotApplications(System.String)">
-            <summary>
-            Metodo che restituisce lista applicazioni
-            </summary>
-            <param name="connectionString"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.GetRobotProperties(System.String)">
-            <summary>
-            Get della tabella robot_properties
-            </summary>
-            <param name="connectionString">Stringa di connessione</param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.SetRobotVelRec(System.String,System.Int32)">
-            <summary>
-            Aggiorna la velocità del robot nel database.
-            </summary>
-            <param name="connectionString">La stringa di connessione al database SQLite.</param>
-            <param name="velRec">La velocità corrente del robot da impostare nel database.</param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.SetRobotSpeed(System.String,System.Int32)">
-            <summary>
-            Aggiorna la velocità del robot nel database.
-            </summary>
-            <param name="connectionString">La stringa di connessione al database SQLite.</param>
-            <param name="currentSpeed">La velocità corrente del robot da impostare nel database.</param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.UpdateRobotApplicationName(System.String,System.String,System.String,System.Int64)">
-            <summary>
-            Metodo che aggiorna nome di un'applicazione esistente
-            </summary>
-            <param name="connectionString">Stringa di connessione</param>
-            <param name="application">Nome applicazione</param>
-            <param name="name">Nuovo nome applicazione</param>
-            <param name="unixTimestamp"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.UpdateRobotPositionName(System.String,System.String,System.String,System.DateTime)">
-            <summary>
-            Esegue rinomina della posizione sul database
-            </summary>
-            <param name="connectionString">Stringa di connessione</param>
-            <param name="name">Nome della posizione</param>
-            <param name="newName">Nuovo nome della posizione</param>
-            <param name="date">Data modifica</param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.UpdateRobotApplicationNote(System.String,System.String,System.String,System.Int64)">
-            <summary>
-            Metodo che aggiorna nota di un'applicazione esistente
-            </summary>
-            <param name="connectionString">Stringa di connessione</param>
-            <param name="application">Nome applicazione</param>
-            <param name="note">Nuova nota</param>
-            <param name="unixTimestamp">TimeStamp in millisecondi</param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.UpdateRobotApplicationId(System.String,System.String,System.Int32,System.Int64)">
-            <summary>
-            Metodo che aggiorna id di un'applicazione esistente
-            </summary>
-            <param name="connectionString">Stringa di connessione</param>
-            <param name="application">Nome applicazione</param>
-            <param name="id">Nuovo id</param>
-            <param name="unixTimestamp"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.DeleteRobotApplication(System.String,System.String)">
-            <summary>
-            Metodo che rimuove dal database l'applicazione selezionata e le sue relative posizioni
-            </summary>
-            <param name="connectionString">stringa di connessione</param>
-            <param name="application">Nome applicazione</param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.DeleteRobotPosition(System.String,System.String,System.Int32)">
-            <summary>
-            Cancella una posizione del Robot
-            </summary>
-            <param name="connectionString">Stringa di connessione</param>
-            <param name="positionName">Nome della posizione</param>
-            <param name="idPosition">Id del punto</param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.DeleteRobotApplicationPosition(System.String,System.String,System.String)">
-            <summary>
-            Metodo che cancella posizione selezionata nell'applicazione Robot
-            </summary>
-            <param name="connectionString"></param>
-            <param name="application"></param>
-            <param name="id"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.SetRobotBlend(System.String,System.Int32)">
-            <summary>
-            Aggiorna il blend del robot nel database.
-            </summary>
-            <param name="connectionString">La stringa di connessione al database SQLite.</param>
-            <param name="blend">Il blend corrente del robot da impostare nel database.</param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.SetRobotVelocity(System.String,System.Int32)">
-            <summary>
-            Aggiorna la velocity del robot nel database.
-            </summary>
-            <param name="connectionString">La stringa di connessione al database SQLite.</param>
-            <param name="velocity">La velocity corrente del robot da impostare nel database.</param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.SetRobotAcceleration(System.String,System.Int32)">
-            <summary>
-            Aggiorna la acceleration del robot nel database.
-            </summary>
-            <param name="connectionString">La stringa di connessione al database SQLite.</param>
-            <param name="acceleration">La acceleration corrente del robot da impostare nel database.</param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.SetRobotOvl(System.String,System.Int32)">
-            <summary>
-            Aggiorna la ovl del robot nel database.
-            </summary>
-            <param name="connectionString">La stringa di connessione al database SQLite.</param>
-            <param name="ovl">La ovl corrente del robot da impostare nel database.</param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.SetRobotTool(System.String,System.Int32)">
-            <summary>
-            Aggiorna il tool del robot nel database.
-            </summary>
-            <param name="connectionString">La stringa di connessione al database SQLite.</param>
-            <param name="tool">Il tool corrente del robot da impostare nel database.</param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.SetRobotUser(System.String,System.Int32)">
-            <summary>
-            Aggiorna lo user del robot nel database.
-            </summary>
-            <param name="connectionString">La stringa di connessione al database SQLite.</param>
-            <param name="user">User corrente del robot da impostare nel database.</param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.SetRobotWeight(System.String,System.Int32)">
-            <summary>
-            Aggiorna il carico del robot nel database.
-            </summary>
-            <param name="connectionString">La stringa di connessione al database SQLite.</param>
-            <param name="weight">Carico corrente del robot da impostare nel database.</param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.InitializeDragModePointsTable(System.String)">
-            <summary>
-            Metodo che crea su database la tabella application_positions, se non esistente
-            </summary>
-            <param name="connectionString">Stringa di connessione</param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.UpdatePositionFeedValue(System.String,System.String,System.Int32,System.Int32,System.Single)">
-            <summary>
-            Aggiorna il campo Feed Air per una o più posizioni di una applicazione
-            </summary>
-            <param name="connectionString"></param>
-            <param name="applicationName"></param>
-            <param name="initialIndex"></param>
-            <param name="finalIndex"></param>
-            <param name="value"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.UpdatePositionDosageValue(System.String,System.String,System.Int32,System.Int32,System.Double)">
-            <summary>
-            Aggiorna il campo Dosage Air per una o più posizioni di una applicazione
-            </summary>
-            <param name="connectionString"></param>
-            <param name="applicationName"></param>
-            <param name="initialIndex"></param>
-            <param name="finalIndex"></param>
-            <param name="value"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.UpdatePositionGunAirValue(System.String,System.String,System.Int32,System.Int32,System.Double)">
-            <summary>
-            Aggiorna il campo Gun Air per una o più posizioni di una applicazione
-            </summary>
-            <param name="connectionString"></param>
-            <param name="applicationName"></param>
-            <param name="initialIndex"></param>
-            <param name="finalIndex"></param>
-            <param name="value"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.UpdatePositionMicroAmpValue(System.String,System.String,System.Int32,System.Int32,System.Double)">
-            <summary>
-            Aggiorna il campo Micro ampere per una o più posizioni di una applicazione
-            </summary>
-            <param name="connectionString"></param>
-            <param name="applicationName"></param>
-            <param name="initialIndex"></param>
-            <param name="finalIndex"></param>
-            <param name="value"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.UpdatePositionKiloVoltValue(System.String,System.String,System.Int32,System.Int32,System.Double)">
-            <summary>
-            Aggiorna il campo Kilo volt per una o più posizioni di una applicazione
-            </summary>
-            <param name="connectionString"></param>
-            <param name="applicationName"></param>
-            <param name="initialIndex"></param>
-            <param name="finalIndex"></param>
-            <param name="value"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.UpdatePositionStatusValue(System.String,System.String,System.Int32,System.Int32,System.Boolean)">
-            <summary>
-            Aggiorna il campo Status per una o più posizioni di una applicazione
-            </summary>
-            <param name="connectionString"></param>
-            <param name="applicationName"></param>
-            <param name="initialIndex"></param>
-            <param name="finalIndex"></param>
-            <param name="value"></param>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.GetRobotFrames(System.String)">
-            <summary>
-            Recupera dal database tutti i frame salvati
-            </summary>
-            <param name="connectionString"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.GetRobotTools(System.String)">
-            <summary>
-            Recupera dal database tutti i tool salvati
-            </summary>
-            <param name="connectionString"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotDAOSqlite.GetRobotCollisionLevels(System.String)">
-            <summary>
-            Recupera dal database tutti i livelli di collisione salvati
-            </summary>
-            <param name="connectionString"></param>
-            <returns></returns>
-        </member>
         <member name="T:RM.src.RM250714.PointPosition">
             <summary>
             Definisce una posizione di un punto con il relativo timestamp, 
@@ -2514,23 +2263,6 @@
             <summary>
             Nome posizione
             </summary>
-        </member>
-        <member name="F:RM.src.RM250714.PointPosition.gunSettings">
-            <summary>
-            Impostazioni della pistola per una determinata posizione
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.PointPosition.#ctor(System.String,fairino.DescPose,System.String,System.String,System.String,RM.src.RM250714.Classes.FR20.Applications.Application.GunSettings)">
-            <summary>
-            Costruisce un oggetto contenente le informazioni relative ad un singolo punto 
-            preso tramite modalità insegnamento
-            </summary>
-            <param name="guid">Identificatore univoco della posizione</param>
-            <param name="pos">Coordinate del punto</param>
-            <param name="time">Timestamp del punto</param>
-            <param name="modality">Modalità di registrazione del punto</param>
-            <param name="posName">Nome del punto</param>
-            <param name="gunSettings">Impostazioni della pistola per una determinata posizione</param>
         </member>
         <member name="T:RM.src.RM250714.PositionChecker">
             <summary>
@@ -4624,337 +4356,6 @@
             True: aggiungi eventi mouse move a tutti gli elementi della form, False: sw normale
             </summary>
         </member>
-        <member name="T:RM.src.RM250714.Forms.Plant.DragMode.FormDebugSettings">
-            <summary>
-            Form contente i controlli per modificare velocemente i parametri del robot senza cmabiare pagina tornando indietro
-            </summary>
-        </member>
-        <member name="E:RM.src.RM250714.Forms.Plant.DragMode.FormDebugSettings.LinearModeCheckedChanged">
-            <summary>
-            Evento per modificare la modalità di drag in Linear
-            </summary>
-        </member>
-        <member name="E:RM.src.RM250714.Forms.Plant.DragMode.FormDebugSettings.PTPModeCheckedChanged">
-            <summary>
-            Evento per modificare la modalità di drag in PTP
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.Plant.DragMode.FormDebugSettings.isShown">
-            <summary>
-            Indica se la form è già stata mostrata
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugSettings.#ctor">
-            <summary>
-            Costruisce la form contenente i controlli per modificare i parametri del robot
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugSettings.InitLabels">
-            <summary>
-            Inizializza la form prendendo i valori da robot manager e quindi dal db
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugSettings.CheckedChangeEvent_radioButtonPTP(System.Object,System.EventArgs)">
-            <summary>
-            Gestione scelta mode PTP
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugSettings.CheckedChangeEvent_radioButtonLinear(System.Object,System.EventArgs)">
-            <summary>
-            Gestione scelta mode LINEAR
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugSettings.PnlInfoPTP_Click(System.Object,System.EventArgs)">
-            <summary>
-            Info su PTP mode
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugSettings.PnlInfoLinear_Click(System.Object,System.EventArgs)">
-            <summary>
-            Info su Linear mode
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugSettings.ClickEvent_pb_PTP(System.Object,System.EventArgs)">
-            <summary>
-            Seleziona la modalità ptp
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugSettings.ClickEvent_pb_linear(System.Object,System.EventArgs)">
-            <summary>
-            Seleziona la modalità linear
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugSettings.MouseMoveEvent_moving(System.Object,System.Windows.Forms.MouseEventArgs)">
-            <summary>
-            Spostamento del mouse per il trascinamento della form
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugSettings.MouseUpEvent_stopMove(System.Object,System.Windows.Forms.MouseEventArgs)">
-            <summary>
-            Click sulla form per il trascinamento in mouse up
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugSettings.MouseDownEvent_startMove(System.Object,System.Windows.Forms.MouseEventArgs)">
-            <summary>
-            Click sulla form per il trascinamento in mouse down
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.Plant.DragMode.FormDebugSettings.components">
-            <summary>
-            Required designer variable.
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugSettings.Dispose(System.Boolean)">
-            <summary>
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugSettings.InitializeComponent">
-            <summary>
-            Required method for Designer support - do not modify
-            the contents of this method with the code editor.
-            </summary>
-        </member>
-        <member name="T:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools">
-            <summary>
-            Form contenente dei controlli per spostarsi tra i punti presi durante la fase di drag mode
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.isShown">
-            <summary>
-            Indica se la form è già stata mostrata prima. Se false significa che ancora non è mai stato fatto Show()
-            </summary>
-        </member>
-        <member name="E:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.ButtonPreviousClicked">
-            <summary>
-            Evento al premere del pulsante previous
-            </summary>
-        </member>
-        <member name="E:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.ButtonNextClicked">
-            <summary>
-            Evento al premere del pulsante next
-            </summary>
-        </member>
-        <member name="E:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.ButtonGoToClicked">
-            <summary>
-            Evento al premere del pulsante go to
-            </summary>
-        </member>
-        <member name="E:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.ButtonStartMonitoringClicked">
-            <summary>
-            Evento al premere del pulsante start monitoring
-            </summary>
-        </member>
-        <member name="E:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.ButtonPauseMonitoringClicked">
-            <summary>
-            Evento al premere del pulsante pause/stop monitoring
-            </summary>
-        </member>
-        <member name="E:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.ButtonModifyClicked">
-            <summary>
-            Evento al premere del pulsante modifica
-            </summary>
-        </member>
-        <member name="E:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.ButtonOverwriteClicked">
-            <summary>
-            Evento al premere del pulsante sovrascrivi
-            </summary>
-        </member>
-        <member name="E:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.ButtonDeleteClicked">
-            <summary>
-            Evento al premere del pulsante cancella
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.#ctor">
-            <summary>
-            Costruisce la form dei tools e inizializza lo stato del pulsante di pause/stop monitoring
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.EnableButtons(System.Boolean)">
-            <summary>
-            Abilita o disbilita dei controlli in base al parametro passato. 
-            In pratica serve per disabilitare dei pulsanti quando la drag mode parte o viene fermata
-            </summary>
-            <param name="isDragStart"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.EnableMonitoringButtons(System.Boolean)">
-            <summary>
-            Riporta allo stato corretto l'abilitazione e la visualizzazione dei tasti di monitoring
-            in base al parametro passato
-            </summary>
-            <param name="isMonitoringStart">Indica se il monitoring è stato attivato o disattivato</param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.EnableMovementButtons(System.Boolean)">
-            <summary>
-            Riporta allo stato corretto l'abilitazione e la visualizzazione dei tasti di monitoring
-            in base al parametro passato
-            </summary>
-            <param name="isInMovement">Indica se il monitoring è stato attivato o disattivato</param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.ClickEvent_previousPoint(System.Object,System.EventArgs)">
-            <summary>
-            Genera evento dopo aver cliccato indietro
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.ClickEvent_startMonitoring(System.Object,System.EventArgs)">
-            <summary>
-            Genera evento dopo aver cliccato start monitoring
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.ClickEvent_modifyPoint(System.Object,System.EventArgs)">
-            <summary>
-            Genera evento dopo aver clicclato modifica
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.ClickEvent_nextPoint(System.Object,System.EventArgs)">
-            <summary>
-            Genera evento dopo aver cliccato successivo
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.ClickEvent_pauseMonitoring(System.Object,System.EventArgs)">
-            <summary>
-            Genera evento dopo aver cliccato pausa monitoring
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.ClickEvent_overwritePoints(System.Object,System.EventArgs)">
-            <summary>
-            Genera evento dopo aver cliccato sovrascrivi
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.ClickEvent_goToPoint(System.Object,System.EventArgs)">
-            <summary>
-            Genera evento dopo aver cliccato vai a
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.ClickEvent_deletePoint(System.Object,System.EventArgs)">
-            <summary>
-            Genera evento dopo aver cliccato cancella
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.MouseMoveEvent_moving(System.Object,System.Windows.Forms.MouseEventArgs)">
-            <summary>
-            Spostamento del mouse per il trascinamento della form
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.MouseUpEvent_stopMove(System.Object,System.Windows.Forms.MouseEventArgs)">
-            <summary>
-            Click sulla form per il trascinamento in mouse up
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.MouseDownEvent_startMove(System.Object,System.Windows.Forms.MouseEventArgs)">
-            <summary>
-            Click sulla form per il trascinamento in mouse down
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.components">
-            <summary>
-            Required designer variable.
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.Dispose(System.Boolean)">
-            <summary>
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.FormDebugTools.InitializeComponent">
-            <summary>
-            Required method for Designer support - do not modify
-            the contents of this method with the code editor.
-            </summary>
-        </member>
-        <member name="T:RM.src.RM250714.Forms.Plant.DragMode.UC_weldingParameters">
-            <summary>
-            Pagina contenente i controlli per modificare e visualizzare i parametri per la macchina saldatrice
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.UC_weldingParameters.#ctor">
-            <summary>
-            Costruisce la pagina UC_weldingParameters
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.UC_weldingParameters.CloseForm">
-            <summary>
-            Chiude la pagina e torna alla home
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.UC_weldingParameters.ShowLoadingScreen">
-            <summary>
-            Mostra una schermata di caricamento per tot tempo
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.UC_weldingParameters.ClickEvent_back(System.Object,System.EventArgs)">
-            <summary>
-            Torna alla home page chiudendo questa pagina
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.UC_weldingParameters.ClickEvent_colorButton(System.Object,System.EventArgs)">
-            <summary>
-            Evento per simulare funzionamento dei tasti
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.Plant.DragMode.UC_weldingParameters.components">
-            <summary> 
-            Variabile di progettazione necessaria.
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.UC_weldingParameters.Dispose(System.Boolean)">
-            <summary> 
-            Pulire le risorse in uso.
-            </summary>
-            <param name="disposing">ha valore true se le risorse gestite devono essere eliminate, false in caso contrario.</param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.DragMode.UC_weldingParameters.InitializeComponent">
-            <summary> 
-            Metodo necessario per il supporto della finestra di progettazione. Non modificare 
-            il contenuto del metodo con l'editor di codice.
-            </summary>
-        </member>
         <member name="M:RM.src.RM250714.Forms.Plant.FormDiagnostics.#ctor">
             <summary>
             Comunica diagnostica del programma
@@ -5136,11 +4537,6 @@
             Costruttore
             </summary>
         </member>
-        <member name="M:RM.src.RM250714.Forms.Plant.UC_parameters.ShowLoadingScreen">
-            <summary>
-            Mostra una schermata di caricamento per tot tempo
-            </summary>
-        </member>
         <member name="M:RM.src.RM250714.Forms.Plant.UC_parameters.InitRobotParameters">
             <summary>
             Inizializza i tb
@@ -5282,860 +4678,6 @@
             il contenuto del metodo con l'editor di codice.
             </summary>
         </member>
-        <member name="T:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage">
-            <summary>
-            Pagina dedicata alla modalità di drag, utile per acquisire nuovi punti, visualizzarli e salvarli sul database per una specifica 
-            applicazione. Oltre a questo permette il debug dei movimenti: tramite appositi comandi è possibile infatti muoversi tra i punti
-            presi e se necessario modificarli.
-            <br>Istruzioni:</br>
-            <br></br>
-            -Selezionare l'applicazione desiderata prima di procedere dalla apposita tabella.
-            <br></br>
-            -Selezionare la tabella dei punti (che ora conterrà i punti dell'applicazione scelta) per visualizzare i punti dell'applicazione.
-            <br></br>
-            -Aprire il pannello dei tool (tasto a destra) e usare gli strumenti di debug come avanti, indietro, modifica e sovrascrivi.
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.log">
-            <summary>
-            Variabile per usare i messaggi di log
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.savedPositions">
-            <summary>
-            Posizioni Robot salavate nel database
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.dragMode">
-            <summary>
-            Modalità scelta
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.applicationName">
-            <summary>
-            Nome dell'applicazione su cui verranno salvati i punti
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.isDragStart">
-            <summary>
-            Specifica se il robot è attualmente in drag mode o se la drag mode sta per partire
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.pointIndex">
-            <summary>
-            Indica l'indice del punto nella traiettoria
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.debugCurrentIndex">
-            <summary>
-            Indica l'indice del punto corrente nel debug
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.positionUpdateRequested">
-            <summary>
-            Booleano settato a true se è stata richiesta la modifica di una posizione all'interna della lista di posizioni
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.updateRowIndex">
-            <summary>
-            Indica l'indice dell'ultima riga aggiornata
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.idPositionUpdated">
-            <summary>
-            Id della posizione Robot modificata
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.maxRowsToCompare">
-            <summary>
-            Numero di righe della listView con le quali fare il confronto delle posizioni
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.formDebugTools">
-            <summary>
-            Form contenente strumenti per debug
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.formDebugSettings">
-            <summary>
-            Form contenente strumenti per modificare le impostazioni del robot
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.pauseEvent">
-            <summary>
-            Oggetto per gestire pausa e ripresa thread di monitoring
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.monitoringThread">
-            <summary>
-            Thread di monitoring
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.contMonitoring">
-            <summary>
-            Contatore di posizioni lette in thread di monitoring
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.stopMonitoring">
-            <summary>
-            A true quando fermo thread di monitoring
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.stopMonitoringRequest">
-            <summary>
-            Richiesta per fermare il monitoring e di conseguenza anche l'applicazione in corso
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.monitoringStep">
-            <summary>
-            Step del thread monitoring
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.monitoringThreadStarted">
-            <summary>
-            A true quando il thread monitoring è avviato
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.stopCheckMovement">
-            <summary>
-            A true quando viene richiesto di fermare il thread
-            </summary>
-        </member>
-        <member name="E:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.PositionListUpdated">
-            <summary>
-            Evento lanciato quando viene fatto save operation
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.NewPointColor">
-            <summary>
-            Colore associato alle righe lw per i nuovi punti presi in drag mode
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.ModifyPointColor">
-            <summary>
-            Colore associato alle righe lw per i punti da modificare
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.DeletePointColor">
-            <summary>
-            Colore associato alle righe lw per i punti da eliminare
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.MoveToPointColor">
-            <summary>
-            Colore associato alle righe lw per gli spostamenti verso un punto
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.GenericPointColor">
-            <summary>
-            Colore associato alle righe lw per i punti presi e salvati
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.CurrentPointColor">
-            <summary>
-            Colore associato alle righe lw per il punto corrente in cui ci si trova
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.ModifyGunPointColor">
-            <summary>
-            Colore associato alle righe lw per gli elementi che sono stati selezionati per la modifica delle variabili pistola
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.DelayMonitoringStopPause">
-            <summary>
-            Delay tra lo stop e il pause del robot
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.monitoringRefreshPeriod">
-            <summary>
-            Delay nel thread monitoring
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.DelayMovement">
-            <summary>
-            Delay nel thread Single/Multiple movement
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.#ctor">
-            <summary>
-            Costruttore UC_FullDragModePage
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.InitDebug">
-            <summary>
-            Inizializza le form per i comandi di debug, si iscrive ai loro eventi e inizializza
-            la prima riga selezionata
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.InitView">
-            <summary>
-            Inizializza alcuni elementi grafici della schermata e iscrive form agli eventi
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.InitFont">
-            <summary>
-            Metodo che setta Font
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.SetHeight(System.Windows.Forms.ListView,System.Int32)">
-            <summary>
-            Serve per aumentare la grandezza delle righe di una list view.
-            NB: può solo aumentare la grandezza e bisogna stare attenti al SO perchè è in base a quello che
-            cambia l'altezza delle righe.
-            </summary>
-            <param name="listView">riferimento alla lw</param>
-            <param name="height">altezza supplementare specificata</param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.EnableScreenElements">
-            <summary>
-            Determina se abilitare o disabilitare i controlli per il debug. Essi saranno attivi solo se ci sono elementi nella lw e se non è in drag al
-            momento.
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.ShowLoadingScreen">
-            <summary>
-            Mostra una schermata di caricamento per tot tempo
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.ClosingControls">
-            <summary>
-            Effettua dei controlli prima di chiudere la pagina, tornare alla home o tornare indietro.
-            Non è possibile chiudere la pagina se si è in drag mode.
-            Si richiede all'utente se vuole comunque uscire senza aver salvato i punti presi.
-            </summary>
-            <returns>True quando è possibile uscire, False quando l'uscita dà problemi</returns>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.CloseForm">
-            <summary>
-            Chiude la pagina tornando alla homepage, si disiscrive dagli eventi e termina i thread del debug e drag mode
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.OpenDebugTools">
-            <summary>
-            Rende visibili i controlli di debug
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.OpenDebugSettings">
-            <summary>
-            Rende visibili i controlli per la gestine delle proprietà del robot durante il debug
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.StartDrag">
-            <summary>
-            Fa partire la modalità drag mode lineare o PTP in base alla modalità scelta
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.StopDrag">
-            <summary>
-            Fa fermare la modalità drag mode avviata in precedenza
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.RestoreListView">
-            <summary>
-            Cancella gli elementi della list view e rimette gli elementi già salvati, resettando la list view
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.AddPositionToListView(RM.src.RM250714.PointPosition)">
-            <summary>
-            Aggiunge un punto alla list view
-            </summary>
-            <param name="point"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.UpdatePositionInListView(RM.src.RM250714.PointPosition,System.Int32)">
-            <summary>
-            Aggiorna una posizione nella ListView sostituendo la riga selezionata con una nuova posizione.
-            </summary>
-            <param name="point">Le nuove coordinate del punto.</param>
-            <param name="selectedIndex">L'indice della riga selezionata nella ListView da sostituire.</param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.CancelOperation">
-            <summary>
-            Cancella i punti presi non salvati
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.SaveOperation">
-            <summary>
-            Salva i punti presi sul db
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.AddApplication">
-            <summary>
-            Aggiunta di una nuova applicazione
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.ChangeDragModePTP(System.Object,System.EventArgs)">
-            <summary>
-            Modifica la modalità di drag mode in PTP
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.ChangeDragModeLinear(System.Object,System.EventArgs)">
-            <summary>
-            Modifica la modalità di drag mode in Linear
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.AddPositionToListView(System.Object,System.EventArgs)">
-            <summary>
-            Aggiunge una posizione alla list view
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.HideSettingsAndToolsPanels(System.Boolean)">
-            <summary>
-            Impedisce all'utente di usare i pannelli settings, tools e gun durante la drag mode per evitare problemi di 
-            sincronismo tra i pulsanti.
-            </summary>
-            <param name="isDragStarted"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.HideSettingsPanel(System.Boolean)">
-            <summary>
-            Impedisce l'accesso al pannello delle impostazioni durante il movimento del robot
-            </summary>
-            <param name="robotIsMoving"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.RobotSingleMovement(System.Int32)">
-            <summary>
-            Muove il robot verso l'indice selezionato sia avanti che indietro. 
-            Colora la riga con l'indice selezionato e poi aspetta che il robot 
-            arrivi in quella posizione prima di ricolorare la riga.
-            </summary>
-            <param name="newIndex">indice di arrivo del movimento</param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.RobotMultipleMovement(System.Int32)">
-            <summary>
-            Muove il robot verso l'indice selezionato sia avanti che indietro.
-            Colora la riga con l'indice selezionato poi aspetta che il robot
-            arrivi in quella posizione prima di ricolorare la riga.
-            E' possibile fare anche più di un movimento prima della terminazione 
-            del metodo in modo da implementare la funzionalirà di goto.
-            </summary>
-            <param name="arriveIndex">indice di arrivo del movimento</param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.PreviousPoint(System.Object,System.EventArgs)">
-            <summary>
-            Movimento verso punto precedente
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.NextPoint(System.Object,System.EventArgs)">
-            <summary>
-            Movimento verso punto successivo
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.CheckRobotIsInSafePosition">
-            <summary>
-            Controlla che il robot si trovi in una posizione sicura prima di eseguire comandi di movimento
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.GoToPoint(System.Object,System.EventArgs)">
-            <summary>
-            Movimento verso punto selezionato
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.StartMonitoring(System.Object,System.EventArgs)">
-            <summary>
-            Avvio thread di monitoring
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.PauseMonitoring(System.Object,System.EventArgs)">
-            <summary>
-            Pausa movimento robot e thread di monitoring
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.ResumeMonitoring(System.Object,System.EventArgs)">
-            <summary>
-            Ripresa movimento robot e thread di monitoring
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.ModifyPoint(System.Object,System.EventArgs)">
-            <summary>
-            Modifica del punto selezionato
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.OverwritePoints(System.Object,System.EventArgs)">
-            <summary>
-            Sovrascrittura dei punti partendo da quello selezionato
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.DeletePoint(System.Object,System.EventArgs)">
-            <summary>
-            Cancellazione del punto selezionato
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.positionCheckerThread">
-            <summary>
-            Thread che esegue il metodo CheckPosition
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.positionCheckerThreadRefreshPeriod">
-            <summary>
-            Tempo di refresh all'interno del metodo CheckPosition del thread positionCheckerThread
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.stopPositionCheckerThread">
-            <summary>
-            A true quando il thread deve essere concluso
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.checker_monitoringPos">
-            <summary>
-            Checker utilizzato per la colorazione delle righe all'interna di lw_positions
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.inPosition">
-            <summary>
-            A true quando il punto attuale del robot corrisponde con la posizione interrogata della lw_positions
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.positionsToCheck">
-            <summary>
-            Lista di posizioni su cui eseguire l'inPosition per gestire colorazione di lw_positions
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.numPositionsToCheck">
-            <summary>
-            Numero di posizioni su cui eseguire l'inPosition e la relativa colorazione su lw_positions
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.aggiornamentoFinito">
-            <summary>
-            A true quando l'aggiornamento della lista di posizioni su cui eseguire inPosition 
-            per gestire colorazione su lw_positions viene terminato
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.CheckPosition">
-            <summary>
-            Esegue inPosition su una lista di posizioni continuamente aggiornata da CheckMonitoring
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.CheckMonitoring">
-            <summary>
-            Avvia la riproduzione dei punti dell'applicazione selezionata
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.UpdateDebugLabels">
-            <summary>
-            Aggiorna le label di current point id e current point time prendendo i valori direttamente dalla list view
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.EnsureVisibleAndCentered(System.Int32)">
-            <summary>
-            Metodo per centrare un elemento visibile
-            </summary>
-            <param name="index"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.ClickEvent_debugTools(System.Object,System.EventArgs)">
-            <summary>
-            Evento che apre strumenti di debug
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.ClickEvent_debugSettings(System.Object,System.EventArgs)">
-            <summary>
-            Evento che apre impostazioni di debug
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.ClickEvent_HomePage(System.Object,System.EventArgs)">
-            <summary>
-            Ritorno a HomePage
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.ClickEvent_StopDrag(System.Object,System.EventArgs)">
-            <summary>
-            Stop dragMode
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.ClickEvent_StartDrag(System.Object,System.EventArgs)">
-            <summary>
-            Avvio dragMode
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.ClickEvent_cancelOperation(System.Object,System.EventArgs)">
-            <summary>
-            Cancella punti non salvati
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.ClickEvent_saveOperation(System.Object,System.EventArgs)">
-            <summary>
-            Salva punti acquisiti
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.ClickEvent_addApplication(System.Object,System.EventArgs)">
-            <summary>
-            Aggiunta applicazione
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.lw_positions_DrawColumnHeader(System.Object,System.Windows.Forms.DrawListViewColumnHeaderEventArgs)">
-            <summary>
-            Disegno intestazioni colonne
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.lw_positions_DrawItem(System.Object,System.Windows.Forms.DrawListViewItemEventArgs)">
-            <summary>
-            Disegno elementi
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.lw_positions_DrawSubItem(System.Object,System.Windows.Forms.DrawListViewSubItemEventArgs)">
-            <summary>
-            Disegno sub-elementi
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.HandleDictionaryPositionDeleted(System.Object,RM.src.RM250714.RobotDictionaryChangedEventArgs)">
-            <summary>
-            Metodo che intercetta evento di aggiunta applicazione e refresha la lw delle applicazioni
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.HandleDictionaryPositionDeletedStartingFromId(System.Object,RM.src.RM250714.RobotDictionaryChangedEventArgs)">
-            <summary>
-            Metodo che intercetta evento di aggiunta applicazione e refresha la lw delle applicazioni
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.HandleDictionaryPositionDeletedFromId(System.Object,RM.src.RM250714.RobotDictionaryChangedEventArgs)">
-            <summary>
-            Sostituisce l'elemento selezionato
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.components">
-            <summary> 
-            Variabile di progettazione necessaria.
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.Dispose(System.Boolean)">
-            <summary> 
-            Pulire le risorse in uso.
-            </summary>
-            <param name="disposing">ha valore true se le risorse gestite devono essere eliminate, false in caso contrario.</param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.DragMode.UC_FullDragModePage.InitializeComponent">
-            <summary> 
-            Metodo necessario per il supporto della finestra di progettazione. Non modificare 
-            il contenuto del metodo con l'editor di codice.
-            </summary>
-        </member>
-        <member name="T:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager">
-            <summary>
-            Gestisce la visualizzazione di una form che controlla lo screen saver. Per usare lo screen saver è necessaria la libreria 
-            wmp.dll, mettendo un media player nel designer di una form, le librerie associate verranno importate automaticamente. 
-            Per usare la libreria wmp è necessario avere una form sempre aperta che al suo interno abbia il riferimento alla form dello
-            screen saver. Questo perchè usando una classe statica che istanzia un thread STA e lo distrugge ogni volta porta al crash non
-            prevedibile dell'applicazione con errore "tentativo di accesso alla memoria protetta" (che significa che la memoria si è corrotta)
-            perciò l'uso di una form sempre aperta è necessario. 
-            <br></br>
-            Una buona idea è quella di istanziare il manager dentro alla form home page (che rimane sempre aperta), impostare file name e 
-            delay, la creazione dell'oggetto va fatta dentro l'evento "shown" della form, mantenendo una variabile nella classe. 
-            <br></br>
-            Una volta fatto bisogna anche aggiungere gli eventi personalizzati che vanno a resettare il timer al click, per farlo
-            è possibile usare il metodo <code>AutoAddClickEvents(Form form) o (UserControl uc)</code> che automaticamente aggiunge ai 
-            controlli e i figli di questi un evento click. NB: è necessario anche rimuovere tali eventi con il metodo 
-            <code>AutoRemoveClickEvents(Form form) o (UserControl uc)</code> quando le pagine vengono chiuse.
-            <para></para>
-            20250422 - V1.0: Creazione per fiera lamiera CEMSA
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.log">
-            <summary>
-            Logger
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.Version">
-            <summary>
-            Versione della libreria
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.defaultDelayValue">
-            <summary>
-            Valore numerico di default nel caso si scelga di usare il valore di default per il delay
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.defaultDelayTime">
-            <summary>
-            Calcolo tempo in ms di delay utilizzando il valore di default
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.videoDefaultDirectory">
-            <summary>
-            Path di default usato per passare dal percorso dell'eseguibile al percorso del video
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.exeDefaultDirectory">
-            <summary>
-            Path calcolato a run time dell'eseguibile
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.videoPath">
-            <summary>
-            Contiene il percorso del file video da calcolare a run time
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.videoFileName">
-            <summary>
-            Contiene il nome del file mp4 che si desidera mettere a schermo
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.delay">
-            <summary>
-            Contiene il valore del delay in ms
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.videoPlayer">
-            <summary>
-            Riferimento alla form dello screen saver
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.timer">
-            <summary>
-            Riferimento al timer di system timers usato per mostrare lo screen saver ogni tot tempo
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.currentTimerState">
-             <summary>
-             Indica se il timer è in esecuzione al momento
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.hiddenControlsXCoordOffset">
-            <summary>
-            La coordinata x da sommare per nascondere la form del manager
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.useScreenSaver">
-            <summary>
-            Specifica se usare o meno lo screen saver per l'app
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.#ctor">
-            <summary>
-            Costruttore vuoto che usa i valori di default
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.#ctor(System.Int32,System.String,System.Boolean)">
-            <summary>
-            Costruttore per usare valori arbitrari
-            </summary>
-            <param name="delayMs"></param>
-            <param name="fileName"></param>
-            <param name="useScreenSaver"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.InitView">
-            <summary>
-            Inizializza la pagina e i controlli
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.SetupEvents">
-            <summary>
-            Inizializza gli eventi
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.SetupVideoPlayer">
-            <summary>
-            Inizializza la form media player
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.SetupTimer(System.Int32)">
-            <summary>
-            Inizializzazione del timer
-            </summary>
-            <param name="delayVal"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.SetupVideoFile">
-            <summary>
-            Inizializzazione e calcolo percorso completo del file video
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.CheckFilePresence">
-            <summary>
-            Controlla che il file video esista
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.HideControls">
-            <summary>
-            Sposta la form del manager fuori dallo schermo in modo che rimanga comunque attiva
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.RestoreLocation">
-            <summary>
-            Ripristina la posizione della form del manager in modo che torni visibile
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.RestartTimer(System.Object,System.EventArgs)">
-            <summary>
-            Resetta il timer quando si clicca sul video per chiuderlo
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.StartTimer">
-            <summary>
-            Fa partire il timer solo se il video esiste
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.StopTimer">
-            <summary>
-            Ferma il timer e il video
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.ResetTimer">
-            <summary>
-            Resetta il timer solo se si ha dato il via dal manager
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.ShowScreenSaver(System.Object,System.EventArgs)">
-            <summary>
-            Mostra la pagina dello screen saver
-            </summary>
-            <param name="sender"></param>
-            <param name="args"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.AutoAddClickEvents(System.Windows.Forms.Form)">
-            <summary>
-            Aggiunge in modo automatico l'evento click ai controlli della form passata come parametro
-            </summary>
-            <param name="form"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.AutoAddClickEvents(System.Windows.Forms.UserControl)">
-            <summary>
-            Aggiunge in modo automatico l'evento click ai controlli dello user control passato come parametro
-            </summary>
-            <param name="UC"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.AutoRemoveClickEvents(System.Windows.Forms.Form)">
-            <summary>
-            Rimuove in modo automatico l'evento click dai controlli della form
-            </summary>
-            <param name="form"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.AutoRemoveClickEvents(System.Windows.Forms.UserControl)">
-            <summary>
-            Rimuove in modo automatico l'evento click dai controlli dello User control
-            </summary>
-            <param name="uc"></param>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.components">
-            <summary>
-            Variabile di progettazione necessaria.
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.Dispose(System.Boolean)">
-            <summary>
-            Pulire le risorse in uso.
-            </summary>
-            <param name="disposing">ha valore true se le risorse gestite devono essere eliminate, false in caso contrario.</param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.ScreenSaverManager.InitializeComponent">
-            <summary>
-            Metodo necessario per il supporto della finestra di progettazione. Non modificare
-            il contenuto del metodo con l'editor di codice.
-            </summary>
-        </member>
-        <member name="T:RM.src.RM250714.Forms.ScreenSaver.VideoPlayer">
-            <summary>
-            Form contenente il media player per mostrare lo screen saver
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.ScreenSaver.VideoPlayer.videoPath">
-            <summary>
-            Contiene il full path assoluto al video
-            </summary>
-        </member>
-        <member name="E:RM.src.RM250714.Forms.ScreenSaver.VideoPlayer.RestartTimer">
-            <summary>
-            Evento per dire al manager che il video è stato chiuso
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.VideoPlayer.#ctor(System.String)">
-            <summary>
-            Costruttore di default con scelta full path video
-            </summary>
-            <param name="path"></param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.VideoPlayer.InitVideo">
-            <summary>
-            Inizializza il media player in modo che sia senza controlli, in loop e parta automaticamente
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.VideoPlayer.Play">
-            <summary>
-            Fa partire la riproduzione del video
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.VideoPlayer.Stop">
-            <summary>
-            Ferma la riproduzione in modo che la prossima volta riparta da capo
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.VideoPlayer.DisposeElements">
-            <summary>
-            Distrugge il media player e i suoi riferimenti
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Forms.ScreenSaver.VideoPlayer.components">
-            <summary>
-            Required designer variable.
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.VideoPlayer.Dispose(System.Boolean)">
-            <summary>
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:RM.src.RM250714.Forms.ScreenSaver.VideoPlayer.InitializeComponent">
-            <summary>
-            Required method for Designer support - do not modify
-            the contents of this method with the code editor.
-            </summary>
-        </member>
         <member name="T:RM.src.RM250714.FormHomePage">
             <summary>
             Definisce la struttura, il comportamento e la UI della form principale da cui si può arrivare a tutte le altre funzionalità. Non va mai chiusa
@@ -6147,11 +4689,6 @@
         <member name="P:RM.src.RM250714.FormHomePage.Instance">
             <summary>
             Definisce una istanza statica per la classe
-            </summary>
-        </member>
-        <member name="P:RM.src.RM250714.FormHomePage.ScreenSaverManagerForm">
-            <summary>
-            Restituisce il riferimento alla form screen saver
             </summary>
         </member>
         <member name="P:RM.src.RM250714.FormHomePage.PnlContainer">
@@ -6382,11 +4919,6 @@
             Chiude la form di caricamento ed apre la form di homepage
             </summary>
         </member>
-        <member name="M:RM.src.RM250714.FormLoading.OpenVATView">
-            <summary>
-            Apre form VATView
-            </summary>
-        </member>
         <member name="M:RM.src.RM250714.FormLoading.LoadProgressBar(System.String[])">
             <summary>
             Esegue il metodo per la configurazione iniziale del sistema
@@ -6426,398 +4958,9 @@
             il contenuto del metodo con l'editor di codice.
             </summary>
         </member>
-        <member name="T:RM.src.RM250714.UC_ApplicationPage">
-            <summary>
-            Raccoglie le applicazione disponibili da caricare
-            </summary>
-        </member>
-        <member name="E:RM.src.RM250714.UC_ApplicationPage.selectedApplicationChanged">
-            <summary>
-            Segnala il cambio di un'applicazione
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.#ctor">
-            <summary>
-            Costruttore
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.ShowLoadingScreen">
-            <summary>
-            (TODO) Mostra caricamento pagina
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.HandleDictionaryDataAdded(System.Object,RM.src.RM250714.RobotDictionaryChangedEventArgs)">
-            <summary>
-            Metodo che intercetta evento di aggiunta applicazione e refrsha la lw delle applicazioni
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.HandleDictionaryApplicationNoteUpdated(System.Object,RM.src.RM250714.RobotDictionaryChangedEventArgs)">
-            <summary>
-            Metodo che intercetta il comando UPDATE NOTA della ricetta e aggiorna campo nota e lastUpdateTime nella listView delle ricette
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.HandleDictionaryApplicationDeleted(System.Object,RM.src.RM250714.RobotDictionaryChangedEventArgs)">
-            <summary>
-            Metodo che intercetta il comando DELETE dell'applicazione e rimuove dalla
-            listView delle applicazioni l'applicazione selezionata
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.HandleDictionaryApplicationIdUpdated(System.Object,RM.src.RM250714.RobotDictionaryChangedEventArgs)">
-            <summary>
-            Metodo che intercetta il comando UPDATE ID dell'applicazione e aggiorna campo id nella List view delle applicazioni
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.HandleDictionaryApplicationNameUpdated(System.Object,RM.src.RM250714.RobotDictionaryChangedEventArgs)">
-            <summary>
-            Metodo che intercetta il comando UPDATE NAME dell'applicazione e aggiorna campo name nella listView delle applicazioni
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.BuildLw_Applications">
-            <summary>
-            Metodo che costruisce ListView delle applicazioni
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.FillLw_Applications">
-            <summary>
-            Metodo che riempie ListView Applications
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.BuildAndFill_Dt_filtered">
-            <summary>
-            Metodo che costruisce e riempie DataTable di supporto per filtrare ListView
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.Update_Dt_filtered">
-            <summary>
-            Metodo usato per aggiornare la datatable per filtrare la listview, chiamato quando viene modificata la list view a
-            seguito di un add, delete, import o qualsiasi modifica alle sue righe
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.InitFont">
-            <summary>
-            Metodo che setta Font
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.SetHeight(System.Windows.Forms.ListView,System.Int32)">
-            <summary>
-            Serve per aumentare la grandezza delle righe di una list view.
-            NB: può solo aumentare la grandezza e bisogna stare attenti al SO perchè è in base a quello che
-            cambia l'altezza delle righe.
-            </summary>
-            <param name="listView">riferimento alla lw</param>
-            <param name="height">altezza supplementare specificata</param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.RemoveFilters">
-            <summary>
-            Toglie i filtri applicati in precedenza mettendone alcuni generici che mostrano tutti i risultati
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.ApplyFilters">
-            <summary>
-            Applica i filtri derivati dalle textbox e dai numericUpDown alla list view sottostante
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.lw_Applications_DrawItem(System.Object,System.Windows.Forms.DrawListViewItemEventArgs)">
-            <summary>
-            Disegno elemento
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.lw_Applications_DrawSubItem(System.Object,System.Windows.Forms.DrawListViewSubItemEventArgs)">
-            <summary>
-            Disegno sub-elemento
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.btn_Home_Click(System.Object,System.EventArgs)">
-            <summary>
-            Ritorno a casa
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.ClickEvent_addApplication(System.Object,System.EventArgs)">
-            <summary>
-            Aggiunta applicazione
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.ClickEvent_deleteApplication(System.Object,System.EventArgs)">
-            <summary>
-            Cancella applicazione
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.ClickEvent_EditID(System.Object,System.EventArgs)">
-            <summary>
-            Aggiornamento ID
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.ClickEvent_rename(System.Object,System.EventArgs)">
-            <summary>
-            Aggiornamento nome
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.ClickEvent_EditNote(System.Object,System.EventArgs)">
-            <summary>
-            Aggiornamento note
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.Bttn_AvailableChoiches_EnableFilter_Click(System.Object,System.EventArgs)">
-            <summary>
-            Attivazione filtri
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.Tb_note_filter_TextChanged(System.Object,System.EventArgs)">
-            <summary>
-            Filtro su note
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.Tb_name_filter_TextChanged(System.Object,System.EventArgs)">
-            <summary>
-            Filtro su nome
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.Ud_min_id_filter_ValueChanged(System.Object,System.EventArgs)">
-            <summary>
-            Filtro su ID
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.Ud_max_id_filter_ValueChanged(System.Object,System.EventArgs)">
-            <summary>
-            Filtro su ID
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.Tb_note_filter_Click(System.Object,System.EventArgs)">
-            <summary>
-            Inserimento note da filtrare
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.Tb_name_filter_Click(System.Object,System.EventArgs)">
-            <summary>
-            Inserimento nome da filtrare
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.Btn_min_id_filter_Click(System.Object,System.EventArgs)">
-            <summary>
-            Inserimento ID da filtrare
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.Btn_max_id_filter_Click(System.Object,System.EventArgs)">
-            <summary>
-            Inserimento ID da filtrare
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.ClickEvent_loadProgram(System.Object,System.EventArgs)">
-            <summary>
-            Caricamento applicazione
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.lw_Applications_DrawColumnHeader(System.Object,System.Windows.Forms.DrawListViewColumnHeaderEventArgs)">
-            <summary>
-            Disegno colonne listView
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="F:RM.src.RM250714.UC_ApplicationPage.components">
-            <summary> 
-            Variabile di progettazione necessaria.
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.Dispose(System.Boolean)">
-            <summary> 
-            Pulire le risorse in uso.
-            </summary>
-            <param name="disposing">ha valore true se le risorse gestite devono essere eliminate, false in caso contrario.</param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_ApplicationPage.InitializeComponent">
-            <summary> 
-            Metodo necessario per il supporto della finestra di progettazione. Non modificare 
-            il contenuto del metodo con l'editor di codice.
-            </summary>
-        </member>
-        <member name="T:RM.src.RM250714.UC_configuration">
-            <summary>
-            Pagina per la configurazione delle proprietà del software
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.UC_configuration.USActivation">
-            <summary>
-            False quando interruttore tempo US è spento
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.UC_configuration.USCleaning">
-            <summary>
-            False quando interruttore pulizia US è spento
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.UC_configuration.jogTape">
-            <summary>
-            False quando tasto jog nastro non premuto 
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.UC_configuration.robotGripperOpened">
-            <summary>
-            False quando tasto apri pinze robot non premuto
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.UC_configuration.robotGripperClosed">
-            <summary>
-            False quando tasto chiudi pinze robot non premuto
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.UC_configuration.traysReseted">
-            <summary>
-            False quando tasto forzamento reset teglie non premuto
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.UC_configuration.#ctor">
-            <summary>
-            Costruttore vuoto per creare la pagina di configurazione
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.UC_configuration.InitComponents">
-            <summary>
-            Inizializza i controlli
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.UC_configuration.InitParameters">
-            <summary>
-            Inizializza i valori dei controlli presenti nell'interfaccia
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.UC_configuration.RefreshVariables(System.Object,RMLib.PLC.DictionaryChangedEventArgs)">
-            <summary>
-            Metodo richiamato dall'evento ValueChanged del dizionario delle variabili PLC
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_configuration.BtnHome_Click(System.Object,System.EventArgs)">
-            <summary>
-            Ritorno a pagina di home
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_configuration.PnlUSActivation_Click(System.Object,System.EventArgs)">
-            <summary>
-            Gestione interruttore tempo US
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_configuration.PnlUSCleaning_Click(System.Object,System.EventArgs)">
-            <summary>
-            Gestione interruttore pulizia US
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_configuration.BtnJogTape_Click(System.Object,System.EventArgs)">
-            <summary>
-            Gestisce colore tasto jog nastro
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_configuration.BtnOpenRobotGripper_Click(System.Object,System.EventArgs)">
-            <summary>
-            Gestisce colore tasto apri pinze robot
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_configuration.BtnCloseRobotGripper_Click(System.Object,System.EventArgs)">
-            <summary>
-            Gestisce colore tasto chiudi pinze robot
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_configuration.BtnResetTrays_Click(System.Object,System.EventArgs)">
-            <summary>
-            Gestisce colore tasto forzamento reset teglie
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="F:RM.src.RM250714.UC_configuration.components">
-            <summary> 
-            Variabile di progettazione necessaria.
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.UC_configuration.Dispose(System.Boolean)">
-            <summary> 
-            Pulire le risorse in uso.
-            </summary>
-            <param name="disposing">ha valore true se le risorse gestite devono essere eliminate, false in caso contrario.</param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_configuration.InitializeComponent">
-            <summary> 
-            Metodo necessario per il supporto della finestra di progettazione. Non modificare 
-            il contenuto del metodo con l'editor di codice.
-            </summary>
-        </member>
         <member name="T:RM.src.RM250714.UC_HomePage">
             <summary>
             Definisce la struttura, il comportamento e la UI della home page del software, da usare come pannello preimpostato.
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.UC_HomePage.MoveToPointColor">
-            <summary>
-            Colore associato alle righe lw per gli spostamenti verso un punto
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.UC_HomePage.GenericPointColor">
-            <summary>
-            Colore associato alle righe lw per i punti presi e salvati
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.UC_HomePage.CurrentPointColor">
-            <summary>
-            Colore associato alle righe lw per il punto corrente in cui ci si trova
             </summary>
         </member>
         <member name="F:RM.src.RM250714.UC_HomePage.log">
@@ -6896,12 +5039,6 @@
             <param name="sender"></param>
             <param name="e"></param>
         </member>
-        <member name="M:RM.src.RM250714.UC_HomePage.EnableCycleButton(System.Int32)">
-            <summary>
-            Abilita e disabilita i tasti di start, stop e pausa
-            </summary>
-            <param name="status">//0: Disattiva stop, disattiva pause, attiva start - 1: Attiva stop, attiva pause, disattiva start</param>
-        </member>
         <member name="M:RM.src.RM250714.UC_HomePage.InitVelocitySaverTimer">
             <summary>
             Inizializza il timer che salva la velocità del Robot
@@ -6940,12 +5077,6 @@
             </summary>
             <param name="sender"></param>
             <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_HomePage.SetApplicationToExecute(System.String)">
-            <summary>
-            Imposta il valore della label dell'applicazione da eseguire
-            </summary>
-            <param name="application"></param>
         </member>
         <member name="M:RM.src.RM250714.UC_HomePage.ContinuousAddVelocityTimer_Tick(System.Object,System.EventArgs)">
             <summary>
@@ -7083,13 +5214,6 @@
             <param name="sender"></param>
             <param name="e"></param>
         </member>
-        <member name="M:RM.src.RM250714.UC_HomePage.ClickEvent_restoreScreenSaverManager(System.Object,System.EventArgs)">
-            <summary>
-            Restore dello screen saver
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
         <member name="F:RM.src.RM250714.UC_HomePage.components">
             <summary> 
             Variabile di progettazione necessaria.
@@ -7102,111 +5226,6 @@
             <param name="disposing">ha valore true se le risorse gestite devono essere eliminate, false in caso contrario.</param>
         </member>
         <member name="M:RM.src.RM250714.UC_HomePage.InitializeComponent">
-            <summary> 
-            Metodo necessario per il supporto della finestra di progettazione. Non modificare 
-            il contenuto del metodo con l'editor di codice.
-            </summary>
-        </member>
-        <member name="T:RM.src.RM250714.UC_permissions">
-            <summary>
-            Pagina dedicata alla visualizzazione e gestione dei permessi necessari affinchè il robot possa 
-            funzionare.
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.UC_permissions.#ctor">
-            <summary>
-            Costruttore vuoto per inizializzare la pagina dei permessi
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.UC_permissions.InitParameters">
-            <summary>
-            Inizializza i valori dei controlli presenti nell'interfaccia
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.UC_permissions.UpdateUI(System.Object,System.Object,System.Object,System.Object,System.Object,System.Object)">
-            <summary>
-            Aggiornamento grafico dei consensi
-            </summary>
-            <param name="Hmi_Start_Condition_1"></param>
-            <param name="Hmi_Start_Condition_2"></param>
-            <param name="Hmi_Start_Condition_3"></param>
-            <param name="Hmi_Start_Condition_4"></param>
-            <param name="Hmi_Start_Condition_5"></param>
-            <param name="Hmi_Start_Condition_6"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_permissions.InitComponents">
-            <summary>
-            Inizializza i controlli di UC_permissions
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.UC_permissions.RefreshVariables(System.Object,RMLib.PLC.DictionaryChangedEventArgs)">
-            <summary>
-            Metodo richiamato dall'evento ValueChanged del dizionario delle variabili PLC
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_permissions.ClickEvent_back(System.Object,System.EventArgs)">
-            <summary>
-            Ritorno ad Home
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_permissions.PnlInfoStopCycleAlarm_Click(System.Object,System.EventArgs)">
-            <summary>
-            info allarme stop ciclo
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_permissions.PnlInfoRobotReady_Click(System.Object,System.EventArgs)">
-            <summary>
-            Info robot pronto
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_permissions.PnlInfoTapeInit_Click(System.Object,System.EventArgs)">
-            <summary>
-            Info init nastro
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_permissions.PnlInfoRobotGripperOpen_Click(System.Object,System.EventArgs)">
-            <summary>
-            Info pinze aperte
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_permissions.PnlInfoBarrier_Click(System.Object,System.EventArgs)">
-            <summary>
-            info barriere
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_permissions.PnlInfoRobotInPosition_Click(System.Object,System.EventArgs)">
-            <summary>
-            Info robot in posizione
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="F:RM.src.RM250714.UC_permissions.components">
-            <summary> 
-            Variabile di progettazione necessaria.
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.UC_permissions.Dispose(System.Boolean)">
-            <summary> 
-            Pulire le risorse in uso.
-            </summary>
-            <param name="disposing">ha valore true se le risorse gestite devono essere eliminate, false in caso contrario.</param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_permissions.InitializeComponent">
             <summary> 
             Metodo necessario per il supporto della finestra di progettazione. Non modificare 
             il contenuto del metodo con l'editor di codice.
@@ -7289,38 +5308,6 @@
             </summary>
             <param name="listView">riferimento alla lw</param>
             <param name="height">altezza supplementare specificata</param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_positions.ShowLoadingScreen">
-            <summary>
-            Mostra una schermata di caricamento per tot tempo
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.UC_positions.FiltersManagement(System.Boolean)">
-            <summary>
-            Mostra o nasconde gli elementi relativi ai filtri, inoltre li applica o li toglie a seconda della variabile isFilterEnabled
-            </summary>
-            <param name="forceValue">Indica se si vuole forzare la chiusura dei filtri</param>
-        </member>
-        <member name="M:RM.src.RM250714.UC_positions.ApplyFilters">
-            <summary>
-            Applica i filtri derivati dalle textbox e dai numericUpDown alla list view sottostante
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.UC_positions.BuildAndFill_Dt_filtered">
-            <summary>
-            Metodo che costruisce e riempie DataTable di supporto per filtrare ListView
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.UC_positions.Update_Dt_filtered">
-            <summary>
-            Metodo usato per aggiornare la datatable per filtrare la listview, chiamato quando viene modificata la list view a
-            seguito di un add, delete, import o qualsiasi modifica alle sue righe
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.UC_positions.RemoveFilters">
-            <summary>
-            Toglie i filtri applicati in precedenza mettendone alcuni generici che mostrano tutti i risultati
-            </summary>
         </member>
         <member name="M:RM.src.RM250714.UC_positions.AddNewPositionToListView(System.Int32@,System.String,System.String)">
             <summary>

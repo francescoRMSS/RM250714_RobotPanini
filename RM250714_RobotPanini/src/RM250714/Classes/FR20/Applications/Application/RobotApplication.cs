@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace RM.src.RM250714
 {
@@ -17,17 +16,17 @@ namespace RM.src.RM250714
         /// <summary>
         /// Timestamp di creazione dell'applicazione
         /// </summary>
-        public String creation { get; set; }
+        public string creation { get; set; }
 
         /// <summary>
         /// Timestamp dell'ultima modifica dell'applicazione
         /// </summary>
-        public String lastUpdate { get; set; }
+        public string lastUpdate { get; set; }
 
         /// <summary>
         /// Note applicazione
         /// </summary>
-        public String note { get; set; }
+        public string note { get; set; }
 
         /// <summary>
         /// Lista di posizioni che contiene l'applicazione

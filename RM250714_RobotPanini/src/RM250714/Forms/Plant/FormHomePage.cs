@@ -14,7 +14,6 @@ using RMLib.VATView;
 using RMLib.View;
 using RMLib.Security;
 using System.Collections.Generic;
-using RM.src.RM250714.Forms.ScreenSaver;
 using RM.src.RM250714.Classes.FR20;
 using System.Threading.Tasks;
 
@@ -41,14 +40,6 @@ namespace RM.src.RM250714
                 if (_obj == null) _obj = new FormHomePage();
                 return _obj;
             }
-        }
-        
-        /// <summary>
-        /// Restituisce il riferimento alla form screen saver
-        /// </summary>
-        public ScreenSaverManager ScreenSaverManagerForm
-        {
-            get { return screenSaverManager; }
         }
 
         /// <summary>
@@ -132,8 +123,6 @@ namespace RM.src.RM250714
         /// </summary>
         private bool emergencyOK = false;
 
-        private ScreenSaverManager screenSaverManager;
-
         #endregion
 
         /// <summary>
@@ -183,8 +172,6 @@ namespace RM.src.RM250714
 
             // Iscrizione al metodo OnAllarmeResettato quando generato evento AllarmeResettato
             RobotManager.AllarmeResettato += OnAllarmeResettato;
-
-            ScreenSaverManager.AutoAddClickEvents(this);
         }
 
         #region Metodi di FormHomePage
@@ -280,9 +267,6 @@ namespace RM.src.RM250714
         {
             // Notifica l'alarmManager che la form è stata caricata e quindi è possibile procedere con la gestione degli allarmi 
             AlarmManager.isFormReady = true;
-
-            //Configurazione screen saver manager - 5m
-            screenSaverManager = new ScreenSaverManager(300000, "screenSaver.mp4", false);
 
             ChangeTaskStatus(this, EventArgs.Empty); // Chiamo il metodo per aggiornare l'interfaccia la prima volta
         }

@@ -57,8 +57,6 @@
 
         #region Lista delle velocità
 
-
-
         #endregion
 
         /// <summary>

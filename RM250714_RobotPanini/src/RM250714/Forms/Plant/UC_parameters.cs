@@ -1,5 +1,4 @@
-﻿using RM.src.RM250714.Forms.ScreenSaver;
-using RMLib.DataAccess;
+﻿using RMLib.DataAccess;
 using RMLib.Keyboards;
 using RMLib.MessageBox;
 using RMLib.Security;
@@ -33,21 +32,9 @@ namespace RM.src.RM250714.Forms.Plant
             FormHomePage.Instance.LabelHeader = "PARAMETRI ROBOT";
 
             InitRobotParameters();
-
-            ScreenSaverManager.AutoAddClickEvents(this);
         }
 
         #region Metodi di UC_parameters
-
-        /// <summary>
-        /// Mostra una schermata di caricamento per tot tempo
-        /// </summary>
-        public async void ShowLoadingScreen()
-        {
-            pnl_loading.Location = new Point(0, 0);
-            await Task.Delay(RMLib.Utils.ProjectVariables.UserControlLoadingScreenTime);
-            pnl_loading.Visible = false;
-        }
 
         /// <summary>
         /// Inizializza i tb
@@ -92,8 +79,6 @@ namespace RM.src.RM250714.Forms.Plant
             FormHomePage.Instance.LabelHeader = TranslationManager.GetTranslation("LBL_HOMEPAGE_HEADER");
             FormHomePage.Instance.PnlContainer.Controls["UC_HomePage"].BringToFront();
             FormHomePage.Instance.PnlContainer.Controls.Remove(Controls["UC_applications"]);
-
-            ScreenSaverManager.AutoRemoveClickEvents(this);
 
             Dispose();
         }

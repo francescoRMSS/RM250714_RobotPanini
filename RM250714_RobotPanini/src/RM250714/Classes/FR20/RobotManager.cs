@@ -11,7 +11,6 @@ using RMLib.PLC;
 using RMLib.Alarms;
 using RM.src.RM250714.Forms.Plant;
 using RM.Properties;
-using RM.src.RM250714.Forms.DragMode;
 using RM.src.RM250714.Classes.PLC;
 using RM.src.RM250714.Classes.FR20.Jog;
 using RM.src.RM250714.Classes.FR20;
@@ -4138,7 +4137,6 @@ namespace RM.src.RM250714
                 pauseCycleRequested = false;
                 currentIndex = -1;
                 robotEnableStatus = 0;
-                UC_FullDragModePage.debugCurrentIndex = -1;
                 log.Warn("[ENABLE] Disabilitazione robot completata");
             }
         }

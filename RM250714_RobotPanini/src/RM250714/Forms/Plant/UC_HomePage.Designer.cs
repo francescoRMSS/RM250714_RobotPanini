@@ -54,8 +54,6 @@
             this.pnl_pinzeStatus = new System.Windows.Forms.Panel();
             this.label13 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
-            this.btn_restoreSCreenSaverManager = new System.Windows.Forms.Button();
-            this.lbl_restoreScreenSaverManager = new System.Windows.Forms.Label();
             this.btn_VAT = new System.Windows.Forms.Button();
             this.lbl_buttonVAT = new System.Windows.Forms.Label();
             this.btn_exit = new System.Windows.Forms.Button();
@@ -403,30 +401,6 @@
             this.label11.TabIndex = 0;
             this.label11.Text = "Pinze";
             // 
-            // btn_restoreSCreenSaverManager
-            // 
-            this.btn_restoreSCreenSaverManager.BackColor = System.Drawing.SystemColors.Control;
-            this.btn_restoreSCreenSaverManager.BackgroundImage = global::RM.Properties.Resources.resumeMonitoringBlue_32;
-            this.btn_restoreSCreenSaverManager.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btn_restoreSCreenSaverManager.Location = new System.Drawing.Point(517, 569);
-            this.btn_restoreSCreenSaverManager.Name = "btn_restoreSCreenSaverManager";
-            this.btn_restoreSCreenSaverManager.Size = new System.Drawing.Size(50, 50);
-            this.btn_restoreSCreenSaverManager.TabIndex = 307;
-            this.btn_restoreSCreenSaverManager.UseVisualStyleBackColor = false;
-            this.btn_restoreSCreenSaverManager.Click += new System.EventHandler(this.ClickEvent_restoreScreenSaverManager);
-            // 
-            // lbl_restoreScreenSaverManager
-            // 
-            this.lbl_restoreScreenSaverManager.BackColor = System.Drawing.Color.Transparent;
-            this.lbl_restoreScreenSaverManager.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_restoreScreenSaverManager.ForeColor = System.Drawing.SystemColors.Control;
-            this.lbl_restoreScreenSaverManager.Location = new System.Drawing.Point(506, 628);
-            this.lbl_restoreScreenSaverManager.Name = "lbl_restoreScreenSaverManager";
-            this.lbl_restoreScreenSaverManager.Size = new System.Drawing.Size(70, 15);
-            this.lbl_restoreScreenSaverManager.TabIndex = 306;
-            this.lbl_restoreScreenSaverManager.Text = "ScrnSvr MGr";
-            this.lbl_restoreScreenSaverManager.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // btn_VAT
             // 
             this.btn_VAT.BackColor = System.Drawing.SystemColors.Control;
@@ -750,8 +724,6 @@
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.btn_restoreSCreenSaverManager);
-            this.Controls.Add(this.lbl_restoreScreenSaverManager);
             this.Controls.Add(this.btn_VAT);
             this.Controls.Add(this.lbl_buttonVAT);
             this.Controls.Add(this.btn_exit);
@@ -825,8 +797,6 @@
         private System.Windows.Forms.Panel pnl_pinzeStatus;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Button btn_restoreSCreenSaverManager;
-        private System.Windows.Forms.Label lbl_restoreScreenSaverManager;
         private System.Windows.Forms.Button btn_VAT;
         private System.Windows.Forms.Label lbl_buttonVAT;
         private System.Windows.Forms.Button btn_exit;
