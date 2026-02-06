@@ -102,6 +102,9 @@
     <Reference Include="RMLib.Security">
       <HintPath>..\..\..\..\..\..\Support\RMLib.Security.dll</HintPath>
     </Reference>
+    <Reference Include="RMLib.TaskManager">
+      <HintPath>..\..\..\..\..\..\Support\RMLib.TaskManager.dll</HintPath>
+    </Reference>
     <Reference Include="RMLib.Translations">
       <HintPath>..\..\..\..\..\..\Support\RMLib.Translations.dll</HintPath>
     </Reference>
@@ -167,9 +170,6 @@
     <Compile Include="src\RM250714\Classes\FR20\Properties\RobotSpeed.cs" />
     <Compile Include="src\RM250714\Classes\FR20\Properties\SpeedMode.cs" />
     <Compile Include="src\RM250714\Classes\FR20\Properties\Tools.cs" />
-    <Compile Include="src\RM250714\Classes\FR20\TaskManager\TaskManager.cs" />
-    <Compile Include="src\RM250714\Classes\FR20\TaskManager\TaskModel.cs" />
-    <Compile Include="src\RM250714\Classes\FR20\TaskManager\TaskType.cs" />
     <Compile Include="src\RM250714\Classes\Global.cs" />
     <Compile Include="src\RM250714\Classes\PLC\PLCTagName.cs" />
     <Compile Include="src\RM250714\Classes\Program.cs" />

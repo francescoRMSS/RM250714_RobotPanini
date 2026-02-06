@@ -18,6 +18,7 @@ using RM.src.RM250714.Classes.FR20.Properties;
 using CookComputing.XmlRpc;
 using System.IO;
 using RM.src.RM250714.Classes.FR20.Exceptions;
+using RMLib.TaskManager;
 
 namespace RM.src.RM250714
 {
@@ -1110,30 +1111,7 @@ namespace RM.src.RM250714
         /// <returns></returns>
         private async static Task PlcComHandler(CancellationToken token)
         {
-            DateTime now = DateTime.Now;
-            long unixTimestamp = ((DateTimeOffset)now).ToUnixTimeMilliseconds();
-            DateTime dateTime = DateTime.Now;
-            string formattedDate = dateTime.ToString("dd-MM-yyyy HH:mm:ss");
-
-            Dictionary<string, object> alarmValues = new Dictionary<string, object>();
-            Dictionary<string, string> alarmDescriptions = new Dictionary<string, string>
-            {
-                { "Safety NOK", "Ausiliari non pronti" },
-                { "Modbus robot error", "Errore comunicazione modbus robot" },
-                { "Robot Cycle Paused", "Ciclo robot in pausa" },
-                { "Error plates full", "Teglie piene" },
-                { "Check open gr.failed", "Controllo pinza aperta fallito" },
-                { "Check pos_Dx gr. failed", "Controllo pinza chiusa fallito" },
-                { "Robot fault present", "Errore robot" },
-                { "US_Dx_Error", "Errore ultrasuono" },
-                { "US_Dx_Enabled", "Ultrasuono abilitato" },
-                { "US_Dx_Started", "Ultrasuono avviato" },
-                { "US_Dx_Error_Disconnect", "Ultrasuono disconnesso" },
-                { "Errore_Drive_Destro", "Mancata presa pinza robot" },
-            };
-
             JointPos jPos = new JointPos(0, 0, 0, 0, 0, 0);
-
 
             const int LOW_PRIORITY_DELAY = 2;
             int lowPriorityDelayNum = 0;
@@ -1148,8 +1126,6 @@ namespace RM.src.RM250714
                     if (lowPriorityDelayNum >= LOW_PRIORITY_DELAY)
                     {
                         CheckRobotPosition(jPos);
-                        GetPLCErrorCode(alarmValues, alarmDescriptions, now, unixTimestamp,
-                            dateTime, formattedDate);
                         SendUpdatesToPLC();
 
                         lowPriorityDelayNum = 0;
@@ -1345,19 +1321,14 @@ namespace RM.src.RM250714
         {
             try
             {
-                await Task.Delay(2000);
+                await Task.Delay(2500);
 
                 while (!token.IsCancellationRequested)
                 {
                     CheckCommandStart();
                     CheckCommandGoToHome();
-
-                  //  await CheckCommandRecordPoint();
                     CheckVelCommand();
                     CheckCommandResetAlarms();
-
-                    //SetRobotMode();
-                    //ManageTasks();
 
                     await Task.Delay(applicationTaskManagerRefreshPeriod);
                 }
@@ -3234,7 +3205,7 @@ namespace RM.src.RM250714
                                            TCPCurrentPosition.rpy.rz);
 
                             JointPos JointPosApproachHome = new JointPos(0, 0, 0, 0, 0, 0);
-                            GetInverseKin(descPoseApproachHome, ref JointPosApproachHome);
+                            GetInverseKin(descPoseApproachHome, ref JointPosApproachHome, "Approach home position");
 
                             int result = MoveL(JointPosApproachHome, descPoseApproachHome,
                                 tool, user, vel, acc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
@@ -4281,7 +4252,7 @@ namespace RM.src.RM250714
             byte search = 0;
 
             JointPos jointTarget = new JointPos(0, 0, 0, 0, 0, 0);
-            GetInverseKin(pHome, ref jointTarget);
+            GetInverseKin(pHome, ref jointTarget, "Go To Home position");
 
             int result = MoveL(jointTarget, pHome,
                 tool, user, homeRoutineVel, homeRoutineAcc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
@@ -4306,7 +4277,7 @@ namespace RM.src.RM250714
             byte search = 0;
 
             JointPos jointTarget = new JointPos(0, 0, 0, 0, 0, 0);
-            GetInverseKin(target, ref jointTarget);
+            GetInverseKin(target, ref jointTarget, "Go to approach home position");
 
             int result = MoveL(jointTarget, target,
                 tool, user, homeRoutineVel, homeRoutineAcc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
@@ -5390,74 +5361,6 @@ namespace RM.src.RM250714
         }
 
         /// <summary>
-        /// Check su errori comunicati da PLC
-        /// </summary>
-        /// <param name="alarmValues"></param>
-        /// <param name="alarmDescriptions"></param>
-        /// <param name="now"></param>
-        /// <param name="unixTimestamp"></param>
-        /// <param name="dateTime"></param>
-        /// <param name="formattedDate"></param>
-        private static void GetPLCErrorCode(
-            Dictionary<string, object> alarmValues,
-            Dictionary<string, string> alarmDescriptions,
-            DateTime now,
-            long unixTimestamp,
-            DateTime dateTime,
-            string formattedDate
-            )
-        {
-            /*
-            object alarmsPresent;
-
-            lock (PLCConfig.appVariables)
-            {
-                alarmsPresent = PLCConfig.appVariables.getValue("PLC1_" + "Alarm present");
-
-                if (Convert.ToBoolean(alarmsPresent))
-                {
-                    foreach (var key in alarmDescriptions.Keys)
-                    {
-                        alarmValues[key] = PLCConfig.appVariables.getValue("PLC1_" + key);
-                    }
-                }
-            }
-            */
-            /*
-            try
-            {
-
-                foreach (var key in alarmDescriptions.Keys)
-                {
-                    alarmValues[key] = PLCConfig.appVariables.getValue("PLC1_" + key);
-                }
-
-                // if (Convert.ToBoolean(alarmsPresent))
-                // {
-                now = DateTime.Now;
-                unixTimestamp = ((DateTimeOffset)now).ToUnixTimeMilliseconds();
-                dateTime = DateTimeOffset.FromUnixTimeMilliseconds(unixTimestamp).DateTime.ToLocalTime();
-                formattedDate = dateTime.ToString("dd-MM-yyyy HH:mm:ss");
-
-                foreach (var alarm in alarmValues)
-                {
-                    if (Convert.ToBoolean(alarm.Value) && !IsAlarmAlreadySignaled(alarm.Key))
-                    {
-                        string id = GenerateAlarmId(alarm.Key);
-                        CreateRobotAlarm(id, alarmDescriptions[alarm.Key], formattedDate, "PLC", "ON");
-                        MarkAlarmAsSignaled(alarm.Key);
-                    }
-                }
-                // }
-            }
-            catch(Exception ex)
-            {
-
-            }
-            */
-        }
-
-        /// <summary>
         /// Avvisa se un allarme è già stato segnalato
         /// </summary>
         /// <param name="alarmKey"></param>
@@ -6137,8 +6040,10 @@ namespace RM.src.RM250714
         /// <param name="jPos">Posizione in joint ottenuta dal calcolo di cinematica inversa partendo dalla posizione TCP</param>
         public static void CheckRobotPosition(JointPos jPos)
         {
+            if (!AlarmManager.isRobotConnected)
+                return;
+
             // Calcolo della posizione in joint eseguendo il calcolo di cinematica inversa
-            //robot.GetInverseKin(0, TCPCurrentPosition, -1, ref jPos);
             GetInverseKin(TCPCurrentPosition, ref jPos);
 
             #region TCP
