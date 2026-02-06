@@ -148,7 +148,7 @@ namespace RM.src.RM250714.Classes.FR20
             {
                 log.Error("[Tools] Errore durante cambio tool: " + GetErrorCode(errNum));
                 RobotManager.GenerateAlarm(0, 2);
-                RobotManager.robotPropertiesError = 1;
+                RobotManager.robotPropertiesError = true;
                 return false;
             }
             log.Info("[Tools] Cambio di tool a " + toolId);
@@ -191,7 +191,7 @@ namespace RM.src.RM250714.Classes.FR20
             {
                 log.Error("[Tools] Errore durante cambio tool: " + GetErrorCode(errNum));
                 RobotManager.GenerateAlarm(0, 2);
-                RobotManager.robotPropertiesError = 1;
+                RobotManager.robotPropertiesError = true;
                 return false;
             }
             log.Info("[Tools] Cambio di tool a " + toolName);

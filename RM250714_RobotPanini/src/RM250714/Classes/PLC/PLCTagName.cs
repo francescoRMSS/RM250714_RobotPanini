@@ -56,9 +56,14 @@ namespace RM.src.RM250714.Classes.PLC
         public const string Move_InPause = "PLC1_" + "Move_InPause";
 
         /// <summary>
-        /// Errore nel robot
+        /// Due byte per gli errori relativi al robot
         /// </summary>
-        public const string Robot_error = "PLC1_" + "Robot_error";
+        public const string Robot_error_alarms = "PLC1_" + "Robot_error_alarms";
+
+        /// <summary>
+        /// Due byte per gli errori relativi all'applicazione
+        /// </summary>
+        public const string Application_errror_alarms = "PLC1_" + "Application_error_alarms";
 
         /// <summary>
         /// Stato robot abilitato

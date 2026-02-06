@@ -62,8 +62,6 @@ namespace RM.src.RM250714
             InitView();
             InitRobotParameters();
             Fill_LwPositions();
-
-            RobotManager.RecordPoint += RobotManager_UpdatePoint;
         }
 
         #region Metodi di UC_positions

@@ -1187,9 +1187,14 @@
             Feedback in scrittura dello stato di pausa del robot
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.Robot_error">
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.Robot_error_alarms">
             <summary>
-            Errore nel robot
+            Due byte per gli errori relativi al robot
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.Application_errror_alarms">
+            <summary>
+            Due byte per gli errori relativi all'applicazione
             </summary>
         </member>
         <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.Robot_enable">
@@ -2504,42 +2509,62 @@
         </member>
         <member name="F:RM.src.RM250714.RobotManager.robotGeneralError">
             <summary>
-            Positivo in caso di allarme
+            1 in caso di allarme del robot
             </summary>
         </member>
         <member name="F:RM.src.RM250714.RobotManager.robotError">
             <summary>
-            Positivo quando il robot è in allarme 
+            1 quando il robot è in allarme 
             </summary>
         </member>
         <member name="F:RM.src.RM250714.RobotManager.robotKinError">
             <summary>
-            Positivo quando il robot non riesce a calcolare una cinematica inversa o diretta
+            1 quando il robot non riesce a calcolare una cinematica inversa o diretta
             </summary>
         </member>
         <member name="F:RM.src.RM250714.RobotManager.robotMovementError">
             <summary>
-            Positivo quando il robot restituisce un allarme da un movimento
+            1 quando il robot restituisce un allarme da un movimento
             </summary>
         </member>
         <member name="F:RM.src.RM250714.RobotManager.robotPropertiesError">
             <summary>
-            Positivo quando il robot restituisce un allarme da un metodo che cambia alcune sue proprietà
+            1 quando il robot restituisce un allarme da un metodo che cambia alcune sue proprietà
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.robotDisconnectedError">
+        <member name="F:RM.src.RM250714.RobotManager.robotConnected">
             <summary>
-            Positivo quando il robot restituisce -2 n volte o il task segnala una disconnessione
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.dataError">
-            <summary>
-            Positivo quando alcuni dati nel ciclo sono mancanti o errati
+            0 quando il robot restituisce -2 n volte o il task segnala una disconnessione
             </summary>
         </member>
         <member name="F:RM.src.RM250714.RobotManager.runTimeError">
             <summary>
-            Positivo quando il ciclo va in eccezione generica durante l'esecuzione
+            1 quando un ciclo va in eccezione durante l'esecuzione
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.dataError">
+            <summary>
+            1 quando alcuni dati nel ciclo sono mancanti o errati
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.trayNotPresentError">
+            <summary>
+            1 quando dopo aver fatto il pick della teglia, la fotocellula non rileva la teglia
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.gripperNotClosedError">
+            <summary>
+            1 quando dopo aver fatto il pick della teglia la pinza non ha raggiunto il fine corsa
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.slideNotOutError">
+            <summary>
+            1 quando dopo aver tirato fuori la slitta, il sensore rileva che la slitta non è fuori
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.slideNotInError">
+            <summary>
+            1 quando dopo aver tirato dentro la slitta, il sensore rileva che la slitta non è dentro
             </summary>
         </member>
         <member name="F:RM.src.RM250714.RobotManager.formAlarmPage">
@@ -2592,11 +2617,6 @@
             Parametro da usare per eseguire inPosition.
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.trackerEndingPoint">
-            <summary>
-            Parametro da usare per eseguire in position sulla pose del tracker calcolata.
-            </summary>
-        </member>
         <member name="F:RM.src.RM250714.RobotManager.isInSafeZone">
             <summary>
             A true quando il robot si trova in safe zone.
@@ -2607,14 +2627,24 @@
             A true quando il robot si trova in home zone.
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.prevIsInSafeZone">
+        <member name="F:RM.src.RM250714.RobotManager.isInPositionCarrello1">
             <summary>
-            Stato precedente di isInSafeZone per rilevare i cambiamenti.
+            A true quando si trova in posizione di Pick
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.previousIsInHomePosition">
+        <member name="F:RM.src.RM250714.RobotManager.isInPositionCarrello2">
             <summary>
-            Variabile per memorizzare lo stato precedente di isInHomePosition.
+            A true quando si trova in posizione di Place
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.isInPositionBeor">
+            <summary>
+            A true quando si trova in posizione di beor
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.isInPositionHome">
+            <summary>
+            A true quando si trova in posizione di home
             </summary>
         </member>
         <member name="F:RM.src.RM250714.RobotManager.robotMovingStartTime">
@@ -2630,21 +2660,6 @@
         <member name="F:RM.src.RM250714.RobotManager.stopCycleRequested">
             <summary>
             A true quando si richiede lo stop del ciclo del Robot.
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.riprendiCiclo">
-            <summary>
-            A true quando il ciclo deve riprendere da un punto precedente.
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.chainPos">
-            <summary>
-            Contatore spostamento catena.
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.stopChainUpdaterThread">
-            <summary>
-            A true quando bisogna fermare l'updater del contatore catena.
             </summary>
         </member>
         <member name="F:RM.src.RM250714.RobotManager.isEnabledNow">
@@ -2710,41 +2725,6 @@
         <member name="F:RM.src.RM250714.RobotManager.homeRoutineAcc">
             <summary>
             Acceleration utilizzata in home routine
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.positionsToSend">
-            <summary>
-            Lista di punti da visualizzare.
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.positionToSend">
-            <summary>
-            Punto da aggiungere alla lista di posizioni.
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.positionsToSave">
-            <summary>
-            Lista di punti da salvare.
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.getTrackerPosition">
-            <summary>
-            Flag per avviare/fermare il recupero della posizione del tracker.
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.stopFetchTrackerData">
-            <summary>
-            A true quando non si vuole eseguire retrieve delle coordinate dal tracker.
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.timerCallback">
-            <summary>
-            Callback per il timer di teaching.
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.timer">
-            <summary>
-            Timer usato per il teaching lineare.
             </summary>
         </member>
         <member name="F:RM.src.RM250714.RobotManager.checker_pos">
@@ -3042,11 +3022,6 @@
             Evento invocato al termine della routine per riabilitare i tasti per riavvio della routine
             </summary>
         </member>
-        <member name="E:RM.src.RM250714.RobotManager.RecordPoint">
-            <summary>
-            Evento invocato quanto dall'hmi viene rischiesto di registrare uno specifico punto
-            </summary>
-        </member>
         <member name="F:RM.src.RM250714.RobotManager.previousBarrierPauseStatus">
             <summary>
             Memorizza lo stato precedente della variabile on/off barrier status dal PLC
@@ -3075,31 +3050,6 @@
         <member name="F:RM.src.RM250714.RobotManager.robotCycleStopRequested">
             <summary>
             A true quando viene richiesto lo stop del ciclo routine del robot
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.isInPositionCarrello1">
-            <summary>
-            A true quando si trova in posizione di Pick
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.isInPositionCarrello2">
-            <summary>
-            A true quando si trova in posizione di Place
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.isInPositionBeor">
-            <summary>
-            A true quando si trova in posizione di beor
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.isInPositionHome">
-            <summary>
-            A true quando si trova in posizione di home
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.RobotManager.robotIsPaused">
-            <summary>
-            A true quando il robot viene messo in pausa
             </summary>
         </member>
         <member name="F:RM.src.RM250714.RobotManager.previousVel">
@@ -3847,9 +3797,15 @@
             <param name="hwEndBoardVer"></param>
             <returns></returns>
         </member>
-        <member name="M:RM.src.RM250714.RobotManager.BuildRobotAlarm">
+        <member name="M:RM.src.RM250714.RobotManager.BuildRobotAlarms">
             <summary>
-            Impacchetta gli allarmi in un unico intero da scrivere al plc
+            Impacchetta gli allarmi del robot in un unico intero da scrivere al plc
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.BuildApplicationAlarms">
+            <summary>
+            Impacchetta gli allarmi dell'applicazione in un unico intero da scrivere al plc
             </summary>
             <returns></returns>
         </member>
