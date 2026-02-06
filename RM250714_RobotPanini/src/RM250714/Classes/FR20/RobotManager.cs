@@ -224,59 +224,195 @@ namespace RM.src.RM250714
 
         #region Allarmi relativi al robot
 
+        private static readonly object _robotGeneralErrorLock = new object();
+        private static readonly object _robotErrorLock = new object();
+        private static readonly object _robotKinErrorLock = new object();
+        private static readonly object _robotMovementErrorLock = new object();
+        private static readonly object _robotPropertiesErrorLock = new object();
+        private static readonly object _robotConnectedLock = new object();
+
         /// <summary>
         /// 1 in caso di allarme del robot
         /// </summary>
-        private static bool robotGeneralError = false; //bit 0
+        private static bool RobotGeneralError
+        {
+            get { lock (_robotGeneralErrorLock) { return _robotGeneralError; } }
+            set { lock (_robotGeneralErrorLock) { _robotGeneralError = value; } }
+        }
+
         /// <summary>
         /// 1 quando il robot è in allarme 
         /// </summary>
-        private static bool robotError = false; //bit 1
+        private static bool RobotError
+        {
+            get { lock (_robotErrorLock) { return _robotError; } }
+            set { lock (_robotErrorLock) { _robotError = value; } }
+        }
+
         /// <summary>
         /// 1 quando il robot non riesce a calcolare una cinematica inversa o diretta
         /// </summary>
-        private static bool robotKinError = false; //bit 2
+        private static bool RobotKinError
+        {
+            get { lock (_robotKinErrorLock) { return _robotKinError; } }
+            set { lock (_robotKinErrorLock) { _robotKinError = value; } }
+        }
+
         /// <summary>
         /// 1 quando il robot restituisce un allarme da un movimento
         /// </summary>
-        private static bool robotMovementError = false; //bit 3
+        private static bool RobotMovementError
+        {
+            get { lock (_robotMovementErrorLock) { return _robotMovementError; } }
+            set { lock (_robotMovementErrorLock) { _robotMovementError = value; } }
+        }
+
         /// <summary>
         /// 1 quando il robot restituisce un allarme da un metodo che cambia alcune sue proprietà
         /// </summary>
-        public static bool robotPropertiesError = false; //bit 4
+        public static bool RobotPropertiesError
+        {
+            get { lock (_robotPropertiesErrorLock) { return _robotPropertiesError; } }
+            set { lock (_robotPropertiesErrorLock) { _robotPropertiesError = value; } }
+        }
+
         /// <summary>
         /// 0 quando il robot restituisce -2 n volte o il task segnala una disconnessione
         /// </summary>
-        private static bool robotConnected = true; //bit 5
+        private static bool RobotConnected
+        {
+            get { lock (_robotConnectedLock) { return _robotConnected; } }
+            set { lock (_robotConnectedLock) { _robotConnected = value; } }
+        }
+
+        /// <summary>
+        /// 1 in caso di allarme del robot
+        /// </summary>
+        private static bool _robotGeneralError = false; //bit 0
+        /// <summary>
+        /// 1 quando il robot è in allarme 
+        /// </summary>
+        private static bool _robotError = false; //bit 1
+        /// <summary>
+        /// 1 quando il robot non riesce a calcolare una cinematica inversa o diretta
+        /// </summary>
+        private static bool _robotKinError = false; //bit 2
+        /// <summary>
+        /// 1 quando il robot restituisce un allarme da un movimento
+        /// </summary>
+        private static bool _robotMovementError = false; //bit 3
+        /// <summary>
+        /// 1 quando il robot restituisce un allarme da un metodo che cambia alcune sue proprietà
+        /// </summary>
+        private static bool _robotPropertiesError = false; //bit 4
+        /// <summary>
+        /// 0 quando il robot restituisce -2 n volte o il task segnala una disconnessione
+        /// </summary>
+        private static bool _robotConnected = true; //bit 5
 
         #endregion
 
         #region Allarmi relativi all'applicazione
 
+        private static readonly object _runTimeErrorLock = new object();
+        private static readonly object _dataErrorLock = new object();
+        private static readonly object _homeRoutineErrorLock = new object();
+        private static readonly object _trayNotPresentErrorLock = new object();
+        private static readonly object _gripperNotClosedErrorLock = new object();
+        private static readonly object _slideNotOutErrorLock = new object();
+        private static readonly object _slideNotInErrorLock = new object();
+
         /// <summary>
         /// 1 quando un ciclo va in eccezione durante l'esecuzione
         /// </summary>
-        private static bool runTimeError = false; //bit 0
+        private static bool RunTimeError
+        {
+            get { lock (_runTimeErrorLock) { return _runTimeError; } }
+            set { lock (_runTimeErrorLock) { _runTimeError = value; } }
+        }
+
         /// <summary>
         /// 1 quando alcuni dati nel ciclo sono mancanti o errati
         /// </summary>
-        private static bool dataError = false; //bit 1
+        private static bool DataError
+        {
+            get { lock (_dataErrorLock) { return _dataError; } }
+            set { lock (_dataErrorLock) { _dataError = value; } }
+        }
+
+        /// <summary>
+        /// 1 quando mancano i consensi per la home routine o sono avvenuti degli errori nel ciclo
+        /// </summary>
+        private static bool HomeRoutineError
+        {
+            get { lock (_homeRoutineErrorLock) { return _homeRoutineError; } }
+            set { lock (_homeRoutineErrorLock) { _homeRoutineError = value; } }
+        }
+
         /// <summary>
         /// 1 quando dopo aver fatto il pick della teglia, la fotocellula non rileva la teglia
         /// </summary>
-        private static bool trayNotPresentError = false; //bit 2
+        private static bool TrayNotPresentError
+        {
+            get { lock (_trayNotPresentErrorLock) { return _trayNotPresentError; } }
+            set { lock (_trayNotPresentErrorLock) { _trayNotPresentError = value; } }
+        }
+
         /// <summary>
         /// 1 quando dopo aver fatto il pick della teglia la pinza non ha raggiunto il fine corsa
         /// </summary>
-        private static bool gripperNotClosedError = false; //bit 3
+        private static bool GripperNotClosedError
+        {
+            get { lock (_gripperNotClosedErrorLock) { return _gripperNotClosedError; } }
+            set { lock (_gripperNotClosedErrorLock) { _gripperNotClosedError = value; } }
+        }
+
         /// <summary>
         /// 1 quando dopo aver tirato fuori la slitta, il sensore rileva che la slitta non è fuori
         /// </summary>
-        private static bool slideNotOutError = false; //bit 4
+        private static bool SlideNotOutError
+        {
+            get { lock (_slideNotOutErrorLock) { return _slideNotOutError; } }
+            set { lock (_slideNotOutErrorLock) { _slideNotOutError = value; } }
+        }
+
         /// <summary>
         /// 1 quando dopo aver tirato dentro la slitta, il sensore rileva che la slitta non è dentro
         /// </summary>
-        private static bool slideNotInError = false; //bit 5
+        private static bool SlideNotInError
+        {
+            get { lock (_slideNotInErrorLock) { return _slideNotInError; } }
+            set { lock (_slideNotInErrorLock) { _slideNotInError = value; } }
+        }
+
+        /// <summary>
+        /// 1 quando un ciclo va in eccezione durante l'esecuzione
+        /// </summary>
+        private static bool _runTimeError = false; //bit 0
+        /// <summary>
+        /// 1 quando alcuni dati nel ciclo sono mancanti o errati
+        /// </summary>
+        private static bool _dataError = false; //bit 1
+        /// <summary>
+        /// 1 quando mancano i consensi per la home routine o sono avvenuti degli errori nel ciclo
+        /// </summary>
+        private static bool _homeRoutineError = false; //bit 2
+        /// <summary>
+        /// 1 quando dopo aver fatto il pick della teglia, la fotocellula non rileva la teglia
+        /// </summary>
+        private static bool _trayNotPresentError = false; //bit 3
+        /// <summary>
+        /// 1 quando dopo aver fatto il pick della teglia la pinza non ha raggiunto il fine corsa
+        /// </summary>
+        private static bool _gripperNotClosedError = false; //bit 4
+        /// <summary>
+        /// 1 quando dopo aver tirato fuori la slitta, il sensore rileva che la slitta non è fuori
+        /// </summary>
+        private static bool _slideNotOutError = false; //bit 5
+        /// <summary>
+        /// 1 quando dopo aver tirato dentro la slitta, il sensore rileva che la slitta non è dentro
+        /// </summary>
+        private static bool _slideNotInError = false; //bit 6
 
         #endregion
 
@@ -995,12 +1131,12 @@ namespace RM.src.RM250714
             catch (DataErrorException ex)
             {
                 log.Error($"[TASK] {TaskAuxiliaryWorkerName} Data error: {ex}");
-                dataError = true;
+                DataError = true;
             }
             catch (Exception ex)
             {
                 log.Error($"[TASK] {TaskAuxiliaryWorkerName}: {ex}");
-                runTimeError = true;
+                RunTimeError = true;
                 throw;
             }
             finally
@@ -1047,7 +1183,7 @@ namespace RM.src.RM250714
             catch (Exception ex)
             {
                 log.Error($"[TASK] {TaskHighPriorityName}: {ex}");
-                runTimeError = true;
+                RunTimeError = true;
                 throw;
             }
             finally
@@ -1094,7 +1230,7 @@ namespace RM.src.RM250714
             catch (Exception ex)
             {
                 log.Error($"[TASK] {TaskPlcComHandlerName}: {ex}");
-                runTimeError = true;
+                RunTimeError = true;
                 throw;
             }
             finally
@@ -1127,7 +1263,7 @@ namespace RM.src.RM250714
             catch (Exception ex)
             {
                 log.Error($"[TASK] {TaskLowPriorityName}: {ex}");
-                runTimeError = true;
+                RunTimeError = true;
                 throw;
             }
             finally
@@ -1237,7 +1373,7 @@ namespace RM.src.RM250714
                             {
                                 CreateRobotAlarm(id, description, formattedDate, device, state);
                                 MarkAlarmAsSignaled(id);
-                                robotConnected = false;
+                                RobotConnected = false;
                             }
 
                             isReconnectionNeeded = false; // Reset del bypass
@@ -1256,7 +1392,7 @@ namespace RM.src.RM250714
             catch (Exception ex)
             {
                 log.Error($"[TASK] {TaskCheckRobotConneciton}: {ex}");
-                runTimeError = true;
+                RunTimeError = true;
                 throw;
             }
             finally
@@ -1294,7 +1430,7 @@ namespace RM.src.RM250714
             catch (Exception ex)
             {
                 log.Error($"[TASK] {TaskApplicationManager}: {ex}");
-                runTimeError = true;
+                RunTimeError = true;
                 throw;
             }
             finally
@@ -1330,7 +1466,7 @@ namespace RM.src.RM250714
             catch (Exception ex)
             {
                 log.Error($"[TASK] {TaskSafetyManager}: {ex}");
-                runTimeError = true;
+                RunTimeError = true;
                 throw;
             }
             finally
@@ -1398,13 +1534,13 @@ namespace RM.src.RM250714
             byte isTrayPresent = 0;
 
             // Cod. errore movimento 1
-            int err1 = 0;
+            int err1;
 
             // Cod. errore movimento 2
-            int err2 = 0;
+            int err2;
 
             // Cod. errore movimento 3
-            int err3 = 0;
+            int err3;
 
             // Segnala quando il carrello è pieno
             bool carrelloTerminato = false;
@@ -2568,6 +2704,7 @@ namespace RM.src.RM250714
                         #endregion
 
                         case 125:
+                            #region Controllo presenza teglia
 
                             // Get presenza teglia
                             GetDI(7, 1, ref isTrayPresent);
@@ -2578,9 +2715,11 @@ namespace RM.src.RM250714
                             }
                             else
                             {
-                                robotError = true;
+                                TrayNotPresentError = true;
                             }
                             break;
+
+                        #endregion
 
                         case 130:
                             #region Movimento a beor
@@ -3228,39 +3367,38 @@ namespace RM.src.RM250714
             catch (RobotConnectionException ex)
             {
                 log.Error($"[TASK] : {TaskPickAndPlaceTegliaIperal} - robot disconnesso: {ex}");
-                robotConnected = false;
-
+                RobotConnected = false;
             }
             catch (RobotPropertiesChangeException ex)
             {
                 log.Error($"[TASK] : {TaskPickAndPlaceTegliaIperal} - eccezione durante il cambio delle proprietà del robot: {ex}");
-                robotPropertiesError = true;
+                RobotPropertiesError = true;
             }
             catch (RobotKinException ex)
             {
                 log.Error($"[TASK] : {TaskPickAndPlaceTegliaIperal} - eccezione durante il calcolo cinematica inversa/diretta: {ex}");
-                robotKinError = true;
+                RobotKinError = true;
             }
             catch (RobotMovementException ex)
             {
                 log.Error($"[TASK] : {TaskPickAndPlaceTegliaIperal} - eccezione durante il movimento del robot: {ex}");
-                robotMovementError = true;
+                RobotMovementError = true;
             }
             catch (RunTimeException ex)
             {
                 log.Error($"[TASK] : {TaskPickAndPlaceTegliaIperal} - eccezione durante l'esecuzione del ciclo: {ex}");
-                runTimeError = true;
+                RunTimeError = true;
             }
             catch (DataErrorException ex)
             {
                 log.Error($"[TASK] : {TaskPickAndPlaceTegliaIperal} - eccezione generata da dei dati mancanti o errati: {ex}");
-                dataError = true;
+                DataError = true;
             }
             catch (Exception ex)
             {
                 // Azioni da eseguire quando il task va in una eccezione generica
                 log.Error($"[TASK] : {TaskPickAndPlaceTegliaIperal} - generic exception: {ex}");
-                runTimeError = true;
+                RunTimeError = true;
                 throw;
             }
             finally
@@ -3339,9 +3477,21 @@ namespace RM.src.RM250714
 
             #endregion
 
-            // Controllo che la pinza sia aperta e la slitta avanti oppure che la pinza sia aperta, la slitta indietro e la teglia assente
-            if ((isGripperOpen == 1 && isGripperExtended == 1) || (isGripperOpen == 1 && isGripperRetracted == 1 && isTrayPresent == 0))
+            try
             {
+                // Controllo che la pinza sia aperta e la slitta avanti oppure che la pinza sia aperta, la slitta indietro e la teglia assente
+                if ((isGripperOpen == 1 && isGripperExtended == 1) || (isGripperOpen == 1 && isGripperRetracted == 1 && isTrayPresent == 0))
+                    throw new HomeRoutineException("Mancanza condizione di avvio routine");
+
+                if (restPose == null)
+                    throw new DataErrorException("Il punto di home position non esiste");
+
+                if (beor == null)
+                    throw new DataErrorException("Il punto di beor non esiste");
+
+                if (safeZone == null)
+                    throw new DataErrorException("Il punto di safeZone non esiste");
+
                 // Apro la pinza
                 SetDO(0, 1, 0, 0);
 
@@ -3349,181 +3499,186 @@ namespace RM.src.RM250714
                 // SetDO(1, 1, 0, 0);
                 // RefresherTask.AddUpdate(PLCTagName.CMD_slittaAvanti, 1, "INT16");
 
-                try
+                while (!stopHomeRoutine && !token.IsCancellationRequested) // Fino a quando non termino la home routine
                 {
-                    if (restPose == null)
-                        throw new DataErrorException("Il punto di home position non esiste");
-
-                    if (beor == null)
-                        throw new DataErrorException("Il punto di beor non esiste");
-
-                    if (safeZone == null)
-                        throw new DataErrorException("Il punto di safeZone non esiste");
-
-                    while (!stopHomeRoutine && !token.IsCancellationRequested) // Fino a quando non termino la home routine
+                    switch (stepHomeRoutine)
                     {
-                        switch (stepHomeRoutine)
-                        {
-                            case 0:
-                                #region Comunicazione a PLC avvio della HomeRoutine e setting HomeRoutineSpeed
+                        case 0:
+                            #region Comunicazione a PLC avvio della HomeRoutine e setting HomeRoutineSpeed
 
-                                CycleRun_Home = 1;
-
-                                SetHomeRoutineSpeed();
-                                await Task.Delay(1000);
-
-                                stepHomeRoutine = 5;
-
+                            if (!isInSafeZone)
+                            {
+                                step = 999;
                                 break;
+                            }
 
-                            #endregion
+                            CycleRun_Home = 1;
 
-                            case 5:
-                                #region Check zone di ingmboro e movimento a punto di approach home
+                            SetHomeRoutineSpeed();
+                            await Task.Delay(1000);
 
-                                if (robotDangerousPoseCarrello)
-                                {
-                                    DescPose pApproach = new DescPose(
-                                        TCPCurrentPosition.tran.x,
-                                        pHome.tran.y,
-                                        TCPCurrentPosition.tran.z,
-                                        TCPCurrentPosition.rpy.rx,
-                                        TCPCurrentPosition.rpy.ry,
-                                        TCPCurrentPosition.rpy.rz);
+                            stepHomeRoutine = 5;
 
-                                    GoToApproachHomePosition(pApproach);
-                                    endingPoint = pApproach;
-                                    stepHomeRoutine = 6;
-                                }
-                                else
-                                    if (robotDangerousPoseBeor)
-                                {
-                                    DescPose pApproach = new DescPose(
-                                        pBeor.tran.x - offsetBeor,
-                                        TCPCurrentPosition.tran.y,
-                                        TCPCurrentPosition.tran.z,
-                                        TCPCurrentPosition.rpy.rx,
-                                        TCPCurrentPosition.rpy.ry,
-                                        TCPCurrentPosition.rpy.rz);
+                            break;
 
-                                    GoToApproachHomePosition(pApproach);
-                                    endingPoint = pApproach;
-                                    stepHomeRoutine = 6;
-                                }
-                                else
-                                {
-                                    stepHomeRoutine = 10;
-                                }
+                        #endregion
 
-                                break;
+                        case 5:
+                            #region Check zone di ingmboro e movimento a punto di approach home
 
-                            #endregion
+                            if (robotDangerousPoseCarrello)
+                            {
+                                DescPose pApproach = new DescPose(
+                                    TCPCurrentPosition.tran.x,
+                                    pHome.tran.y,
+                                    TCPCurrentPosition.tran.z,
+                                    TCPCurrentPosition.rpy.rx,
+                                    TCPCurrentPosition.rpy.ry,
+                                    TCPCurrentPosition.rpy.rz);
 
-                            case 6:
-                                #region Attesa in position approach home
+                                GoToApproachHomePosition(pApproach);
+                                endingPoint = pApproach;
+                                stepHomeRoutine = 6;
+                            }
+                            else
+                                if (robotDangerousPoseBeor)
+                            {
+                                DescPose pApproach = new DescPose(
+                                    pBeor.tran.x - offsetBeor,
+                                    TCPCurrentPosition.tran.y,
+                                    TCPCurrentPosition.tran.z,
+                                    TCPCurrentPosition.rpy.rx,
+                                    TCPCurrentPosition.rpy.ry,
+                                    TCPCurrentPosition.rpy.rz);
 
-                                if (inPosition)
-                                    stepHomeRoutine = 10;
+                                GoToApproachHomePosition(pApproach);
+                                endingPoint = pApproach;
+                                stepHomeRoutine = 6;
+                            }
+                            else
+                            {
+                                stepHomeRoutine = 10;
+                            }
 
-                                break;
-                            #endregion
+                            break;
 
-                            case 10:
-                                #region Movimento a punto di home
+                        #endregion
 
-                                //MoveRobotToSafePosition();
-                                GoToHomePosition();
-                                endingPoint = pHome;
+                        case 6:
+                            #region Attesa in position approach home
 
-                                stepHomeRoutine = 20;
+                            if (inPosition)
+                                stepHomeRoutine = 10;
 
-                                break;
+                            break;
+                        #endregion
 
-                            #endregion
+                        case 10:
+                            #region Movimento a punto di home
 
-                            case 20:
-                                #region Attesa inPosition home
+                            //MoveRobotToSafePosition();
+                            GoToHomePosition();
+                            endingPoint = pHome;
 
-                                if (inPosition)
-                                {
-                                    stepHomeRoutine = 99;
-                                    log.Info("[HOME] robot arrivato in home position");
-                                }
+                            stepHomeRoutine = 20;
 
-                                break;
+                            break;
 
-                            #endregion
+                        #endregion
 
-                            case 99:
-                                #region Termine ciclo, comunicazione a PLC e reset robot speed
+                        case 20:
+                            #region Attesa inPosition home
 
-                                ResetHomeRoutineSpeed();
+                            if (inPosition)
+                            {
+                                stepHomeRoutine = 99;
+                                log.Info("[HOME] robot arrivato in home position");
+                            }
 
-                                CycleRun_Home = 0;
-                                stepHomeRoutine = 0;
-                                stopHomeRoutine = true;
+                            break;
 
-                                await Task.Delay(1000);
+                        #endregion
 
-                                break;
+                        case 99:
+                            #region Termine ciclo, comunicazione a PLC e reset robot speed
 
-                                #endregion
-                        }
+                            ResetHomeRoutineSpeed();
 
-                        await Task.Delay(homeRoutineTaskRefreshPeriod); // Delay routine
+                            CycleRun_Home = 0;
+                            stepHomeRoutine = 0;
+                            stopHomeRoutine = true;
+
+                            await Task.Delay(1000);
+
+                            break;
+
+                        #endregion
+
+                        case 999:
+                            #region Step di errore
+
+                            // Home routine partita con il robot fuori dalla safe zone
+                            // Rimango in attesa 
+
+                            break;
+
+                        #endregion
                     }
-                    token.ThrowIfCancellationRequested();
+
+                    await Task.Delay(homeRoutineTaskRefreshPeriod); // Delay routine
                 }
-                catch (OperationCanceledException)
-                {
-                    // Azioni da eseguire quando il task viene fermato tramite cancellation token
-                    throw;
-                }
-                catch (RobotConnectionException ex)
-                {
-                    log.Error($"[TASK] : {TaskHomeRoutine} - robot disconnesso: {ex}");
-                    robotConnected = false;
-                }
-                catch (RobotPropertiesChangeException ex)
-                {
-                    log.Error($"[TASK] : {TaskHomeRoutine} - eccezione durante il cambio delle proprietà del robot: {ex}");
-                    robotPropertiesError = true;
-                }
-                catch (RobotKinException ex)
-                {
-                    log.Error($"[TASK] : {TaskHomeRoutine} - eccezione durante il calcolo cinematica inversa/diretta: {ex}");
-                    robotKinError = true;
-                }
-                catch (RobotMovementException ex)
-                {
-                    log.Error($"[TASK] : {TaskHomeRoutine} - eccezione durante il movimento del robot: {ex}");
-                    robotMovementError = true;
-                }
-                catch (RunTimeException ex)
-                {
-                    log.Error($"[TASK] : {TaskHomeRoutine} - eccezione durante l'esecuzione del ciclo: {ex}");
-                    runTimeError = true;
-                }
-                catch (DataErrorException ex)
-                {
-                    log.Error($"[TASK] : {TaskHomeRoutine} - eccezione generata da dei dati mancanti o errati: {ex}");
-                    dataError = true;
-                }
-                catch (Exception ex)
-                {
-                    // Azioni da eseguire quando il task va in una eccezione generica
-                    log.Error($"[TASK] : {TaskHomeRoutine} - generic exception: {ex}");
-                    runTimeError = true;
-                    throw;
-                }
-                finally
-                {
-                    // Azioni da eseguire al termine del task
-                }
+                token.ThrowIfCancellationRequested();
             }
-            else
+            catch (OperationCanceledException)
             {
-                log.Error("[HOME ROUTINE] -> Mancanza condizione di avvio routine.");
+                // Azioni da eseguire quando il task viene fermato tramite cancellation token
+                throw;
+            }
+            catch (RobotConnectionException ex)
+            {
+                log.Error($"[TASK] : {TaskHomeRoutine} - robot disconnesso: {ex}");
+                RobotConnected = false;
+            }
+            catch (RobotPropertiesChangeException ex)
+            {
+                log.Error($"[TASK] : {TaskHomeRoutine} - eccezione durante il cambio delle proprietà del robot: {ex}");
+                RobotPropertiesError = true;
+            }
+            catch (RobotKinException ex)
+            {
+                log.Error($"[TASK] : {TaskHomeRoutine} - eccezione durante il calcolo cinematica inversa/diretta: {ex}");
+                RobotKinError = true;
+            }
+            catch (RobotMovementException ex)
+            {
+                log.Error($"[TASK] : {TaskHomeRoutine} - eccezione durante il movimento del robot: {ex}");
+                RobotMovementError = true;
+            }
+            catch (RunTimeException ex)
+            {
+                log.Error($"[TASK] : {TaskHomeRoutine} - eccezione durante l'esecuzione del ciclo: {ex}");
+                RunTimeError = true;
+            }
+            catch (DataErrorException ex)
+            {
+                log.Error($"[TASK] : {TaskHomeRoutine} - eccezione generata da dei dati mancanti o errati: {ex}");
+                DataError = true;
+            }
+            catch (HomeRoutineException ex)
+            {
+                log.Error($"[TASK] : {TaskHomeRoutine} - mancanza di consensi o errori durante la home routine: {ex}");
+                HomeRoutineError = true;
+            }
+            catch (Exception ex)
+            {
+                // Azioni da eseguire quando il task va in una eccezione generica
+                log.Error($"[TASK] : {TaskHomeRoutine} - generic exception: {ex}");
+                RunTimeError = true;
+                throw;
+            }
+            finally
+            {
+                // Azioni da eseguire al termine del task
             }
         }
 
@@ -3821,15 +3976,22 @@ namespace RM.src.RM250714
                     // Reset valore
                     RefresherTask.AddUpdate(PLCTagName.CMD_ResetAlarms, 0, "INT16");
 
-                    //Reset allarmi interni
-                    robotGeneralError = false;
-                    robotError = false;
-                    robotKinError = false;
-                    robotMovementError = false;
-                    robotConnected = true;
-                    robotPropertiesError = false;
-                    dataError = false;
-                    runTimeError = false; //TODO
+                    //Reset allarmi robot
+                    RobotGeneralError = false;
+                    RobotError = false;
+                    RobotKinError = false;
+                    RobotMovementError = false;
+                    RobotConnected = true;
+                    RobotPropertiesError = false;
+
+                    //Reset allarmi applicazione
+                    RunTimeError = false; //TODO: forse non bisogna resettare l'allarme ma riavviare i task
+                    DataError = false;
+                    HomeRoutineError = false;
+                    TrayNotPresentError = false;
+                    GripperNotClosedError = false;
+                    SlideNotOutError = false;
+                    SlideNotInError = false;
 
                     log.Warn("Comando RESET completato");
                 }
@@ -4366,7 +4528,7 @@ namespace RM.src.RM250714
             {
                 log.Error("Errore durante update robot speed : " + errSpeed);
                 GenerateAlarm(0, 4);
-                robotPropertiesError = true;
+                RobotPropertiesError = true;
                 return false;
             }
             log.Info("[Speed] velocita robot impostata a : " + speedPerc);
@@ -4386,7 +4548,7 @@ namespace RM.src.RM250714
             {
                 log.Error("Errore durante update robot payload : " + errPayload);
                 GenerateAlarm(0, 4);
-                robotPropertiesError = true;
+                RobotPropertiesError = true;
                 return false;
             }
             log.Info("[Payload] Peso robot impostato a : " + payload);
@@ -4432,7 +4594,7 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 log.Error("Errore durante cambio frame a " + id + " : Codice errore " + err);
-                robotPropertiesError = true;
+                RobotPropertiesError = true;
             }
             return err;
         }
@@ -4455,7 +4617,7 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 log.Error("Errore durante cambio tool a " + id + " : Codice errore " + err);
-                robotPropertiesError = true;
+                RobotPropertiesError = true;
             }
             return err;
         }
@@ -4473,7 +4635,7 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 log.Error("Errore durante calcolo cinematica inversa : " + err);
-                robotPropertiesError = true;
+                RobotPropertiesError = true;
             }
 
             return err;
@@ -4556,7 +4718,7 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 log.Error("Errore durante calcolo cinematica inversa : " + err);
-                robotKinError = true;
+                RobotKinError = true;
             }
 
             return err;
@@ -4586,7 +4748,7 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 log.Error("Errore durante calcolo cinematica inversa : " + err);
-                robotKinError = true;
+                RobotKinError = true;
                 if (!string.IsNullOrEmpty(pointName))
                 {
                     throw new RobotKinException("Errore durante calcolo cinematica inversa per il punto " + pointName + " : Codice errore " + err);
@@ -4611,7 +4773,7 @@ namespace RM.src.RM250714
 
             if (err != 0)
             {
-                robotKinError = true;
+                RobotKinError = true;
                 log.Error("Errore durante calcolo cinematica diretta : " + err);
             }
 
@@ -4633,7 +4795,7 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 log.Error("Errore durante calcolo cinematica diretta : " + err);
-                robotKinError = true;
+                RobotKinError = true;
                 if (!string.IsNullOrEmpty(pointName))
                 {
                     throw new Exception("Errore durante calcolo cinematica diretta per il punto " + pointName + " : Codice errore " + err);
@@ -4665,7 +4827,7 @@ namespace RM.src.RM250714
             if(err != 0)
             {
                 log.Error("Errore durante moveCart: " + err);
-                robotMovementError = true;
+                RobotMovementError = true;
             }
             return err;
         }
@@ -4696,7 +4858,7 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 GetRobotMovementCode(err);
-                robotMovementError = true;
+                RobotMovementError = true;
             }
             return err;
         }
@@ -4727,7 +4889,7 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 GetRobotMovementCode(err);
-                robotMovementError = true;
+                RobotMovementError = true;
             }
             return err;
         }
@@ -4759,7 +4921,7 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 GetRobotMovementCode(err);
-                robotMovementError = true;
+                RobotMovementError = true;
             }
             return err;
         }
@@ -4791,7 +4953,7 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 GetRobotMovementCode(err);
-                robotMovementError = true;
+                RobotMovementError = true;
             }
             return err;
         }
@@ -4818,7 +4980,7 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 GetRobotMovementCode(err);
-                robotMovementError = true;
+                RobotMovementError = true;
             }
             return err;
         }
@@ -4844,7 +5006,7 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 GetRobotMovementCode(err);
-                robotMovementError = true;
+                RobotMovementError = true;
             }
             return err;
         }
@@ -4865,7 +5027,7 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 GetRobotMovementCode(err);
-                robotMovementError = true;
+                RobotMovementError = true;
             }
             return err;
         }
@@ -5099,20 +5261,20 @@ namespace RM.src.RM250714
         /// <returns></returns>
         private static int BuildRobotAlarms()
         {
-            robotGeneralError = (robotError |
-                                robotKinError |
-                                robotMovementError |
-                                robotPropertiesError |
-                                !robotConnected
+            RobotGeneralError = (RobotError |
+                                RobotKinError |
+                                RobotMovementError |
+                                RobotPropertiesError |
+                                !RobotConnected
                                 ) ? true : false;
 
-            int errorWord = Convert.ToInt16(robotGeneralError);
+            int errorWord = Convert.ToInt16(RobotGeneralError);
 
-            errorWord |= robotError ? 1 << 1 : 0;
-            errorWord |= robotKinError ? 1 << 2 : 0;
-            errorWord |= robotMovementError ? 1 << 3 : 0;
-            errorWord |= robotPropertiesError ? 1 << 4 : 0;
-            errorWord |= !robotConnected ? 1 << 5 : 0;
+            errorWord |= RobotError ? 1 << 1 : 0;
+            errorWord |= RobotKinError ? 1 << 2 : 0;
+            errorWord |= RobotMovementError ? 1 << 3 : 0;
+            errorWord |= RobotPropertiesError ? 1 << 4 : 0;
+            errorWord |= !RobotConnected ? 1 << 5 : 0;
 
             return errorWord;
         }
@@ -5125,12 +5287,13 @@ namespace RM.src.RM250714
         {
             int errorWord = 0;
 
-            errorWord |= runTimeError ? 1 << 0 : 0;
-            errorWord |= dataError ? 1 << 1 : 0;
-            errorWord |= trayNotPresentError ? 1 << 2 : 0;
-            errorWord |= gripperNotClosedError ? 1 << 3 : 0;
-            errorWord |= slideNotOutError ? 1 << 4 : 0;
-            errorWord |= slideNotInError ? 1 << 5 : 0;
+            errorWord |= RunTimeError ? 1 << 0 : 0;
+            errorWord |= DataError ? 1 << 1 : 0;
+            errorWord |= HomeRoutineError ? 1 << 2 : 0;
+            errorWord |= TrayNotPresentError ? 1 << 3 : 0;
+            errorWord |= GripperNotClosedError ? 1 << 4 : 0;
+            errorWord |= SlideNotOutError ? 1 << 5 : 0;
+            errorWord |= SlideNotInError ? 1 << 6 : 0;
 
             return errorWord;
         }
@@ -5240,7 +5403,7 @@ namespace RM.src.RM250714
 
                 // Segnalo che è presente un allarme bloccante (allarme robot)
                 AlarmManager.blockingAlarm = true;
-                robotError = true;
+                RobotError = true;
             }
         }
 
@@ -5367,7 +5530,7 @@ namespace RM.src.RM250714
 
                     // Segnalo che è presente un allarme bloccante (allarme robot)
                     AlarmManager.blockingAlarm = true;
-                    robotError = true;
+                    RobotError = true;
                 }
                 //else if (maincode == 0)
                 //{

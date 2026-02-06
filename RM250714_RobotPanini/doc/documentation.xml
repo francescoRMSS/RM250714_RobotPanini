@@ -642,6 +642,17 @@
             </summary>
             <param name="message"></param>
         </member>
+        <member name="T:RM.src.RM250714.Classes.FR20.Exceptions.HomeRoutineException">
+            <summary>
+            Eccezioni per mancanze di consensi o errori durante la home routine
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.Classes.FR20.Exceptions.HomeRoutineException.#ctor(System.String)">
+            <summary>
+            Istanzia l'eccezione
+            </summary>
+            <param name="message"></param>
+        </member>
         <member name="T:RM.src.RM250714.Classes.FR20.Exceptions.RobotConnectionException">
             <summary>
             Eccezioni per disconnesione del robot
@@ -1155,11 +1166,6 @@
         <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.Automatic_Start">
             <summary>
             A 1 quando quando il robot lavora in modalità automatico
-            </summary>
-        </member>
-        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.ApplicationComRobot_active">
-            <summary>
-            A 1 quando il robot sta comunicando con il programma
             </summary>
         </member>
         <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.Program_In_Memory">
@@ -2507,62 +2513,132 @@
             Numero massimo accettato di errori di connessione -2
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.robotGeneralError">
+        <member name="P:RM.src.RM250714.RobotManager.RobotGeneralError">
             <summary>
             1 in caso di allarme del robot
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.robotError">
+        <member name="P:RM.src.RM250714.RobotManager.RobotError">
             <summary>
             1 quando il robot è in allarme 
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.robotKinError">
+        <member name="P:RM.src.RM250714.RobotManager.RobotKinError">
             <summary>
             1 quando il robot non riesce a calcolare una cinematica inversa o diretta
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.robotMovementError">
+        <member name="P:RM.src.RM250714.RobotManager.RobotMovementError">
             <summary>
             1 quando il robot restituisce un allarme da un movimento
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.robotPropertiesError">
+        <member name="P:RM.src.RM250714.RobotManager.RobotPropertiesError">
             <summary>
             1 quando il robot restituisce un allarme da un metodo che cambia alcune sue proprietà
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.robotConnected">
+        <member name="P:RM.src.RM250714.RobotManager.RobotConnected">
             <summary>
             0 quando il robot restituisce -2 n volte o il task segnala una disconnessione
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.runTimeError">
+        <member name="F:RM.src.RM250714.RobotManager._robotGeneralError">
+            <summary>
+            1 in caso di allarme del robot
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager._robotError">
+            <summary>
+            1 quando il robot è in allarme 
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager._robotKinError">
+            <summary>
+            1 quando il robot non riesce a calcolare una cinematica inversa o diretta
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager._robotMovementError">
+            <summary>
+            1 quando il robot restituisce un allarme da un movimento
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager._robotPropertiesError">
+            <summary>
+            1 quando il robot restituisce un allarme da un metodo che cambia alcune sue proprietà
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager._robotConnected">
+            <summary>
+            0 quando il robot restituisce -2 n volte o il task segnala una disconnessione
+            </summary>
+        </member>
+        <member name="P:RM.src.RM250714.RobotManager.RunTimeError">
             <summary>
             1 quando un ciclo va in eccezione durante l'esecuzione
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.dataError">
+        <member name="P:RM.src.RM250714.RobotManager.DataError">
             <summary>
             1 quando alcuni dati nel ciclo sono mancanti o errati
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.trayNotPresentError">
+        <member name="P:RM.src.RM250714.RobotManager.HomeRoutineError">
+            <summary>
+            1 quando mancano i consensi per la home routine o sono avvenuti degli errori nel ciclo
+            </summary>
+        </member>
+        <member name="P:RM.src.RM250714.RobotManager.TrayNotPresentError">
             <summary>
             1 quando dopo aver fatto il pick della teglia, la fotocellula non rileva la teglia
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.gripperNotClosedError">
+        <member name="P:RM.src.RM250714.RobotManager.GripperNotClosedError">
             <summary>
             1 quando dopo aver fatto il pick della teglia la pinza non ha raggiunto il fine corsa
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.slideNotOutError">
+        <member name="P:RM.src.RM250714.RobotManager.SlideNotOutError">
             <summary>
             1 quando dopo aver tirato fuori la slitta, il sensore rileva che la slitta non è fuori
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.slideNotInError">
+        <member name="P:RM.src.RM250714.RobotManager.SlideNotInError">
+            <summary>
+            1 quando dopo aver tirato dentro la slitta, il sensore rileva che la slitta non è dentro
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager._runTimeError">
+            <summary>
+            1 quando un ciclo va in eccezione durante l'esecuzione
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager._dataError">
+            <summary>
+            1 quando alcuni dati nel ciclo sono mancanti o errati
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager._homeRoutineError">
+            <summary>
+            1 quando mancano i consensi per la home routine o sono avvenuti degli errori nel ciclo
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager._trayNotPresentError">
+            <summary>
+            1 quando dopo aver fatto il pick della teglia, la fotocellula non rileva la teglia
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager._gripperNotClosedError">
+            <summary>
+            1 quando dopo aver fatto il pick della teglia la pinza non ha raggiunto il fine corsa
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager._slideNotOutError">
+            <summary>
+            1 quando dopo aver tirato fuori la slitta, il sensore rileva che la slitta non è fuori
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager._slideNotInError">
             <summary>
             1 quando dopo aver tirato dentro la slitta, il sensore rileva che la slitta non è dentro
             </summary>

@@ -26,11 +26,6 @@ namespace RM.src.RM250714.Classes.PLC
         public const string Automatic_Start = "PLC1_" + "Automatic_Start";
 
         /// <summary>
-        /// A 1 quando il robot sta comunicando con il programma
-        /// </summary>
-        public const string ApplicationComRobot_active = "PLC1_" + "ApplicationComRobot_active";
-
-        /// <summary>
         /// A 1 quando quando il robot ha almeno un programma i nmemoria
         /// </summary>
         public const string Program_In_Memory = "PLC1_" + "Program_In_Memory";

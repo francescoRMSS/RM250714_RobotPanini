@@ -152,6 +152,7 @@
     <Compile Include="src\RM250714\Classes\FR20\Applications\ObservableApplicationsDictionary.cs" />
     <Compile Include="src\RM250714\Classes\FR20\DAO\SQLite\RobotDAOSqlite.cs" />
     <Compile Include="src\RM250714\Classes\FR20\Exceptions\DataErrorException.cs" />
+    <Compile Include="src\RM250714\Classes\FR20\Exceptions\HomeRoutineException.cs" />
     <Compile Include="src\RM250714\Classes\FR20\Exceptions\RobotConnectionException.cs" />
     <Compile Include="src\RM250714\Classes\FR20\Exceptions\RobotKinException.cs" />
     <Compile Include="src\RM250714\Classes\FR20\Exceptions\RobotPropertiesChangeException.cs" />
