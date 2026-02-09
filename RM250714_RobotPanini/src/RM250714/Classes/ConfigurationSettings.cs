@@ -193,7 +193,15 @@ namespace RM.src.RM250714
                 // Controlla il valore di useOverlappingZones
             }
 
-            if ((string.IsNullOrEmpty(robotIp)) || !RobotManager.InitRobot(robotIp))
+            if ((string.IsNullOrEmpty(robotIp)))
+            {
+                CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Errore durante configurazione del Robot");
+                Application.Exit();
+            }
+
+            bool robotConfigurated = await RobotManager.InitRobot(robotIp);
+
+            if (!robotConfigurated)
             {
                 CustomMessageBox.Show(MessageBoxTypeEnum.ERROR, "Errore durante configurazione del Robot");
                 Application.Exit();

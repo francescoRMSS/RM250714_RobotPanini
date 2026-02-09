@@ -938,7 +938,7 @@ namespace RM.src.RM250714
         /// </summary>
         /// <param name="robotIpAddress">Indirizzo IP Robot</param>
         /// <returns></returns>
-        public static bool InitRobot(string robotIpAddress)
+        public static async Task<bool> InitRobot(string robotIpAddress)
         {
             formAlarmPage = new FormAlarmPage();
             formAlarmPage.AlarmsCleared += RMLib_AlarmsCleared;
@@ -968,7 +968,17 @@ namespace RM.src.RM250714
             GetRobotRealTimeState(ref robot_state_pkg);
             currentRobotMode = robot_state_pkg.robot_mode;
             currentRobotEnableStatus = robot_state_pkg.rbtEnableState;
+            robotStatus = robot_state_pkg.robot_state;
             isAutomaticMode = currentRobotMode == 0;
+
+            // Procedura di stop robot e lettura stato per poter impostare i parametri corretti
+            StopMotion();
+            while(robotStatus != 1)
+            {
+                GetRobotRealTimeState(ref robot_state_pkg);
+                robotStatus = robot_state_pkg.robot_state;
+                await Task.Delay(100);
+            }
 
             // Se fallisce setting della proprietà del Robot
             if (!GetRobotProperties())
@@ -1562,6 +1572,7 @@ namespace RM.src.RM250714
             float zOffsetDistaccoPlace = 5; // Offse su asse Z in cui mi abbasso in linea retta
             float offsetAllontamentoPostPlace = 130; // Offset di allontanamento dal carrello dopo aver eseguito il place
             float offsetAllontamentoPreSlittaAvanti = 550; // Offset utilizzato per sapere quanto prima di raggiungere il place inviare il comando di slitta avanti
+            float yoffsetAvvicinamentoPlace = 100; // Offset in y usato per sapere quanto prima di raggiungere il place di inviare il comando apri pinza
             float zOffsetPlace = 10; // Offset del punto di place su asse z
             float yOffsetPlace = 100; // Offset del punto di place su asse y
             float rxOffsetPrePlace = 2; // Offset di rotazione su asse x applicato al punto di avvicinamento place
@@ -2678,12 +2689,14 @@ namespace RM.src.RM250714
                             GetDI(4,1,ref isGripperExtended);
 
                             if (inPosition && robotStatus == 1 && isGripperExtended == 1) // Se il Robot è arrivato in posizione di Place ed è fermo e la slitta è avanti
+                            //if (TCPCurrentPosition.tran.y >= descPosPlace.tran.y - yoffsetAvvicinamentoPlace)
                             {
                                 //await Task.Delay(200);
                                 // Apro la pinza
                                 SetDO(0, 1, 0, 0);
 
                                 log.Info("STEP 180 - Attesa inPosition punto di place e apertura pinza");
+                                //log.Info("STEP 180 -Attesa quota y e apertura pinza");
 
                                 step = 190;
                             }
@@ -2736,7 +2749,7 @@ namespace RM.src.RM250714
                             #region Movimento distacco teglia
 
                             slowVel = vel * 1f;
-                            slowAcc = acc * 1f;
+                            slowAcc = acc * 0.75f;
 
                             blendR = 0;
 
@@ -5736,7 +5749,7 @@ namespace RM.src.RM250714
                 // Creazione dell'oggetto robotProperties
                 robotProperties = new RobotProperties(_speed, _velocity, _blendT, _acceleration, _ovl, _tool, _user, _weight, _velRec);
 
-                log.Info($"SetRobotProperties completata: " +
+                log.Info($"GetRobotProperties completata: " +
                          $"Speed: {_speed} " +
                          $"Velocity: {_velocity} " +
                          $"Blend T: {_blendT} " +
@@ -5785,10 +5798,10 @@ namespace RM.src.RM250714
             if (!SetRobotSpeed(robotProperties.Speed))
                 return false;
 
-            if (!toolManager.ChangeRobotTool(tool))
+            if (!frameManager.ChangeRobotFrame(user))
                 return false;
 
-            if (!frameManager.ChangeRobotFrame(user))
+            if (!toolManager.ChangeRobotTool(tool))
                 return false;
 
             if (!collisionManager.ChangeRobotCollision(currentCollisionLevel))
