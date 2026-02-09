@@ -2668,11 +2668,6 @@
             Gestore delle collisioni del robot.
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.RobotManager.Connection_Robot_Error">
-            <summary>
-            Flag che indica un errore di connessione con il robot.
-            </summary>
-        </member>
         <member name="F:RM.src.RM250714.RobotManager.allarmiSegnalati">
             <summary>
             Dizionario di allarmi per evitare segnalazioni duplicate.
@@ -3393,9 +3388,17 @@
             Esegue check su Robot enable
             </summary>
         </member>
-        <member name="M:RM.src.RM250714.RobotManager.ClearRobotQueue">
+        <member name="M:RM.src.RM250714.RobotManager.CheckRobotMode">
             <summary>
-            Metodo che ferma il robot e cancella la coda di punti
+            Esegue check su modalità Robot
+            </summary>
+            <summary>
+            Esegue check su modalità Robot
+            </summary>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.CheckStatusRobot">
+            <summary>
+            Legge lo stato del robot
             </summary>
         </member>
         <member name="M:RM.src.RM250714.RobotManager.CreateRobotAlarm(System.String,System.String,System.String,System.String,System.String)">
@@ -3501,12 +3504,6 @@
             </summary>
             <param name="payload">Peso in kg</param>
             <param name="loadNum">Load number</param>
-            <returns></returns>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.SetRobotProperties">
-            <summary>
-            Imposta le proprietà principali del robot: speed-frame-tool-collision levels
-            </summary>
             <returns></returns>
         </member>
         <member name="M:RM.src.RM250714.RobotManager.SetWObjCoord(System.Int32,fairino.DescPose,System.Int32)">
@@ -3930,24 +3927,6 @@
             Reset iniziali delle variabili PLC
             </summary>
         </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckRobotMode">
-            <summary>
-            Esegue check su modalità Robot
-            </summary>
-            <summary>
-            Esegue check su modalità Robot
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.CheckStatusRobot">
-            <summary>
-            Legge lo stato del robot
-            </summary>
-        </member>
-        <member name="M:RM.src.RM250714.RobotManager.ResetRobotSteps">
-            <summary>
-            Esegue reset del contatore degli step delle routine
-            </summary>
-        </member>
         <member name="M:RM.src.RM250714.RobotManager.CheckCurrentToolAndUser">
             <summary>
             Controlla il tool e user correnti
@@ -3997,6 +3976,12 @@
             Imposta le proprietà del robot prelevandole dal database.
             </summary>
             <returns>True se l'operazione ha successo, altrimenti False.</returns>
+        </member>
+        <member name="M:RM.src.RM250714.RobotManager.SetRobotProperties">
+            <summary>
+            Imposta le proprietà principali del robot: speed-frame-tool-collision levels
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:RM.src.RM250714.RobotManager.OnAllarmeGenerato(System.EventArgs)">
             <summary>

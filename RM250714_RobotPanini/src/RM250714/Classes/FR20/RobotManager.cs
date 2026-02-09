@@ -224,20 +224,15 @@ namespace RM.src.RM250714
 
         #region Allarmi relativi al robot
 
-        private static readonly object _robotGeneralErrorLock = new object();
         private static readonly object _robotErrorLock = new object();
-        private static readonly object _robotKinErrorLock = new object();
-        private static readonly object _robotMovementErrorLock = new object();
-        private static readonly object _robotPropertiesErrorLock = new object();
-        private static readonly object _robotConnectedLock = new object();
 
         /// <summary>
         /// 1 in caso di allarme del robot
         /// </summary>
         private static bool RobotGeneralError
         {
-            get { lock (_robotGeneralErrorLock) { return _robotGeneralError; } }
-            set { lock (_robotGeneralErrorLock) { _robotGeneralError = value; } }
+            get { lock (_robotErrorLock) { return _robotGeneralError; } }
+            set { lock (_robotErrorLock) { _robotGeneralError = value; } }
         }
 
         /// <summary>
@@ -254,8 +249,8 @@ namespace RM.src.RM250714
         /// </summary>
         private static bool RobotKinError
         {
-            get { lock (_robotKinErrorLock) { return _robotKinError; } }
-            set { lock (_robotKinErrorLock) { _robotKinError = value; } }
+            get { lock (_robotErrorLock) { return _robotKinError; } }
+            set { lock (_robotErrorLock) { _robotKinError = value; } }
         }
 
         /// <summary>
@@ -263,8 +258,8 @@ namespace RM.src.RM250714
         /// </summary>
         private static bool RobotMovementError
         {
-            get { lock (_robotMovementErrorLock) { return _robotMovementError; } }
-            set { lock (_robotMovementErrorLock) { _robotMovementError = value; } }
+            get { lock (_robotErrorLock) { return _robotMovementError; } }
+            set { lock (_robotErrorLock) { _robotMovementError = value; } }
         }
 
         /// <summary>
@@ -272,8 +267,8 @@ namespace RM.src.RM250714
         /// </summary>
         public static bool RobotPropertiesError
         {
-            get { lock (_robotPropertiesErrorLock) { return _robotPropertiesError; } }
-            set { lock (_robotPropertiesErrorLock) { _robotPropertiesError = value; } }
+            get { lock (_robotErrorLock) { return _robotPropertiesError; } }
+            set { lock (_robotErrorLock) { _robotPropertiesError = value; } }
         }
 
         /// <summary>
@@ -281,8 +276,8 @@ namespace RM.src.RM250714
         /// </summary>
         private static bool RobotConnected
         {
-            get { lock (_robotConnectedLock) { return _robotConnected; } }
-            set { lock (_robotConnectedLock) { _robotConnected = value; } }
+            get { lock (_robotErrorLock) { return _robotConnected; } }
+            set { lock (_robotErrorLock) { _robotConnected = value; } }
         }
 
         /// <summary>
@@ -314,21 +309,15 @@ namespace RM.src.RM250714
 
         #region Allarmi relativi all'applicazione
 
-        private static readonly object _runTimeErrorLock = new object();
-        private static readonly object _dataErrorLock = new object();
-        private static readonly object _homeRoutineErrorLock = new object();
-        private static readonly object _trayNotPresentErrorLock = new object();
-        private static readonly object _gripperNotClosedErrorLock = new object();
-        private static readonly object _slideNotOutErrorLock = new object();
-        private static readonly object _slideNotInErrorLock = new object();
+        private static readonly object _applicationErrorLock = new object();
 
         /// <summary>
         /// 1 quando un ciclo va in eccezione durante l'esecuzione
         /// </summary>
         private static bool RunTimeError
         {
-            get { lock (_runTimeErrorLock) { return _runTimeError; } }
-            set { lock (_runTimeErrorLock) { _runTimeError = value; } }
+            get { lock (_applicationErrorLock) { return _runTimeError; } }
+            set { lock (_applicationErrorLock) { _runTimeError = value; } }
         }
 
         /// <summary>
@@ -336,8 +325,8 @@ namespace RM.src.RM250714
         /// </summary>
         private static bool DataError
         {
-            get { lock (_dataErrorLock) { return _dataError; } }
-            set { lock (_dataErrorLock) { _dataError = value; } }
+            get { lock (_applicationErrorLock) { return _dataError; } }
+            set { lock (_applicationErrorLock) { _dataError = value; } }
         }
 
         /// <summary>
@@ -345,8 +334,8 @@ namespace RM.src.RM250714
         /// </summary>
         private static bool HomeRoutineError
         {
-            get { lock (_homeRoutineErrorLock) { return _homeRoutineError; } }
-            set { lock (_homeRoutineErrorLock) { _homeRoutineError = value; } }
+            get { lock (_applicationErrorLock) { return _homeRoutineError; } }
+            set { lock (_applicationErrorLock) { _homeRoutineError = value; } }
         }
 
         /// <summary>
@@ -354,8 +343,8 @@ namespace RM.src.RM250714
         /// </summary>
         private static bool TrayNotPresentError
         {
-            get { lock (_trayNotPresentErrorLock) { return _trayNotPresentError; } }
-            set { lock (_trayNotPresentErrorLock) { _trayNotPresentError = value; } }
+            get { lock (_applicationErrorLock) { return _trayNotPresentError; } }
+            set { lock (_applicationErrorLock) { _trayNotPresentError = value; } }
         }
 
         /// <summary>
@@ -363,8 +352,8 @@ namespace RM.src.RM250714
         /// </summary>
         private static bool GripperNotClosedError
         {
-            get { lock (_gripperNotClosedErrorLock) { return _gripperNotClosedError; } }
-            set { lock (_gripperNotClosedErrorLock) { _gripperNotClosedError = value; } }
+            get { lock (_applicationErrorLock) { return _gripperNotClosedError; } }
+            set { lock (_applicationErrorLock) { _gripperNotClosedError = value; } }
         }
 
         /// <summary>
@@ -372,8 +361,8 @@ namespace RM.src.RM250714
         /// </summary>
         private static bool SlideNotOutError
         {
-            get { lock (_slideNotOutErrorLock) { return _slideNotOutError; } }
-            set { lock (_slideNotOutErrorLock) { _slideNotOutError = value; } }
+            get { lock (_applicationErrorLock) { return _slideNotOutError; } }
+            set { lock (_applicationErrorLock) { _slideNotOutError = value; } }
         }
 
         /// <summary>
@@ -381,8 +370,8 @@ namespace RM.src.RM250714
         /// </summary>
         private static bool SlideNotInError
         {
-            get { lock (_slideNotInErrorLock) { return _slideNotInError; } }
-            set { lock (_slideNotInErrorLock) { _slideNotInError = value; } }
+            get { lock (_applicationErrorLock) { return _slideNotInError; } }
+            set { lock (_applicationErrorLock) { _slideNotInError = value; } }
         }
 
         /// <summary>
@@ -446,10 +435,6 @@ namespace RM.src.RM250714
         #region Variabili di Stato per la Logica di Controllo
 
         // --- Stato connessione e allarmi ---
-        /// <summary>
-        /// Flag che indica un errore di connessione con il robot.
-        /// </summary>
-        private static readonly bool Connection_Robot_Error = false;
         /// <summary>
         /// Dizionario di allarmi per evitare segnalazioni duplicate.
         /// </summary>
@@ -4154,7 +4139,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// Esegue check su Robot enable
         /// </summary>
-        public static async Task CheckIsRobotEnable()
+        private static async Task CheckIsRobotEnable()
         {
             // Controllo se il robot è abilitato tramite PLC
             isEnabledNow = Convert.ToBoolean(PLCConfig.appVariables.getValue(PLCTagName.Enable));
@@ -4181,13 +4166,88 @@ namespace RM.src.RM250714
         }
 
         /// <summary>
-        /// Metodo che ferma il robot e cancella la coda di punti
+        /// Esegue check su modalità Robot
         /// </summary>
-        public static void ClearRobotQueue()
+        /// <summary>
+        /// Esegue check su modalità Robot
+        /// </summary>
+        private static async Task CheckRobotMode()
         {
-            AlarmManager.isRobotMoving = false;
-            PauseMotion();
-            StopMotion();
+            // Ottieni la modalità operativa dal PLC
+            mode = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Operating_Mode));
+
+            // CASO A: Il PLC vuole la modalità AUTOMATICA
+            if (mode == 1) // 1 = AUTO secondo la tua logica PLC
+            {
+                // Se il robot NON è GIA' in automatico...
+                if (currentRobotMode != 0) // 0 = AUTOMATICO secondo la libreria robot
+                {
+                    await Task.Delay(1000);
+                    log.Warn("[Mode] Cambio modalita in AUTO");
+                    isAutomaticMode = true;
+                    prevIsOff = false;
+                    SetRobotMode(0); // Imposta il robot in modalità automatica
+                    JogMovement.StopJogRobotTask(); // Ferma il thread di movimento manuale
+                    TriggerRobotModeChangedEvent(1);  // Evento: modalità automatica
+                }
+            }
+            // CASO B: Il PLC vuole la modalità MANUALE
+            else if (mode == 2) // 2 = MANUALE secondo la tua logica PLC
+            {
+                // Se il robot NON è GIA' in manuale...
+                if (currentRobotMode != 1) // 1 = MANUALE secondo la libreria robot
+                {
+                    await Task.Delay(1000);
+                    log.Warn("[Mode] Cambio modalita in MANUAL");
+                    isAutomaticMode = false;
+                    prevIsOff = false;
+                    SetRobotMode(1); // Imposta il robot in modalità manuale
+                    TriggerRobotModeChangedEvent(0);  // Evento: modalità manuale
+                }
+
+                // La logica per avviare il JOG va qui.
+                // Se siamo in manuale (lo siamo, altrimenti saremmo entrati nell'if sopra)
+                // e il robot è abilitato, avvia il task di JOG.
+                if (isEnabledNow)
+                {
+                    JogMovement.StartJogRobotTask(); // Questo ha già il controllo per non partire più volte
+                }
+            }
+            // CASO C: Il PLC vuole la modalità OFF o un valore non valido
+            else
+            {
+                if (!prevIsOff)
+                {
+                    //await Task.Delay(100);
+                    log.Warn("[Mode] Cambio modalita in OFF");
+                    isAutomaticMode = false;
+                    prevIsOff = true;
+                    TriggerRobotModeChangedEvent(3);  // Evento: modalità Off
+                }
+            }
+        }
+
+        /// <summary>
+        /// Legge lo stato del robot
+        /// </summary>
+        private static void CheckStatusRobot()
+        {
+            ROBOT_STATE_PKG robot_state_pkg = new ROBOT_STATE_PKG();
+
+            int err = GetRobotRealTimeState(ref robot_state_pkg);
+            if (err == 0)
+            {
+                robotStatus = robot_state_pkg.robot_state;
+                currentRobotMode = robot_state_pkg.robot_mode;
+                currentRobotEnableStatus = robot_state_pkg.rbtEnableState;
+
+                currentConnectionErrorTries = 0;
+            }
+            else if (err == -2)
+            {
+                if (currentConnectionErrorTries < connectionErrorMaxTries * 2)
+                    currentConnectionErrorTries++;
+            }
         }
 
         /// <summary>
@@ -4198,7 +4258,7 @@ namespace RM.src.RM250714
         /// <param name="timestamp">Timestamp allarme</param>
         /// <param name="device">Device da cui deriva l'allarme</param>
         /// <param name="state">ON-OFF</param>
-        public static void CreateRobotAlarm(string id, string description, string timestamp, string device, string state)
+        private static void CreateRobotAlarm(string id, string description, string timestamp, string device, string state)
         {
             // Solleva l'evento quando il robot si ferma
             OnRobotAlarm(new RobotAlarmsEventArgs(id, description, timestamp, device, state));
@@ -4208,7 +4268,7 @@ namespace RM.src.RM250714
         /// Metodo che aggiunge alla lista degli allarmi l'allarme
         /// </summary>
         /// <param name="e"></param>
-        public static void OnRobotAlarm(RobotAlarmsEventArgs e)
+        private static void OnRobotAlarm(RobotAlarmsEventArgs e)
         {
             // Calcola il timestamp Unix in millisecondi
             long unixTimestamp = ((DateTimeOffset)Convert.ToDateTime(e.Timestamp)).ToUnixTimeMilliseconds();
@@ -4223,7 +4283,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// Check su movimento del Robot
         /// </summary>
-        public static void CheckIsRobotMoving()
+        private static void CheckIsRobotMoving()
         {
 
             if (AlarmManager.isRobotConnected)
@@ -4301,7 +4361,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// Metodo che porta il Robot in HomePosition
         /// </summary>
-        public static void GoToHomePosition()
+        private static void GoToHomePosition()
         {
             var restPose = ApplicationConfig.applicationsManager.GetPosition("pHome", "RM");
             DescPose pHome = new DescPose(restPose.x, restPose.y, restPose.z, restPose.rx, restPose.ry, restPose.rz);
@@ -4552,30 +4612,6 @@ namespace RM.src.RM250714
                 return false;
             }
             log.Info("[Payload] Peso robot impostato a : " + payload);
-            return true;
-        }
-
-        /// <summary>
-        /// Imposta le proprietà principali del robot: speed-frame-tool-collision levels
-        /// </summary>
-        /// <returns></returns>
-        private static bool SetRobotProperties()
-        {
-            if (!SetRobotSpeed(robotProperties.Speed))
-                return false;
-
-            if (!toolManager.ChangeRobotTool(tool))
-                return false;
-
-            if (!frameManager.ChangeRobotFrame(user))
-                return false;
-
-            if (!collisionManager.ChangeRobotCollision(currentCollisionLevel))
-                return false;
-
-            if (!SetRobotPayload(robotProperties.Weight))
-                return false;
-
             return true;
         }
 
@@ -5261,22 +5297,25 @@ namespace RM.src.RM250714
         /// <returns></returns>
         private static int BuildRobotAlarms()
         {
-            RobotGeneralError = (RobotError |
-                                RobotKinError |
-                                RobotMovementError |
-                                RobotPropertiesError |
-                                !RobotConnected
+            lock(_robotErrorLock)
+            {
+                _robotGeneralError = (_robotError |
+                                _robotKinError |
+                                _robotMovementError |
+                                _robotPropertiesError |
+                                !_robotConnected
                                 ) ? true : false;
 
-            int errorWord = Convert.ToInt16(RobotGeneralError);
+                int errorWord = Convert.ToInt16(_robotGeneralError);
 
-            errorWord |= RobotError ? 1 << 1 : 0;
-            errorWord |= RobotKinError ? 1 << 2 : 0;
-            errorWord |= RobotMovementError ? 1 << 3 : 0;
-            errorWord |= RobotPropertiesError ? 1 << 4 : 0;
-            errorWord |= !RobotConnected ? 1 << 5 : 0;
+                errorWord |= _robotError ? 1 << 1 : 0;
+                errorWord |= _robotKinError ? 1 << 2 : 0;
+                errorWord |= _robotMovementError ? 1 << 3 : 0;
+                errorWord |= _robotPropertiesError ? 1 << 4 : 0;
+                errorWord |= _robotConnected ? 1 << 5 : 0;
 
-            return errorWord;
+                return errorWord;
+            }
         }
 
         /// <summary>
@@ -5285,17 +5324,20 @@ namespace RM.src.RM250714
         /// <returns></returns>
         private static int BuildApplicationAlarms()
         {
-            int errorWord = 0;
+            lock(_applicationErrorLock)
+            {
+                int errorWord = 0;
 
-            errorWord |= RunTimeError ? 1 << 0 : 0;
-            errorWord |= DataError ? 1 << 1 : 0;
-            errorWord |= HomeRoutineError ? 1 << 2 : 0;
-            errorWord |= TrayNotPresentError ? 1 << 3 : 0;
-            errorWord |= GripperNotClosedError ? 1 << 4 : 0;
-            errorWord |= SlideNotOutError ? 1 << 5 : 0;
-            errorWord |= SlideNotInError ? 1 << 6 : 0;
+                errorWord |= _runTimeError ? 1 << 0 : 0;
+                errorWord |= _dataError ? 1 << 1 : 0;
+                errorWord |= _homeRoutineError ? 1 << 2 : 0;
+                errorWord |= _trayNotPresentError ? 1 << 3 : 0;
+                errorWord |= _gripperNotClosedError ? 1 << 4 : 0;
+                errorWord |= _slideNotOutError ? 1 << 5 : 0;
+                errorWord |= _slideNotInError ? 1 << 6 : 0;
 
-            return errorWord;
+                return errorWord;
+            }
         }
 
         /// <summary>
@@ -5545,99 +5587,6 @@ namespace RM.src.RM250714
         private static void ResetPLCVariables()
         {
 
-        }
-
-        /// <summary>
-        /// Esegue check su modalità Robot
-        /// </summary>
-        /// <summary>
-        /// Esegue check su modalità Robot
-        /// </summary>
-        private static async Task CheckRobotMode()
-        {
-            // Ottieni la modalità operativa dal PLC
-            mode = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.Operating_Mode));
-
-            // CASO A: Il PLC vuole la modalità AUTOMATICA
-            if (mode == 1) // 1 = AUTO secondo la tua logica PLC
-            {
-                // Se il robot NON è GIA' in automatico...
-                if (currentRobotMode != 0) // 0 = AUTOMATICO secondo la libreria robot
-                {
-                    await Task.Delay(1000);
-                    log.Warn("[Mode] Cambio modalita in AUTO");
-                    isAutomaticMode = true;
-                    prevIsOff = false;
-                    SetRobotMode(0); // Imposta il robot in modalità automatica
-                    JogMovement.StopJogRobotTask(); // Ferma il thread di movimento manuale
-                    TriggerRobotModeChangedEvent(1);  // Evento: modalità automatica
-                }
-            }
-            // CASO B: Il PLC vuole la modalità MANUALE
-            else if (mode == 2) // 2 = MANUALE secondo la tua logica PLC
-            {
-                // Se il robot NON è GIA' in manuale...
-                if (currentRobotMode != 1) // 1 = MANUALE secondo la libreria robot
-                {
-                    await Task.Delay(1000);
-                    log.Warn("[Mode] Cambio modalita in MANUAL");
-                    isAutomaticMode = false;
-                    prevIsOff = false;
-                    SetRobotMode(1); // Imposta il robot in modalità manuale
-                    TriggerRobotModeChangedEvent(0);  // Evento: modalità manuale
-                }
-
-                // La logica per avviare il JOG va qui.
-                // Se siamo in manuale (lo siamo, altrimenti saremmo entrati nell'if sopra)
-                // e il robot è abilitato, avvia il task di JOG.
-                if (isEnabledNow)
-                {
-                    JogMovement.StartJogRobotTask(); // Questo ha già il controllo per non partire più volte
-                }
-            }
-            // CASO C: Il PLC vuole la modalità OFF o un valore non valido
-            else
-            {
-                if (!prevIsOff)
-                {
-                    //await Task.Delay(100);
-                    log.Warn("[Mode] Cambio modalita in OFF");
-                    isAutomaticMode = false;
-                    prevIsOff = true;
-                    TriggerRobotModeChangedEvent(3);  // Evento: modalità Off
-                }
-            }
-        }
-
-        /// <summary>
-        /// Legge lo stato del robot
-        /// </summary>
-        private static void CheckStatusRobot()
-        {
-            ROBOT_STATE_PKG robot_state_pkg = new ROBOT_STATE_PKG();
-
-            int err = GetRobotRealTimeState(ref robot_state_pkg);
-            if (err == 0)
-            {
-                robotStatus = robot_state_pkg.robot_state;
-                currentRobotMode = robot_state_pkg.robot_mode;
-                currentRobotEnableStatus = robot_state_pkg.rbtEnableState;
-
-                currentConnectionErrorTries = 0;
-            }
-            else if (err == -2)
-            {
-                if (currentConnectionErrorTries < connectionErrorMaxTries * 2)
-                    currentConnectionErrorTries++;
-            }
-        }
-
-        /// <summary>
-        /// Esegue reset del contatore degli step delle routine
-        /// </summary>
-        public static void ResetRobotSteps()
-        {
-            step = 0;
         }
 
         /// <summary>
@@ -5908,7 +5857,7 @@ namespace RM.src.RM250714
         /// Imposta le proprietà del robot prelevandole dal database.
         /// </summary>
         /// <returns>True se l'operazione ha successo, altrimenti False.</returns>
-        public static bool GetRobotProperties()
+        private static bool GetRobotProperties()
         {
             try
             {
@@ -5992,10 +5941,34 @@ namespace RM.src.RM250714
         }
 
         /// <summary>
+        /// Imposta le proprietà principali del robot: speed-frame-tool-collision levels
+        /// </summary>
+        /// <returns></returns>
+        private static bool SetRobotProperties()
+        {
+            if (!SetRobotSpeed(robotProperties.Speed))
+                return false;
+
+            if (!toolManager.ChangeRobotTool(tool))
+                return false;
+
+            if (!frameManager.ChangeRobotFrame(user))
+                return false;
+
+            if (!collisionManager.ChangeRobotCollision(currentCollisionLevel))
+                return false;
+
+            if (!SetRobotPayload(robotProperties.Weight))
+                return false;
+
+            return true;
+        }
+
+        /// <summary>
         /// Generazione evento da allarme ricevuto
         /// </summary>
         /// <param name="e"></param>
-        protected static void OnAllarmeGenerato(EventArgs e)
+        private static void OnAllarmeGenerato(EventArgs e)
         {
             AllarmeGenerato?.Invoke(null, e);
         }
@@ -6004,7 +5977,7 @@ namespace RM.src.RM250714
         /// Generazione evento da allarmi resettati
         /// </summary>
         /// <param name="e"></param>
-        protected static void OnAllarmeResettato(EventArgs e)
+        private static void OnAllarmeResettato(EventArgs e)
         {
             AllarmeResettato?.Invoke(null, e);
         }
@@ -6012,7 +5985,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// Generazione eventi
         /// </summary>
-        public static void TriggerAllarmeGenerato()
+        private static void TriggerAllarmeGenerato()
         {
             OnAllarmeGenerato(EventArgs.Empty);
         }
@@ -6020,7 +5993,7 @@ namespace RM.src.RM250714
         /// <summary>
         /// Trigger attivato quando vengono cancellati gli allarmi
         /// </summary>
-        public static void TriggerAllarmeResettato()
+        private static void TriggerAllarmeResettato()
         {
             OnAllarmeResettato(EventArgs.Empty);
         }
@@ -6030,7 +6003,7 @@ namespace RM.src.RM250714
         /// </summary>
         /// <param name="angle"></param>
         /// <returns></returns>
-        static float NormalizeAngle(float angle)
+        private static float NormalizeAngle(float angle)
         {
             while (angle > 180f) angle -= 360f;
             while (angle <= -180f) angle += 360f;
@@ -6041,7 +6014,7 @@ namespace RM.src.RM250714
         /// Invia posizioni al PLC in formato cartesiano e joint
         /// </summary>
         /// <param name="jPos">Posizione in joint ottenuta dal calcolo di cinematica inversa partendo dalla posizione TCP</param>
-        public static void CheckRobotPosition(JointPos jPos)
+        private static void CheckRobotPosition(JointPos jPos)
         {
             if (!AlarmManager.isRobotConnected)
                 return;
