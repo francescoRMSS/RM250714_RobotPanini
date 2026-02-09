@@ -2571,7 +2571,7 @@ namespace RM.src.RM250714
                             // Se la pinza è chiusa e non è aperta
                             if (isGripperOpen == 0) // && isGripperClosed == 1 )
                             {
-                                log.Info("STEP 80 - Pinza chiusa e non è aperta");
+                                log.Info("STEP 80 - Pinza chiusa e non e' aperta");
                                 step = 100;
                             }
 
@@ -3465,7 +3465,7 @@ namespace RM.src.RM250714
             try
             {
                 // Controllo che la pinza sia aperta e la slitta avanti oppure che la pinza sia aperta, la slitta indietro e la teglia assente
-                if ((isGripperOpen == 1 && isGripperExtended == 1) || (isGripperOpen == 1 && isGripperRetracted == 1 && isTrayPresent == 0))
+                if ((isGripperOpen == 0 && isGripperExtended == 0) || (isGripperOpen == 0 && isGripperRetracted == 0 && isTrayPresent == 1))
                     throw new HomeRoutineException("Mancanza condizione di avvio routine");
 
                 if (restPose == null)
@@ -3476,6 +3476,12 @@ namespace RM.src.RM250714
 
                 if (safeZone == null)
                     throw new DataErrorException("Il punto di safeZone non esiste");
+
+                if (!frameManager.ChangeRobotFrame("frBeor"))
+                    throw new RobotPropertiesChangeException("Cambio frame a frBeor ha generato un'eccezione");
+
+                if (!toolManager.ChangeRobotTool("tPinza"))
+                    throw new RobotPropertiesChangeException("Cambio tool a tPinza ha generato un'eccezione");
 
                 // Apro la pinza
                 SetDO(0, 1, 0, 0);
@@ -4356,7 +4362,7 @@ namespace RM.src.RM250714
 
         #endregion
 
-        #region Metodi movimento
+        #region Cicli di movimento
 
         /// <summary>
         /// Metodo che porta il Robot in HomePosition
