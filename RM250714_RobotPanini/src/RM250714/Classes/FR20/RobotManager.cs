@@ -1548,7 +1548,7 @@ namespace RM.src.RM250714
             float offsetAllontanamentoPick = 750; // Offset  di allontamento post pick
             float zOffsetPick = 3; // Offset del punto di pick su asse z
             float offsetAllontamentoPreSlittaIndietro = 0; // Offset utilizzato per sapere quanto dopo aver eseguito il pick inviare il comando di slitta indietro
-            float yOffsetPick = 5; // Offset del punto di pick su asse y
+            float yOffsetPick = 10; // Offset del punto di pick su asse y
             float offsetPreAvvicinamentoPick = 130; // Offset di avvicinamento al punto di avvicinamento pick
             float rxRotationPick = 3; // Gradi di rotazione su asse rx dopo aver eseguito il pick
 
@@ -1558,10 +1558,11 @@ namespace RM.src.RM250714
 
             float offsetAvvicinamentoPlace = offsetAllontanamentoPick; // Offset per eseguire punto di avvicinamento place
             float zOffsetAvvicinamentoPlace = 40; // Offset su asse Z in cui mi alzo leggermente prima di andare in place
-            float zOffsetPostPlace = 10; // Offset su asse Z in cui mi abbasso leggermente dopo essere andato in place
+            float zOffsetPostPlace = 5; // Offset su asse Z in cui mi abbasso leggermente dopo essere andato in place
+            float zOffsetDistaccoPlace = 5; // Offse su asse Z in cui mi abbasso in linea retta
             float offsetAllontamentoPostPlace = 130; // Offset di allontanamento dal carrello dopo aver eseguito il place
             float offsetAllontamentoPreSlittaAvanti = 550; // Offset utilizzato per sapere quanto prima di raggiungere il place inviare il comando di slitta avanti
-            float zOffsetPlace = 0; // Offset del punto di place su asse z
+            float zOffsetPlace = 10; // Offset del punto di place su asse z
             float yOffsetPlace = 100; // Offset del punto di place su asse y
             float rxOffsetPrePlace = 2; // Offset di rotazione su asse x applicato al punto di avvicinamento place
 
@@ -2071,7 +2072,7 @@ namespace RM.src.RM250714
                                         descPosPostPlace = new DescPose(
                                            place.x,
                                            place.y,
-                                           place.z - zOffsetPlace,
+                                           place.z - zOffsetPostPlace,
                                            place.rx,
                                            place.ry,
                                            place.rz
@@ -2091,7 +2092,7 @@ namespace RM.src.RM250714
                                         descPosDistaccoTegliaPlace = new DescPose(
                                            place.x,
                                            place.y,
-                                           place.z - zOffsetPostPlace - zOffsetPlace,
+                                           place.z - zOffsetPostPlace - zOffsetDistaccoPlace,
                                            place.rx,
                                            place.ry,
                                            place.rz
@@ -3002,7 +3003,7 @@ namespace RM.src.RM250714
                                     descPosPostPlace = new DescPose(
                                        place.x,
                                        place.y,
-                                       place.z - zOffsetPlace,
+                                       place.z - zOffsetPostPlace,
                                        place.rx,
                                        place.ry,
                                        place.rz
@@ -3022,7 +3023,7 @@ namespace RM.src.RM250714
                                     descPosDistaccoTegliaPlace = new DescPose(
                                        place.x,
                                        place.y,
-                                       place.z - zOffsetPostPlace - zOffsetPlace,
+                                       place.z - zOffsetPostPlace - zOffsetDistaccoPlace,
                                        place.rx,
                                        place.ry,
                                        place.rz
