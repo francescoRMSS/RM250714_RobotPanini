@@ -1558,11 +1558,11 @@ namespace RM.src.RM250714
 
             float offsetAvvicinamentoPlace = offsetAllontanamentoPick; // Offset per eseguire punto di avvicinamento place
             float zOffsetAvvicinamentoPlace = 40; // Offset su asse Z in cui mi alzo leggermente prima di andare in place
-            float zOffsetPostPlace = 5; // Offset su asse Z in cui mi abbasso leggermente dopo essere andato in place
+            float zOffsetPostPlace = 10; // Offset su asse Z in cui mi abbasso leggermente dopo essere andato in place
             float offsetAllontamentoPostPlace = 130; // Offset di allontanamento dal carrello dopo aver eseguito il place
             float offsetAllontamentoPreSlittaAvanti = 550; // Offset utilizzato per sapere quanto prima di raggiungere il place inviare il comando di slitta avanti
-            float zOffsetPlace = 10; // Offset del punto di place su asse z
-            float yOffsetPlace = 40; // Offset del punto di place su asse y
+            float zOffsetPlace = 0; // Offset del punto di place su asse z
+            float yOffsetPlace = 100; // Offset del punto di place su asse y
             float rxOffsetPrePlace = 2; // Offset di rotazione su asse x applicato al punto di avvicinamento place
 
             #endregion
@@ -1687,6 +1687,15 @@ namespace RM.src.RM250714
 
             JointPos jointPosPostPlace = new JointPos();
             DescPose descPosPostPlace = new DescPose();
+
+            #endregion
+
+            #region Punto abbassamento post place
+
+            // Punto da eseguire dopo post place, abbassamento in z prima di allontanamento place
+
+            JointPos jointPosDistaccoTegliaPlace = new JointPos();
+            DescPose descPosDistaccoTegliaPlace = new DescPose();
 
             #endregion
 
@@ -2062,7 +2071,7 @@ namespace RM.src.RM250714
                                         descPosPostPlace = new DescPose(
                                            place.x,
                                            place.y,
-                                           place.z - zOffsetPostPlace - zOffsetPlace,
+                                           place.z - zOffsetPlace,
                                            place.rx,
                                            place.ry,
                                            place.rz
@@ -2070,6 +2079,26 @@ namespace RM.src.RM250714
 
                                         // Calcolo del jointPos
                                         GetInverseKin(descPosPostPlace, ref jointPosPostPlace, "Post place");
+
+                                        #endregion
+
+                                        #region Punto distacco teglia 
+
+                                        // Oggetto jointPos
+                                        jointPosDistaccoTegliaPlace = new JointPos(0, 0, 0, 0, 0, 0);
+
+                                        // Creazione oggetto descPose
+                                        descPosDistaccoTegliaPlace = new DescPose(
+                                           place.x,
+                                           place.y,
+                                           place.z - zOffsetPostPlace - zOffsetPlace,
+                                           place.rx,
+                                           place.ry,
+                                           place.rz
+                                           );
+
+                                        // Calcolo del jointPos
+                                        GetInverseKin(descPosDistaccoTegliaPlace, ref jointPosDistaccoTegliaPlace, "Distacco teglia place");
 
                                         #endregion
 
@@ -2165,268 +2194,6 @@ namespace RM.src.RM250714
                                     }
                                 }
                             }
-                            break;
-
-                        #endregion
-
-                        case 30:
-                            #region Calcolo punto di Pick e di Place (step non utilizzato)
-
-                            if (robotStatus == 1) // Se robot fermo
-                            {
-                                #region Calcolo dei punti di pick e di place
-
-                                #region Pick
-
-                                #region Punto di Pick
-
-                                // Get punto di pick da PLC
-                                selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
-                                // selectedFormat = 1001;
-
-                                var pPick = ApplicationConfig.applicationsManager.GetPosition(selectedFormat.ToString(), "RM");
-
-                                if (pPick != null)
-                                {
-                                    // Check validità del punto
-                                    if (pPick.x != 0 && pPick.y != 0 && pPick.z != 0 && pPick.rx != 0 && pPick.ry != 0 && pPick.rz != 0) // Se il punto è valido
-                                    {
-                                        pick = pPick;
-                                    }
-                                    else
-                                        throw new DataErrorException("Punto di pick non presente nel dizionario");
-                                }
-                                else
-                                    throw new DataErrorException("Punto di pick non presente nel dizionario");
-
-                                // pick target
-                                jointPosPick = new JointPos(0, 0, 0, 0, 0, 0);
-                                descPosPick = new DescPose(
-                                    pick.x,
-                                    pick.y + yOffsetPick,
-                                    pick.z + zOffsetPick,
-                                    pick.rx,
-                                    pick.ry,
-                                    pick.rz);
-
-                                GetInverseKin(descPosPick, ref jointPosPick, "Pick");
-
-                                #endregion
-
-                                #region Punto di avvicinamento Pick 
-
-                                // Oggetto jointPos
-                                jointPosApproachPick = new JointPos(0, 0, 0, 0, 0, 0);
-
-                                // Creazione oggetto descPose
-                                descPosApproachPick = new DescPose(
-                                    pick.x,
-                                    pick.y - offsetAvvicinamentoPick,
-                                    pick.z - zOffsetAvvicinamentoPick + zOffsetPick,
-                                    pick.rx,
-                                    pick.ry,
-                                    pick.rz
-                                    );
-
-                                // Calcolo del jointPos
-                                GetInverseKin(descPosApproachPick, ref jointPosApproachPick, "Avvicinamento pick");
-
-                                #endregion
-
-                                #region Punto di pre avvicinamento Pick 
-
-                                // Oggetto jointPos
-                                jointPosPreApproachPick = new JointPos(0, 0, 0, 0, 0, 0);
-
-                                // Creazione oggetto descPose
-                                descPosPreApproachPick = new DescPose(
-                                    pick.x,
-                                    pick.y - offsetPreAvvicinamentoPick,
-                                    pick.z - zOffsetAvvicinamentoPick + zOffsetPick,
-                                    pick.rx,
-                                    pick.ry,
-                                    pick.rz
-                                    );
-
-                                // Calcolo del jointPos
-                                GetInverseKin(descPosPreApproachPick, ref jointPosPreApproachPick, "Pre avvicinamento pick");
-
-                                #endregion
-
-                                #region Punto post Pick
-
-                                // Oggetto jointPos
-                                jointPosPostPick = new JointPos(0, 0, 0, 0, 0, 0);
-
-                                // Creazione oggetto descPose
-                                descPosPostPick = new DescPose(
-                                    pick.x,
-                                    pick.y,
-                                    pick.z + zOffsetPostPick + zOffsetPick,
-                                    pick.rx,
-                                    pick.ry,
-                                    pick.rz
-                                    );
-
-                                // Calcolo del jointPos
-                                GetInverseKin(descPosPostPick, ref jointPosPostPick, "Post pick");
-
-                                #endregion
-
-                                #region Punto allontanamento post Pick
-
-                                // Oggetto jointPos
-                                jointPosAllontanamentoPick = new JointPos(0, 0, 0, 0, 0, 0);
-
-                                // Creazione oggetto descPose
-                                descPosAllontanamentoPick = new DescPose(
-                                    pick.x,
-                                    pick.y - offsetAllontanamentoPick,
-                                    pick.z + zOffsetPostPick + zOffsetAllontanamentoPick + zOffsetPick,
-                                    NormalizeAngle(pick.rx + rxRotationPick),
-                                    pick.ry,
-                                    pick.rz
-                                    );
-
-                                // Calcolo del jointPos
-                                GetInverseKin(descPosAllontanamentoPick, ref jointPosAllontanamentoPick, "Allontanamento pick");
-
-                                #endregion
-
-                                #region Punto intermedio allontanamento post Pick
-
-                                // Oggetto jointPos
-                                jointPosIntAllontanamentoPick = new JointPos(0, 0, 0, 0, 0, 0);
-
-                                // Creazione oggetto descPose
-                                descPosIntAllontanamentoPick = new DescPose(
-                                    descPosAllontanamentoPick.tran.x,
-                                    pick.y - offsetAllontamentoPreSlittaIndietro,
-                                    descPosAllontanamentoPick.tran.z + zOffsetPick,
-                                    descPosAllontanamentoPick.rpy.rx,
-                                    descPosAllontanamentoPick.rpy.ry,
-                                    descPosAllontanamentoPick.rpy.rz
-                                    );
-
-                                // Calcolo del jointPos
-                                GetInverseKin(descPosIntAllontanamentoPick, ref jointPosIntAllontanamentoPick, "Allontanamento intermedio pick");
-
-                                #endregion
-
-                                #endregion
-
-                                #region Place
-
-                                #region Punto di place
-
-                                // Oggetto jointPos
-                                jointPosPlace = new JointPos(0, 0, 0, 0, 0, 0);
-
-                                // Get delle coordinate del punto dal database
-                                place = pick;
-
-                                // Creazione oggetto descPose
-                                descPosPlace = new DescPose(
-                                    place.x,
-                                    place.y - yOffsetPlace,
-                                    place.z + zOffsetPlace,
-                                    place.rx,
-                                    place.ry,
-                                    place.rz
-                                    );
-
-                                // Calcolo del jointPos
-                                GetInverseKin(descPosPlace, ref jointPosPlace, "Place");
-
-                                #endregion
-
-                                #region Punto avvicinamento place
-
-                                // Oggetto jointPos
-                                jointPosApproachPlace = new JointPos(0, 0, 0, 0, 0, 0);
-
-                                // Creazione oggetto descPose
-                                descPosApproachPlace = new DescPose(
-                                    place.x,
-                                    place.y - offsetAvvicinamentoPlace,
-                                    place.z + zOffsetAvvicinamentoPlace,
-                                    NormalizeAngle(place.rx + rxOffsetPrePlace),
-                                    place.ry,
-                                    place.rz
-                                    );
-
-                                // Calcolo del jointPos
-                                GetInverseKin(descPosApproachPlace, ref jointPosApproachPlace, "Avvicinamento place");
-
-                                #endregion
-
-                                #region Punto di rotazione pre place
-
-                                // Oggetto jointPos
-                                jointPosRotationPrePlace = new JointPos(0, 0, 0, 0, 0, 0);
-
-                                // Creazione oggetto descPose
-                                descPosRotationPrePlace = new DescPose(
-                                    home.x,
-                                    home.y,
-                                    place.z + zOffsetAvvicinamentoPlace,
-                                    place.rx,
-                                    place.ry,
-                                    place.rz
-                                    );
-
-                                // Calcolo del jointPos
-                                GetInverseKin(descPosRotationPrePlace, ref jointPosRotationPrePlace, "Rotazione pre place");
-
-                                #endregion
-
-                                #region Punto post place
-
-                                // Oggetto jointPos
-                                jointPosPostPlace = new JointPos(0, 0, 0, 0, 0, 0);
-
-                                // Creazione oggetto descPose
-                                descPosPostPlace = new DescPose(
-                                   place.x,
-                                   place.y,
-                                   place.z - zOffsetPostPlace - zOffsetPlace,
-                                   place.rx,
-                                   place.ry,
-                                   place.rz
-                                   );
-
-                                // Calcolo del jointPos
-                                GetInverseKin(descPosPostPlace, ref jointPosPostPlace, "Post place");
-
-                                #endregion
-
-                                #region Punto allontanamento place
-
-                                // Oggetto jointPos
-                                jointPosAllontanamentoPlace = new JointPos(0, 0, 0, 0, 0, 0);
-
-                                // Creazione oggetto descPose
-                                descPosAllontanamentoPlace = new DescPose(
-                                   place.x,
-                                   place.y - offsetAllontamentoPostPlace,
-                                   place.z,
-                                   place.rx,
-                                   place.ry,
-                                   place.rz
-                                   );
-
-                                // Calcolo del jointPos
-                                GetInverseKin(descPosAllontanamentoPlace, ref jointPosAllontanamentoPlace, "Allontanamento place");
-
-                                #endregion
-
-                                #endregion
-
-                                #endregion
-
-                                step = 40;
-                            }
-
                             break;
 
                         #endregion
@@ -2535,8 +2302,7 @@ namespace RM.src.RM250714
 
                         #endregion
                           
-                        case 70:
-                            
+                        case 70:      
                             #region Check slitta avanti e presenza teglia
                             /*
                             // Get slitta avanti
@@ -2558,7 +2324,6 @@ namespace RM.src.RM250714
 
                         #endregion
                             
-
                         case 80:
                             #region Check chiusura pinza
 
@@ -2579,7 +2344,6 @@ namespace RM.src.RM250714
 
                         #endregion
 
-                            
                         case 90:
                             #region Check slitta indietro
                             /*
@@ -2597,7 +2361,6 @@ namespace RM.src.RM250714
 
                         #endregion
                             
-
                         case 100:
                             #region Movimento di allontanamento post chiusura pinza
 
@@ -2957,14 +2720,27 @@ namespace RM.src.RM250714
 
                             #region Movimento post place
 
-                            slowVel = vel * 1f;
-                            slowAcc = acc * 1f;
+                            slowVel = vel * 0.5f;
+                            slowAcc = acc * 0.5f;
 
 
-                            blendR = 50;
+                            blendR = 0; // era 50
                            
                             // Movimento a punto di allontanamento place teglia 2
                             err1 = MoveL(jointPosPostPlace, descPosPostPlace,
+                                tool, user, slowVel, slowAcc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
+
+                            #endregion
+
+                            #region Movimento distacco teglia
+
+                            slowVel = vel * 1f;
+                            slowAcc = acc * 1f;
+
+                            blendR = 0;
+
+                            // Movimento a punto di distacco place teglia 
+                            err2 = MoveL(jointPosDistaccoTegliaPlace, descPosDistaccoTegliaPlace,
                                 tool, user, slowVel, slowAcc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
                             #endregion
@@ -2974,14 +2750,14 @@ namespace RM.src.RM250714
                             slowVel = vel * 1f;
                             slowAcc = acc * 1f;
 
-                            blendR = 50;
+                            blendR = 0; // era 50
                             // Movimento a punto di allontanamento place teglia 2
-                            err2 = MoveL(jointPosAllontanamentoPlace, descPosAllontanamentoPlace,
+                            err3 = MoveL(jointPosAllontanamentoPlace, descPosAllontanamentoPlace,
                                 tool, user, slowVel, slowAcc, ovl, blendR, epos, search, 1, offset, velAccParamMode, overSpeedStrategy, speedPercent);
 
                             #endregion
 
-                            if (err1 == 99 || err2 == 99)
+                            if (err1 == 99 || err2 == 99 || err3 == 99)
                             {
                                 await Task.Delay(500);
                             }
@@ -3226,7 +3002,7 @@ namespace RM.src.RM250714
                                     descPosPostPlace = new DescPose(
                                        place.x,
                                        place.y,
-                                       place.z - zOffsetPostPlace - zOffsetPlace,
+                                       place.z - zOffsetPlace,
                                        place.rx,
                                        place.ry,
                                        place.rz
@@ -3234,6 +3010,26 @@ namespace RM.src.RM250714
 
                                     // Calcolo del jointPos
                                     GetInverseKin(descPosPostPlace, ref jointPosPostPlace, "Post place");
+
+                                    #endregion
+
+                                    #region Punto distacco teglia 
+
+                                    // Oggetto jointPos
+                                    jointPosDistaccoTegliaPlace = new JointPos(0, 0, 0, 0, 0, 0);
+
+                                    // Creazione oggetto descPose
+                                    descPosDistaccoTegliaPlace = new DescPose(
+                                       place.x,
+                                       place.y,
+                                       place.z - zOffsetPostPlace - zOffsetPlace,
+                                       place.rx,
+                                       place.ry,
+                                       place.rz
+                                       );
+
+                                    // Calcolo del jointPos
+                                    GetInverseKin(descPosDistaccoTegliaPlace, ref jointPosDistaccoTegliaPlace, "Distacco teglia place");
 
                                     #endregion
 
@@ -4156,7 +3952,7 @@ namespace RM.src.RM250714
                 log.Warn("[ENABLE] Richiesta abilitazione robot");
                 EnableRobot(1);
                 //AlarmManager.blockingAlarm = false;
-                robotEnableStatus = 1;
+                
             }
             else if (!isEnabledNow && currentRobotEnableStatus != 0)
             {
@@ -4167,8 +3963,12 @@ namespace RM.src.RM250714
                 JogMovement.StopJogRobotTask(); // Ferma il task di Jog
                 await Task.Delay(10);
                 EnableRobot(0);
-                robotEnableStatus = 0;
             }
+
+            if (isEnabledNow)
+                robotEnableStatus = 1;
+            else
+                robotEnableStatus = 0;
         }
 
         /// <summary>
@@ -4865,6 +4665,9 @@ namespace RM.src.RM250714
         /// <returns></returns>
         public static int MoveCart(DescPose pose, int tool, int user, float vel, float acc, float ovl, float blendT, int config)
         {
+#if DEBUG
+            log.Info($"MoveL(x:{pose.tran.x}, y:{pose.tran.y}, z:{pose.tran.z}, rx:{pose.rpy.rx}, ry:{pose.rpy.ry}, rz:{pose.rpy.rz}");
+#endif
             int err = Robot.MoveCart(pose, tool, user, vel, acc, ovl, blendT, config);
             if(err != 0)
             {
@@ -4896,12 +4699,19 @@ namespace RM.src.RM250714
         public static int MoveL(JointPos jPos, DescPose pose, int tool, int user, float vel, float acc, float ovl,
             float blendR, ExaxisPos epos, byte search, byte offsetFlag, DescPose offsetPos, int velAccParamMode = 0, int overSpeedStrategy = 0, int speedPercent = 5)
         {
+#if DEBUG
+            string joints = $"{string.Join(", ", jPos.jPos)}";
+            log.Info($"MoveL(x:{pose.tran.x}, y:{pose.tran.y}, z:{pose.tran.z}, rx:{pose.rpy.rx}, ry:{pose.rpy.ry}, rz:{pose.rpy.rz}, giunti:{joints}");
+#endif
+
             int err = Robot.MoveL(jPos, pose, tool, user, vel, acc, ovl, blendR, epos, search, offsetFlag, offsetPos, velAccParamMode, overSpeedStrategy, speedPercent);
+
             if (err != 0)
             {
                 GetRobotMovementCode(err);
                 RobotMovementError = true;
             }
+
             return err;
         }
 
@@ -4927,6 +4737,10 @@ namespace RM.src.RM250714
         public static int MoveL(JointPos jPos, DescPose pose, int tool, int user, float vel, float acc, float ovl, float blendR, int blendMode,
              ExaxisPos epos, byte search, byte offsetFlag, DescPose offsetPos, int overSpeedStrategy = 0, int speedPercent = 5)
         {
+#if DEBUG
+            string joints = $"{string.Join(", ", jPos.jPos)}";
+            log.Info($"MoveL(x:{pose.tran.x}, y:{pose.tran.y}, z:{pose.tran.z}, rx:{pose.rpy.rx}, ry:{pose.rpy.ry}, rz:{pose.rpy.rz}, giunti:{joints}");
+#endif
             int err = Robot.MoveL(jPos, pose, tool, user, vel, acc, ovl, blendR, blendMode, epos, search, offsetFlag, offsetPos, overSpeedStrategy, speedPercent);
             if (err != 0)
             {
@@ -4959,6 +4773,10 @@ namespace RM.src.RM250714
         public static int MoveL(JointPos jPos, DescPose pose, int tool, int user, float vel, float acc, float ovl, float blendR, int blendMode,
              ExaxisPos epos, byte search, byte offsetFlag, DescPose offsetPos, int velAccParamMode = 0, int overSpeedStrategy = 0, int speedPercent = 5)
         {
+#if DEBUG
+            string joints = $"{string.Join(", ", jPos.jPos)}";
+            log.Info($"MoveL(x:{pose.tran.x}, y:{pose.tran.y}, z:{pose.tran.z}, rx:{pose.rpy.rx}, ry:{pose.rpy.ry}, rz:{pose.rpy.rz}, giunti:{joints}");
+#endif
             int err = Robot.MoveL(jPos, pose, tool, user, vel, acc, ovl, blendR, blendMode, epos, search, offsetFlag, offsetPos, velAccParamMode, overSpeedStrategy, speedPercent);
             if (err != 0)
             {
@@ -4991,6 +4809,9 @@ namespace RM.src.RM250714
         public static int MoveL(DescPose pose, int tool, int user, float vel, float acc, float ovl, float blendR, int blendMode,
              ExaxisPos epos, byte search, byte offsetFlag, DescPose offsetPos, int config, int velAccParamMode = 0, int overSpeedStrategy = 0, int speedPercent = 5)
         {
+#if DEBUG
+            log.Info($"MoveL(x:{pose.tran.x}, y:{pose.tran.y}, z:{pose.tran.z}, rx:{pose.rpy.rx}, ry:{pose.rpy.ry}, rz:{pose.rpy.rz}");
+#endif
             int err = Robot.MoveL(pose, tool, user, vel, acc, ovl, blendR, blendMode, epos, search, offsetFlag, offsetPos, config, velAccParamMode, overSpeedStrategy, speedPercent);
             if (err != 0)
             {
@@ -5018,6 +4839,10 @@ namespace RM.src.RM250714
         public static int MoveJ(JointPos jPos, DescPose pose, int tool, int user, float vel, float acc, float ovl,
            ExaxisPos epos, float blendT, byte offsetFlag, DescPose offsetPos)
         {
+#if DEBUG
+            string joints = $"{string.Join(", ", jPos.jPos)}";
+            log.Info($"MoveL(x:{pose.tran.x}, y:{pose.tran.y}, z:{pose.tran.z}, rx:{pose.rpy.rx}, ry:{pose.rpy.ry}, rz:{pose.rpy.rz}, giunti:{joints}");
+#endif
             int err = Robot.MoveJ(jPos, pose, tool, user, vel, acc, ovl, epos, blendT, offsetFlag, offsetPos);
             if (err != 0)
             {
@@ -5044,6 +4869,10 @@ namespace RM.src.RM250714
         public static int MoveJ(JointPos jPos, int tool, int user, float vel, float acc, float ovl,
            ExaxisPos epos, float blendT, byte offsetFlag, DescPose offsetPos)
         {
+#if DEBUG
+            string joints = $"{string.Join(", ", jPos.jPos)}";
+            log.Info($"MoveL(giunti:{joints}");
+#endif
             int err = Robot.MoveJ(jPos, tool, user, vel, acc, ovl, epos, blendT, offsetFlag, offsetPos);
             if (err != 0)
             {
@@ -5867,7 +5696,7 @@ namespace RM.src.RM250714
         {
             try
             {
-                log.Info("Inizio impostazione delle proprietà del robot dal database.");
+                log.Info("Inizio impostazione delle proprieta' del robot dal database.");
 
                 // Ottieni le proprietà del robot dal database
                 DataTable dt_robotProperties = RobotDAO.GetRobotProperties(ConnectionString);
