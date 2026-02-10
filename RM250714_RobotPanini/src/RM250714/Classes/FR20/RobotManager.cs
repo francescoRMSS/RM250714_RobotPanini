@@ -19,6 +19,7 @@ using CookComputing.XmlRpc;
 using System.IO;
 using RM.src.RM250714.Classes.FR20.Exceptions;
 using RMLib.TaskManager;
+using log4net.Repository.Hierarchy;
 
 namespace RM.src.RM250714
 {
@@ -4715,8 +4716,9 @@ namespace RM.src.RM250714
             int err = Robot.MoveCart(pose, tool, user, vel, acc, ovl, blendT, config);
             if(err != 0)
             {
-                log.Error("Errore durante moveCart: " + err);
-                RobotMovementError = true;
+                GetRobotMovementCode(err);
+                if (err != 99)
+                    RobotMovementError = true;
             }
             return err;
         }
@@ -4753,7 +4755,8 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 GetRobotMovementCode(err);
-                RobotMovementError = true;
+                if (err != 99)
+                    RobotMovementError = true;
             }
 
             return err;
@@ -4789,7 +4792,8 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 GetRobotMovementCode(err);
-                RobotMovementError = true;
+                if (err != 99)
+                    RobotMovementError = true;
             }
             return err;
         }
@@ -4825,7 +4829,8 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 GetRobotMovementCode(err);
-                RobotMovementError = true;
+                if (err != 99)
+                    RobotMovementError = true;
             }
             return err;
         }
@@ -4860,7 +4865,8 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 GetRobotMovementCode(err);
-                RobotMovementError = true;
+                if (err != 99)
+                    RobotMovementError = true;
             }
             return err;
         }
@@ -4891,7 +4897,8 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 GetRobotMovementCode(err);
-                RobotMovementError = true;
+                if (err != 99)
+                    RobotMovementError = true;
             }
             return err;
         }
@@ -4921,7 +4928,8 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 GetRobotMovementCode(err);
-                RobotMovementError = true;
+                if (err != 99)
+                    RobotMovementError = true;
             }
             return err;
         }
@@ -4942,7 +4950,8 @@ namespace RM.src.RM250714
             if (err != 0)
             {
                 GetRobotMovementCode(err);
-                RobotMovementError = true;
+                if (err != 99)
+                    RobotMovementError = true;
             }
             return err;
         }
