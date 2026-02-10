@@ -1569,11 +1569,11 @@ namespace RM.src.RM250714
             float offsetAvvicinamentoPlace = offsetAllontanamentoPick; // Offset per eseguire punto di avvicinamento place
             float zOffsetAvvicinamentoPlace = 40; // Offset su asse Z in cui mi alzo leggermente prima di andare in place
             float zOffsetPostPlace = 5; // Offset su asse Z in cui mi abbasso leggermente dopo essere andato in place
-            float zOffsetDistaccoPlace = 5; // Offse su asse Z in cui mi abbasso in linea retta
+            float zOffsetDistaccoPlace = 0; // Offse su asse Z in cui mi abbasso in linea retta
             float offsetAllontamentoPostPlace = 130; // Offset di allontanamento dal carrello dopo aver eseguito il place
             float offsetAllontamentoPreSlittaAvanti = 550; // Offset utilizzato per sapere quanto prima di raggiungere il place inviare il comando di slitta avanti
             float yoffsetAvvicinamentoPlace = 100; // Offset in y usato per sapere quanto prima di raggiungere il place di inviare il comando apri pinza
-            float zOffsetPlace = 10; // Offset del punto di place su asse z
+            float zOffsetPlace = 15; // Offset del punto di place su asse z
             float yOffsetPlace = 100; // Offset del punto di place su asse y
             float rxOffsetPrePlace = 2; // Offset di rotazione su asse x applicato al punto di avvicinamento place
 
@@ -2269,10 +2269,10 @@ namespace RM.src.RM250714
 
                             #region Movimento a punto di pick
 
-                            blendR = 20;
+                            blendR = 5;
 
-                            slowVel = vel * 1f;
-                            slowAcc = acc * 1f;
+                            slowVel = vel * 0.5f;
+                            slowAcc = acc * 0.5f;
 
                             // Movimento a pick teglia 1
                             err3 = MoveL(jointPosPick, descPosPick,
