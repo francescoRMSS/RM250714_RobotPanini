@@ -1653,6 +1653,11 @@
             j6 actual position [°]
             </summary>
         </member>
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.ACK_selected_format">
+            <summary>
+            Ack di risposta al plc per sincronizzare il numero di pick/place
+            </summary>
+        </member>
         <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.LifeBit_in">
             <summary>
             Clock da leggere ogni secondo (su clock su PLC gira ogni 2s)
@@ -1868,9 +1873,9 @@
             Limite massimo prodotto
             </summary>
         </member>
-        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.spare_1_to_read">
+        <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.SyncIndexToFormat">
             <summary>
-            spare
+            Bit di sincronizzazione per sapere quando leggere il formato
             </summary>
         </member>
         <member name="F:RM.src.RM250714.Classes.PLC.PLCTagName.Enable_To_Pick">
@@ -3176,6 +3181,11 @@
         <member name="F:RM.src.RM250714.RobotManager.stepPlace">
             <summary>
             Step ciclo di place
+            </summary>
+        </member>
+        <member name="F:RM.src.RM250714.RobotManager.mem_selectedFormat">
+            <summary>
+            Valore precedente per fare comparazione con il valore attuale del valore di selected format
             </summary>
         </member>
         <member name="F:RM.src.RM250714.RobotManager.TaskHighPriorityName">

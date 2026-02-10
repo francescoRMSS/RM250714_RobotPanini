@@ -522,6 +522,15 @@ namespace RM.src.RM250714.Classes.PLC
 
         #endregion
 
+        #region PLC
+
+        /// <summary>
+        /// Ack di risposta al plc per sincronizzare il numero di pick/place
+        /// </summary>
+        public const string ACK_selected_format = "PLC1_" + "ACK_selected_format";
+
+        #endregion
+
         #endregion
 
         #region Lettura da PLC
@@ -680,7 +689,6 @@ namespace RM.src.RM250714.Classes.PLC
 
         #endregion
 
-
         #region HMI
 
         /// <summary>
@@ -749,9 +757,9 @@ namespace RM.src.RM250714.Classes.PLC
         public static string SET_LimitMaxProdotto = "PLC1_" + "com_robot_62";
 
         /// <summary>
-        /// spare
+        /// Bit di sincronizzazione per sapere quando leggere il formato
         /// </summary>
-        public static string spare_1_to_read = "PLC1_" + "com_robot_63";
+        public static string SyncIndexToFormat = "PLC1_" + "com_robot_63";
 
         /// <summary>
         /// A 1 per consenso di pick
