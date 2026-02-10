@@ -2518,6 +2518,11 @@
             Numero massimo accettato di errori di connessione -2
             </summary>
         </member>
+        <member name="F:RM.src.RM250714.RobotManager.numberOfLevels">
+            <summary>
+            Numero di livelli
+            </summary>
+        </member>
         <member name="P:RM.src.RM250714.RobotManager.RobotGeneralError">
             <summary>
             1 in caso di allarme del robot

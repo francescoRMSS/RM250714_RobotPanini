@@ -104,6 +104,7 @@
     </Reference>
     <Reference Include="RMLib.TaskManager">
       <HintPath>..\..\..\..\..\..\Support\RMLib.TaskManager.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="RMLib.Translations">
       <HintPath>..\..\..\..\..\..\Support\RMLib.Translations.dll</HintPath>
