@@ -1520,7 +1520,7 @@ namespace RM.src.RM250714
             int enableToPlace;
 
             // Sincronizzazione cambio formato
-            int SyncIndexToFormat = 0;
+            int SyncIndexToFormat;
 
             // Piano del carrello selezionato
             int selectedFormat = 0;
@@ -1549,11 +1549,20 @@ namespace RM.src.RM250714
             // Cod. errore movimento 3
             int err3;
 
+            // Carrello corrente
+            int currentRack = -1;
+
+            // Teglia corrente 
+            int currentTray = -1;
+
             // Segnala quando il carrello è pieno
-            bool carrelloTerminato = false;
+            bool carrelloTerminato;
 
             bool homeRequested = false;
             bool homeInProgress = false;
+
+            List<int> centralTrays = new List<int>{ 5, 6, 7, 8, 9, 10, 11, 12};
+
             #endregion
 
             #region Offset spostamenti
@@ -1581,7 +1590,7 @@ namespace RM.src.RM250714
             float offsetAvvicinamentoPlace = offsetAllontanamentoPick; // Offset per eseguire punto di avvicinamento place
             float zOffsetAvvicinamentoPlace = 40; // Offset su asse Z in cui mi alzo leggermente prima di andare in place
             float zOffsetPostPlace = 5; // Offset su asse Z in cui mi abbasso leggermente dopo essere andato in place
-            float zOffsetDistaccoPlace = 0; // Offse su asse Z in cui mi abbasso in linea retta
+            float zOffsetDistaccoPlace = 5; // Offse su asse Z in cui mi abbasso in linea retta
             float offsetAllontamentoPostPlace = 130; // Offset di allontanamento dal carrello dopo aver eseguito il place
             float offsetAllontamentoPreSlittaAvanti = 550; // Offset utilizzato per sapere quanto prima di raggiungere il place inviare il comando di slitta avanti
             float yoffsetAvvicinamentoPlace = 100; // Offset in y usato per sapere quanto prima di raggiungere il place di inviare il comando apri pinza
@@ -1874,15 +1883,21 @@ namespace RM.src.RM250714
                                 {
                                     log.Debug("Received Sync for read format");
                                     selectedFormat = Convert.ToInt16(PLCConfig.appVariables.getValue(PLCTagName.CMD_SelectedFormat));
-                                    //if (selectedFormat != mem_selectedFormat)
-                                    {
-                                        mem_selectedFormat = selectedFormat;
-                                        log.Debug($"Format selected: {selectedFormat}");
-                                        RefresherTask.AddUpdate(PLCTagName.ACK_selected_format, mem_selectedFormat, "INT16"); // Scrittura ack selected format
+                                    currentRack = selectedFormat / 1000;
+                                    currentTray = selectedFormat % 100;
 
-                                        step = 5;
-                                    }
+                                    mem_selectedFormat = selectedFormat;
+                                    log.Debug($"Format selected: {selectedFormat}");
+                                    RefresherTask.AddUpdate(PLCTagName.ACK_selected_format, mem_selectedFormat, "INT16"); // Scrittura ack selected format
+
+                                    step = 5;
                                 }
+                            }
+
+                            if (stopCycleRequested)
+                            {
+                                log.Debug("Stop requested");
+                                step = 10;
                             }
 
                             break;
@@ -2506,7 +2521,7 @@ namespace RM.src.RM250714
                             #region Movimento avvicinamento beor
 
                             slowVel = vel * 1f;
-                            slowAcc = acc * 0.5f;
+                            slowAcc = currentRack == 1 || !centralTrays.Contains(currentTray)  ? acc * 0.5f : acc * 0.3f;
 
                             blendR = 10;
                             // Movimento a punto di avvicinamento beor
@@ -2611,15 +2626,16 @@ namespace RM.src.RM250714
 
                             // offset = new DescPose(0, 0, 0, 3, 0, 0);
                             // Movimento a punto di avvicinamento place teglia 2
+
                             if (vel > 70)
                             {
-                                slowVel = vel * 0.7f;
-                                slowAcc = acc * 0.5f;
+                                slowVel = currentRack == 1 || !centralTrays.Contains(currentTray) ? vel * 0.7f : vel * 0.5f;
+                                slowAcc = currentRack == 1 || !centralTrays.Contains(currentTray) ? acc * 0.7f : acc * 0.3f;
                             }
                             else
                             {
                                 slowVel = vel * 1f;
-                                slowAcc = acc * 1f;
+                                slowAcc = currentRack == 1 || !centralTrays.Contains(currentTray) ? acc * 1f : acc * 0.8f;
                             }
 
                             blendR = 10;
@@ -2770,8 +2786,8 @@ namespace RM.src.RM250714
 
                             #region Movimento distacco teglia
 
-                            slowVel = vel * 1f;
-                            slowAcc = acc * 0.75f;
+                            slowVel = vel * 0.8f;
+                            slowAcc = acc * 0.5f;
 
                             blendR = 0;
 
@@ -2817,7 +2833,7 @@ namespace RM.src.RM250714
                                 
                                 if (carrelloTerminato)
                                 {
-                                    log.Info($"STEP 210 - Carrello {selectedFormat / 1000} terminato");
+                                    log.Info($"STEP 210 - Carrello {currentTray} terminato");
                                     homeRequested = true;
                                     step = 220;
                                 }
